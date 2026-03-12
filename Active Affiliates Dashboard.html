@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Active Affiliates Distribution</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#07090f;
+  --surface:#0f1219;
+  --surface2:#161b27;
+  --border:#1e2535;
+  --text:#e8eaf0;
+  --muted:#6b7280;
+  --accent:#3b82f6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:13px;min-height:100vh}
+
+/* --- top bar --- */
+.topbar{background:#0b0f1a;border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.topbar h1{font-size:14px;font-weight:600;color:var(--text);letter-spacing:.3px}
+.topbar h1 span{color:#f97316;margin-right:6px}
+.badge{background:#f9731618;color:#f97316;border:1px solid #f9731630;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+
+/* --- kpi row --- */
+.kpi-row{display:flex;gap:12px;padding:20px 24px 0}
+.kpi{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kclr,#3b82f6)}
+.kpi-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px}
+.kpi-val{font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
+.kpi-sub .pos{color:#34e87c}
+.kpi-sub .neg{color:#ff4f6e}
+
+/* --- section --- */
+.section{margin:20px 24px 0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.section-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px;display:inline-block}
+.section-sub{font-size:11px;color:var(--muted)}
+.chart-wrap{position:relative;height:260px}
+.chart-wrap.tall{height:310px}
+.chart-wrap.short{height:220px}
+
+/* --- toggle --- */
+.toggle{display:flex;gap:0;background:var(--bg);border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.toggle button{border:none;background:none;color:var(--muted);font-size:11px;font-weight:600;padding:5px 14px;cursor:pointer;transition:.15s}
+.toggle button.on{background:var(--accent);color:#fff}
+
+/* --- region legend --- */
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer;padding:3px 8px;border-radius:5px;border:1px solid transparent;transition:.15s}
+.legend-item:hover{background:#ffffff0a;border-color:var(--border)}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* --- heatmap --- */
+.hm-wrap{overflow-x:auto;margin-top:4px}
+.hm-table{border-collapse:collapse;white-space:nowrap;width:100%}
+.hm-table th{font-size:10px;font-weight:600;color:var(--muted);text-align:center;padding:4px 6px;background:var(--surface);position:sticky;top:0}
+.hm-table th:first-child{text-align:left;padding-left:0;position:sticky;left:0;z-index:2;background:var(--surface)}
+.hm-rlabel{font-size:11px;font-weight:600;color:var(--muted);padding:7px 14px 7px 0;white-space:nowrap;position:sticky;left:0;background:var(--surface);z-index:1}
+.hm-cell{text-align:center;padding:5px 4px;min-width:44px;font-size:11px;font-weight:600;border-radius:4px;background:rgba(0,0,0,0);color:rgba(255,255,255,0.1);transition:.1s}
+.hm-cell[title]{cursor:default}
+.hm-cell:not(:empty){
+  background:color-mix(in srgb, var(--clr) calc(var(--hi)*100%), transparent);
+  color:rgba(255,255,255,calc(0.3 + var(--hi)*0.6));
+}
+
+/* --- insight bar --- */
+.insight-row{display:flex;gap:10px;padding:16px 24px 0;flex-wrap:wrap}
+.insight{flex:1;min-width:180px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px 16px;border-left:3px solid var(--iclr,#3b82f6)}
+.insight-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:4px}
+.insight-val{font-size:13px;font-weight:700;color:var(--text)}
+.insight-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* --- footer pad --- */
+.pad{height:40px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><span>◉</span> Active Affiliates Distribution</h1>
+  <div class="badge">Oct 2024 – Mar 2026</div>
+</div>
+
+<!-- KPI row -->
+<div class="kpi-row">
+  <div class="kpi" style="--kclr:#f97316">
+    <div class="kpi-label">Total Active (period)</div>
+    <div class="kpi-val">495</div>
+    <div class="kpi-sub">across all regions</div>
+  </div>
+  <div class="kpi" style="--kclr:#3b82f6">
+    <div class="kpi-label">Current Month</div>
+    <div class="kpi-val">4</div>
+    <div class="kpi-sub"><span class="neg">-94%</span> vs prior month</div>
+  </div>
+  <div class="kpi" style="--kclr:#10b981">
+    <div class="kpi-label">Prior Month</div>
+    <div class="kpi-val">63</div>
+    <div class="kpi-sub">Feb 26</div>
+  </div>
+  <div class="kpi" style="--kclr:#f59e0b">
+    <div class="kpi-label">Peak Month</div>
+    <div class="kpi-val">63</div>
+    <div class="kpi-sub">Feb 26</div>
+  </div>
+  <div class="kpi" style="--kclr:#f97316">
+    <div class="kpi-label">Top Region (3 mo)</div>
+    <div class="kpi-val">Africa</div>
+    <div class="kpi-sub">53 active of late</div>
+  </div>
+</div>
+
+<!-- Insight strip -->
+<div class="insight-row">
+  <div class="insight" style="--iclr:#34e87c">
+    <div class="insight-label">Overall Direction</div>
+    <div class="insight-val">↑ Upward trend</div>
+    <div class="insight-sub">Linear trend is rising; peak was Feb 2026</div>
+  </div>
+  <div class="insight" style="--iclr:#f97316">
+    <div class="insight-label">Africa</div>
+    <div class="insight-val">Dominant region — 53% of total</div>
+    <div class="insight-sub">Consistent contributor across all months</div>
+  </div>
+  <div class="insight" style="--iclr:#3b82f6">
+    <div class="insight-label">Asia</div>
+    <div class="insight-val">Fast grower — from 0 → 31 in Feb 2026</div>
+    <div class="insight-sub">Emerged Aug 2025, now rivalling Africa</div>
+  </div>
+  <div class="insight" style="--iclr:#ff4f6e">
+    <div class="insight-label">LATAM</div>
+    <div class="insight-val">Declining — 0 active in 2026</div>
+    <div class="insight-sub">Was strong Jan–May 2025; gone since</div>
+  </div>
+  <div class="insight" style="--iclr:#6b7280">
+    <div class="insight-label">Europe / CIS</div>
+    <div class="insight-val">Near zero across all periods</div>
+    <div class="insight-sub">Opportunity or gap requiring attention</div>
+  </div>
+</div>
+
+<!-- Section 1: Monthly trend -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">Monthly Active Affiliate Trend</div>
+    <div class="section-sub">Bars = monthly count · Green/red = MoM direction · Dashed = linear trend</div>
+  </div>
+  <div class="chart-wrap tall"><canvas id="cMonthly"></canvas></div>
+</div>
+
+<!-- Section 2: Regional stacked area -->
+<div class="section" style="margin-top:16px">
+  <div class="section-hdr">
+    <div class="section-title">Regional Composition Over Time</div>
+    <div class="section-sub">Stacked area — how each region contributes month by month</div>
+  </div>
+  <div class="chart-wrap tall"><canvas id="cStack"></canvas></div>
+  <div class="legend" id="stackLegend"></div>
+</div>
+
+<!-- Section 3: Heatmap -->
+<div class="section" style="margin-top:16px">
+  <div class="section-hdr">
+    <div class="section-title">Active Affiliates Heatmap</div>
+    <div class="section-sub">Region × Month — colour intensity = volume</div>
+  </div>
+  <div class="hm-wrap">
+    <table class="hm-table">
+      <thead><tr><th></th><th>Oct 24</th><th>Nov 24</th><th>Dec 24</th><th>Jan 25</th><th>Feb 25</th><th>Mar 25</th><th>Apr 25</th><th>May 25</th><th>Jun 25</th><th>Jul 25</th><th>Aug 25</th><th>Sep 25</th><th>Oct 25</th><th>Nov 25</th><th>Dec 25</th><th>Jan 26</th><th>Feb 26</th><th>Mar 26</th></tr></thead>
+      <tbody><tr><td class="hm-rlabel">Africa</td><td class="hm-cell" style="--hi:0.61;--clr:#f97316" title="Africa Oct 24: 20">20</td><td class="hm-cell" style="--hi:0.39;--clr:#f97316" title="Africa Nov 24: 12">12</td><td class="hm-cell" style="--hi:0.335;--clr:#f97316" title="Africa Dec 24: 10">10</td><td class="hm-cell" style="--hi:0.748;--clr:#f97316" title="Africa Jan 25: 25">25</td><td class="hm-cell" style="--hi:0.28;--clr:#f97316" title="Africa Feb 25: 8">8</td><td class="hm-cell" style="--hi:0.39;--clr:#f97316" title="Africa Mar 25: 12">12</td><td class="hm-cell" style="--hi:0.5;--clr:#f97316" title="Africa Apr 25: 16">16</td><td class="hm-cell" style="--hi:0.528;--clr:#f97316" title="Africa May 25: 17">17</td><td class="hm-cell" style="--hi:0.087;--clr:#f97316" title="Africa Jun 25: 1">1</td><td class="hm-cell" style="--hi:0.087;--clr:#f97316" title="Africa Jul 25: 1">1</td><td class="hm-cell" style="--hi:0.087;--clr:#f97316" title="Africa Aug 25: 1">1</td><td class="hm-cell" style="--hi:0.28;--clr:#f97316" title="Africa Sep 25: 8">8</td><td class="hm-cell" style="--hi:0.775;--clr:#f97316" title="Africa Oct 25: 26">26</td><td class="hm-cell" style="--hi:0.94;--clr:#f97316" title="Africa Nov 25: 32">32</td><td class="hm-cell" style="--hi:0.665;--clr:#f97316" title="Africa Dec 25: 22">22</td><td class="hm-cell" style="--hi:0.665;--clr:#f97316" title="Africa Jan 26: 22">22</td><td class="hm-cell" style="--hi:0.802;--clr:#f97316" title="Africa Feb 26: 27">27</td><td class="hm-cell" style="--hi:0.17;--clr:#f97316" title="Africa Mar 26: 4">4</td></tr>
+<tr><td class="hm-rlabel">Asia</td><td class="hm-cell" style="--hi:0.087;--clr:#3b82f6" title="Asia Oct 24: 1">1</td><td class="hm-cell" style="--hi:0.17;--clr:#3b82f6" title="Asia Nov 24: 4">4</td><td class="hm-cell" style="--hi:0.17;--clr:#3b82f6" title="Asia Dec 24: 4">4</td><td class="hm-cell" style="--hi:0.225;--clr:#3b82f6" title="Asia Jan 25: 6">6</td><td class="hm-cell" style="--hi:0.087;--clr:#3b82f6" title="Asia Feb 25: 1">1</td><td class="hm-cell" style="--hi:0.115;--clr:#3b82f6" title="Asia Mar 25: 2">2</td><td class="hm-cell" style="--hi:0.28;--clr:#3b82f6" title="Asia Apr 25: 8">8</td><td class="hm-cell" style="--hi:0.198;--clr:#3b82f6" title="Asia May 25: 5">5</td><td class="hm-cell" style="--hi:0.06;--clr:#3b82f6" title="Asia Jun 25: 0"></td><td class="hm-cell" style="--hi:0.087;--clr:#3b82f6" title="Asia Jul 25: 1">1</td><td class="hm-cell" style="--hi:0.913;--clr:#3b82f6" title="Asia Aug 25: 31">31</td><td class="hm-cell" style="--hi:0.5;--clr:#3b82f6" title="Asia Sep 25: 16">16</td><td class="hm-cell" style="--hi:0.143;--clr:#3b82f6" title="Asia Oct 25: 3">3</td><td class="hm-cell" style="--hi:0.087;--clr:#3b82f6" title="Asia Nov 25: 1">1</td><td class="hm-cell" style="--hi:0.198;--clr:#3b82f6" title="Asia Dec 25: 5">5</td><td class="hm-cell" style="--hi:0.253;--clr:#3b82f6" title="Asia Jan 26: 7">7</td><td class="hm-cell" style="--hi:0.913;--clr:#3b82f6" title="Asia Feb 26: 31">31</td><td class="hm-cell" style="--hi:0.06;--clr:#3b82f6" title="Asia Mar 26: 0"></td></tr>
+<tr><td class="hm-rlabel">MENA</td><td class="hm-cell" style="--hi:0.087;--clr:#8b5cf6" title="MENA Oct 24: 1">1</td><td class="hm-cell" style="--hi:0.06;--clr:#8b5cf6" title="MENA Nov 24: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#8b5cf6" title="MENA Dec 24: 0"></td><td class="hm-cell" style="--hi:0.115;--clr:#8b5cf6" title="MENA Jan 25: 2">2</td><td class="hm-cell" style="--hi:0.087;--clr:#8b5cf6" title="MENA Feb 25: 1">1</td><td class="hm-cell" style="--hi:0.06;--clr:#8b5cf6" title="MENA Mar 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#8b5cf6" title="MENA Apr 25: 0"></td><td class="hm-cell" style="--hi:0.087;--clr:#8b5cf6" title="MENA May 25: 1">1</td><td class="hm-cell" style="--hi:0.143;--clr:#8b5cf6" title="MENA Jun 25: 3">3</td><td class="hm-cell" style="--hi:0.115;--clr:#8b5cf6" title="MENA Jul 25: 2">2</td><td class="hm-cell" style="--hi:0.06;--clr:#8b5cf6" title="MENA Aug 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#8b5cf6" title="MENA Sep 25: 0"></td><td class="hm-cell" style="--hi:0.115;--clr:#8b5cf6" title="MENA Oct 25: 2">2</td><td class="hm-cell" style="--hi:0.115;--clr:#8b5cf6" title="MENA Nov 25: 2">2</td><td class="hm-cell" style="--hi:0.17;--clr:#8b5cf6" title="MENA Dec 25: 4">4</td><td class="hm-cell" style="--hi:0.087;--clr:#8b5cf6" title="MENA Jan 26: 1">1</td><td class="hm-cell" style="--hi:0.198;--clr:#8b5cf6" title="MENA Feb 26: 5">5</td><td class="hm-cell" style="--hi:0.06;--clr:#8b5cf6" title="MENA Mar 26: 0"></td></tr>
+<tr><td class="hm-rlabel">LATAM</td><td class="hm-cell" style="--hi:0.198;--clr:#10b981" title="LATAM Oct 24: 5">5</td><td class="hm-cell" style="--hi:0.143;--clr:#10b981" title="LATAM Nov 24: 3">3</td><td class="hm-cell" style="--hi:0.225;--clr:#10b981" title="LATAM Dec 24: 6">6</td><td class="hm-cell" style="--hi:0.143;--clr:#10b981" title="LATAM Jan 25: 3">3</td><td class="hm-cell" style="--hi:0.307;--clr:#10b981" title="LATAM Feb 25: 9">9</td><td class="hm-cell" style="--hi:0.115;--clr:#10b981" title="LATAM Mar 25: 2">2</td><td class="hm-cell" style="--hi:0.528;--clr:#10b981" title="LATAM Apr 25: 17">17</td><td class="hm-cell" style="--hi:0.472;--clr:#10b981" title="LATAM May 25: 15">15</td><td class="hm-cell" style="--hi:0.307;--clr:#10b981" title="LATAM Jun 25: 9">9</td><td class="hm-cell" style="--hi:0.143;--clr:#10b981" title="LATAM Jul 25: 3">3</td><td class="hm-cell" style="--hi:0.087;--clr:#10b981" title="LATAM Aug 25: 1">1</td><td class="hm-cell" style="--hi:0.06;--clr:#10b981" title="LATAM Sep 25: 0"></td><td class="hm-cell" style="--hi:0.087;--clr:#10b981" title="LATAM Oct 25: 1">1</td><td class="hm-cell" style="--hi:0.198;--clr:#10b981" title="LATAM Nov 25: 5">5</td><td class="hm-cell" style="--hi:0.087;--clr:#10b981" title="LATAM Dec 25: 1">1</td><td class="hm-cell" style="--hi:0.06;--clr:#10b981" title="LATAM Jan 26: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#10b981" title="LATAM Feb 26: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#10b981" title="LATAM Mar 26: 0"></td></tr>
+<tr><td class="hm-rlabel">CIS</td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Oct 24: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Nov 24: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Dec 24: 0"></td><td class="hm-cell" style="--hi:0.087;--clr:#ec4899" title="CIS Jan 25: 1">1</td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Feb 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Mar 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Apr 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS May 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Jun 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Jul 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Aug 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Sep 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Oct 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Nov 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Dec 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Jan 26: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Feb 26: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#ec4899" title="CIS Mar 26: 0"></td></tr>
+<tr><td class="hm-rlabel">Europe</td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Oct 24: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Nov 24: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Dec 24: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Jan 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Feb 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Mar 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Apr 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe May 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Jun 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Jul 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Aug 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Sep 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Oct 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Nov 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Dec 25: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Jan 26: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Feb 26: 0"></td><td class="hm-cell" style="--hi:0.06;--clr:#64748b" title="Europe Mar 26: 0"></td></tr>
+</tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Section 4: Weekly trend -->
+<div class="section" style="margin-top:16px">
+  <div class="section-hdr">
+    <div class="section-title">Weekly Active Affiliates — Last 52 Weeks</div>
+    <div class="section-sub">Stacked bars by region · Line = 4-week rolling average</div>
+  </div>
+  <div class="chart-wrap tall"><canvas id="cWeekly"></canvas></div>
+  <div class="legend" id="weeklyLegend"></div>
+</div>
+
+<!-- Section 5: Region share per month bar -->
+<div class="section" style="margin-top:16px">
+  <div class="section-hdr">
+    <div class="section-title">Regional Share (% of Monthly Active)</div>
+    <div class="section-sub">100% stacked view — spot which regions are growing or shrinking</div>
+  </div>
+  <div class="chart-wrap tall"><canvas id="cShare"></canvas></div>
+</div>
+
+<div class="pad"></div>
+
+<script>
+Chart.defaults.color = '#6b7280';
+Chart.defaults.borderColor = '#1e2535';
+Chart.defaults.font.family = "Inter, system-ui, sans-serif";
+Chart.defaults.font.size = 11;
+
+const MONTHS_LABELS = ["Oct 24", "Nov 24", "Dec 24", "Jan 25", "Feb 25", "Mar 25", "Apr 25", "May 25", "Jun 25", "Jul 25", "Aug 25", "Sep 25", "Oct 25", "Nov 25", "Dec 25", "Jan 26", "Feb 26", "Mar 26"];
+const MONTHS_RAW    = ["2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"];
+const MTOTALS       = [27, 19, 20, 37, 19, 16, 41, 38, 13, 7, 33, 24, 32, 40, 32, 30, 63, 4];
+const TREND         = [22.77, 23.33, 23.88, 24.44, 25.0, 25.55, 26.11, 26.67, 27.22, 27.78, 28.33, 28.89, 29.45, 30.0, 30.56, 31.12, 31.67, 32.23];
+const MOM           = [237.5, -29.6, 5.3, 85.0, -48.6, -15.8, 156.2, -7.3, -65.8, -46.2, 371.4, -27.3, 33.3, 25.0, -20.0, -6.2, 110.0, -93.7];
+const WEEKS_LABELS  = ["W10 Mar'25", "W11 Mar'25", "W12 Mar'25", "W13 Mar'25", "W14 Apr'25", "W15 Apr'25", "W16 Apr'25", "W17 Apr'25", "W18 May'25", "W19 May'25", "W20 May'25", "W21 May'25", "W22 Jun'25", "W23 Jun'25", "W24 Jun'25", "W25 Jun'25", "W27 Jul'25", "W28 Jul'25", "W29 Jul'25", "W30 Jul'25", "W31 Aug'25", "W33 Aug'25", "W34 Aug'25", "W35 Sep'25", "W36 Sep'25", "W37 Sep'25", "W38 Sep'25", "W39 Sep'25", "W40 Oct'25", "W41 Oct'25", "W42 Oct'25", "W43 Oct'25", "W44 Nov'25", "W45 Nov'25", "W46 Nov'25", "W47 Nov'25", "W48 Dec'25", "W49 Dec'25", "W50 Dec'25", "W51 Dec'25", "W52 Dec'25", "W01 Jan'26", "W02 Jan'26", "W03 Jan'26", "W04 Jan'26", "W05 Feb'26", "W06 Feb'26", "W07 Feb'26", "W08 Feb'26", "W09 Mar'26", "W10 Mar'26", "W11 Mar'26"];
+const WTOTALS       = [3, 6, 3, 3, 6, 3, 9, 10, 15, 20, 11, 4, 2, 6, 4, 2, 1, 1, 1, 2, 3, 2, 26, 4, 8, 5, 4, 5, 3, 4, 6, 11, 10, 16, 5, 6, 13, 12, 5, 5, 7, 7, 5, 6, 8, 10, 30, 8, 14, 8, 3, 1];
+const WMA4          = [null, null, null, 3.75, 4.5, 3.75, 5.25, 7.0, 9.25, 13.5, 14.0, 12.5, 9.25, 5.75, 4.0, 3.5, 3.25, 2.0, 1.25, 1.25, 1.75, 2.0, 8.25, 8.75, 10.0, 10.75, 5.25, 5.5, 4.25, 4.0, 4.5, 6.0, 7.75, 10.75, 10.5, 9.25, 10.0, 9.0, 9.0, 8.75, 7.25, 6.0, 6.0, 6.25, 6.5, 7.25, 13.5, 14.0, 15.5, 15.0, 8.25, 6.5];
+
+const REGIONS = ["Africa", "Asia", "MENA", "LATAM", "CIS", "Europe"];
+const RCOLORS = {"Africa": "#f97316", "Asia": "#3b82f6", "MENA": "#8b5cf6", "LATAM": "#10b981", "CIS": "#ec4899", "Europe": "#64748b"};
+
+const MREGION = {
+  'Africa': [20, 12, 10, 25, 8, 12, 16, 17, 1, 1, 1, 8, 26, 32, 22, 22, 27, 4],
+  'Asia': [1, 4, 4, 6, 1, 2, 8, 5, 0, 1, 31, 16, 3, 1, 5, 7, 31, 0],
+  'MENA': [1, 0, 0, 2, 1, 0, 0, 1, 3, 2, 0, 0, 2, 2, 4, 1, 5, 0],
+  'LATAM': [5, 3, 6, 3, 9, 2, 17, 15, 9, 3, 1, 0, 1, 5, 1, 0, 0, 0],
+  'CIS': [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  'Europe': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+};
+const WREGION = {
+  'Africa': [3, 4, 2, 2, 2, 1, 4, 4, 5, 8, 6, 2, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 3, 2, 3, 6, 9, 8, 11, 4, 6, 11, 7, 3, 3, 6, 6, 3, 3, 7, 8, 8, 2, 7, 8, 3, 1],
+  'Asia': [0, 1, 0, 1, 0, 1, 2, 2, 3, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 26, 3, 7, 4, 3, 2, 1, 0, 0, 1, 1, 1, 0, 0, 0, 3, 0, 1, 1, 1, 2, 2, 1, 1, 20, 6, 5, 0, 0, 0],
+  'MENA': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 2, 1, 1, 0, 0, 0, 1, 0, 1, 2, 0, 2, 0, 0, 0],
+  'LATAM': [0, 1, 1, 0, 4, 1, 3, 4, 7, 10, 3, 0, 1, 4, 3, 1, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  'CIS': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  'Europe': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+};
+
+// ---- Chart 1: Monthly bars coloured by MoM ----
+(function(){
+  const barColors = MTOTALS.map((_,i) => {
+    const m = MOM[i];
+    if(m === null) return '#3b82f699';
+    return m > 0 ? '#34e87c99' : '#ff4f6e99';
+  });
+  const barBorder = MTOTALS.map((_,i) => {
+    const m = MOM[i];
+    if(m === null) return '#3b82f6';
+    return m > 0 ? '#34e87c' : '#ff4f6e';
+  });
+
+  new Chart(document.getElementById('cMonthly'), {
+    data: {
+      labels: MONTHS_LABELS,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Active Affiliates',
+          data: MTOTALS,
+          backgroundColor: barColors,
+          borderColor: barBorder,
+          borderWidth: 1.5,
+          borderRadius: 4,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'Trend',
+          data: TREND,
+          borderColor: '#f59e0b',
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0.3,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'MoM %',
+          data: MOM,
+          borderColor: '#8b5cf680',
+          borderWidth: 1,
+          borderDash: [3, 3],
+          pointStyle: (ctx) => {
+            const v = MOM[ctx.dataIndex];
+            return v !== null && v > 0 ? 'triangle' : v !== null && v < 0 ? 'rectRot' : 'circle';
+          },
+          pointRadius: (ctx) => MOM[ctx.dataIndex] !== null ? 5 : 0,
+          pointBackgroundColor: (ctx) => {
+            const v = MOM[ctx.dataIndex];
+            return v > 0 ? '#34e87c' : '#ff4f6e';
+          },
+          fill: false,
+          tension: 0.3,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {mode:'index', intersect:false},
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'end',
+          labels: { boxWidth:12, padding:16, usePointStyle:true }
+        },
+        tooltip: {
+          backgroundColor: '#161b27',
+          borderColor: '#1e2535',
+          borderWidth: 1,
+          padding: 10,
+          callbacks: {
+            title: (items) => MONTHS_LABELS[items[0].dataIndex],
+            label: (item) => {
+              if(item.datasetIndex === 0) {
+                const idx = item.dataIndex;
+                const parts = REGIONS.map(r => `  ${r}: ${MREGION[r][idx]}`);
+                return [`Total: ${MTOTALS[idx]}`, ...parts];
+              }
+              if(item.datasetIndex === 2) {
+                const v = MOM[item.dataIndex];
+                return v !== null ? `MoM: ${v > 0 ? '+' : ''}${v}%` : 'MoM: n/a';
+              }
+              return null;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: {display:false}, ticks: {maxRotation:45, font:{size:10}} },
+        y: {
+          position: 'left',
+          grid: {color:'#1e2535'},
+          title: {display:true, text:'Active Affiliates', font:{size:10}, color:'#6b7280'},
+          beginAtZero: true
+        },
+        y2: {
+          position: 'right',
+          grid: {display:false},
+          title: {display:true, text:'MoM %', font:{size:10}, color:'#6b7280'},
+          ticks: {callback: v => (v!==null ? v+'%' : '')}
+        }
+      }
+    }
+  });
+})();
+
+// ---- Chart 2: Stacked area regional ----
+(function(){
+  const ds = REGIONS.map(r => ({
+    label: r,
+    data: MREGION[r],
+    backgroundColor: RCOLORS[r] + '70',
+    borderColor: RCOLORS[r],
+    borderWidth: 1.5,
+    fill: true,
+    tension: 0.35,
+    pointRadius: 3,
+    pointHoverRadius: 6
+  }));
+  const chart = new Chart(document.getElementById('cStack'), {
+    type: 'line',
+    data: { labels: MONTHS_LABELS, datasets: ds },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {mode:'index', intersect:false},
+      plugins: {
+        legend: {display:false},
+        tooltip: {
+          backgroundColor:'#161b27', borderColor:'#1e2535', borderWidth:1, padding:10
+        }
+      },
+      scales: {
+        x: {stacked:true, grid:{display:false}, ticks:{maxRotation:45, font:{size:10}}},
+        y: {stacked:true, grid:{color:'#1e2535'}, beginAtZero:true,
+             title:{display:true, text:'Active Affiliates', font:{size:10}, color:'#6b7280'}}
+      }
+    }
+  });
+  // custom legend
+  const leg = document.getElementById('stackLegend');
+  REGIONS.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'legend-item';
+    el.innerHTML = `<div class="legend-dot" style="background:${RCOLORS[r]}"></div>${r}`;
+    leg.appendChild(el);
+  });
+})();
+
+// ---- Chart 4: Weekly stacked bars ----
+(function(){
+  const ds = REGIONS.map(r => ({
+    label: r,
+    data: WREGION[r],
+    backgroundColor: RCOLORS[r] + '90',
+    borderColor: RCOLORS[r],
+    borderWidth: 0.5,
+    stack: 'a',
+    type: 'bar'
+  }));
+  ds.push({
+    label: '4-wk avg',
+    data: WMA4,
+    type: 'line',
+    borderColor: '#f59e0b',
+    borderWidth: 2,
+    pointRadius: 0,
+    fill: false,
+    tension: 0.4,
+    borderDash: [5,4]
+  });
+  new Chart(document.getElementById('cWeekly'), {
+    data: {labels: WEEKS_LABELS, datasets: ds},
+    options: {
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#161b27',borderColor:'#1e2535',borderWidth:1,padding:10}
+      },
+      scales:{
+        x:{stacked:true, grid:{display:false}, ticks:{
+          maxRotation:60, font:{size:9},
+          callback:(v,i) => i%4===0 ? WEEKS_LABELS[i] : ''
+        }},
+        y:{stacked:true, grid:{color:'#1e2535'}, beginAtZero:true,
+           title:{display:true,text:'Active Affiliates',font:{size:10},color:'#6b7280'}}
+      }
+    }
+  });
+  const leg = document.getElementById('weeklyLegend');
+  REGIONS.forEach(r => {
+    const el = document.createElement('div');
+    el.className='legend-item';
+    el.innerHTML=`<div class="legend-dot" style="background:${RCOLORS[r]}"></div>${r}`;
+    leg.appendChild(el);
+  });
+})();
+
+// ---- Chart 5: 100% stacked share ----
+(function(){
+  // compute percentages
+  const totals = MTOTALS;
+  const ds = REGIONS.map(r => {
+    const pcts = MREGION[r].map((v,i) => totals[i] > 0 ? Math.round(v/totals[i]*100) : 0);
+    return {
+      label: r,
+      data: pcts,
+      backgroundColor: RCOLORS[r] + 'a0',
+      borderColor: RCOLORS[r],
+      borderWidth: 1,
+      stack: 'b',
+      borderRadius: 0
+    };
+  });
+  new Chart(document.getElementById('cShare'), {
+    type: 'bar',
+    data: {labels: MONTHS_LABELS, datasets: ds},
+    options: {
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{
+          display:true,
+          position:'top',
+          align:'end',
+          labels:{boxWidth:10,padding:14,usePointStyle:true}
+        },
+        tooltip:{
+          backgroundColor:'#161b27', borderColor:'#1e2535', borderWidth:1, padding:10,
+          callbacks:{
+            label: (item) => ` ${item.dataset.label}: ${item.raw}%`
+          }
+        }
+      },
+      scales:{
+        x:{stacked:true, grid:{display:false}, ticks:{maxRotation:45,font:{size:10}}},
+        y:{
+          stacked:true, grid:{color:'#1e2535'}, min:0, max:100,
+          ticks:{callback: v => v+'%'},
+          title:{display:true,text:'% Share',font:{size:10},color:'#6b7280'}
+        }
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
