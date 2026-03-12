@@ -139,12 +139,20 @@ tbody tr{cursor:pointer}
 .th-chevron.open{transform:rotate(90deg)}
 .th-expand{display:none;background:#0a0d16}
 .th-expand.show{display:block}
-.th-period-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:14px 16px}
-.th-period-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
-.th-period-label{font-size:10px;font-weight:700;color:var(--dim);margin-bottom:6px}
-.th-period-stat{font-size:11px;color:var(--muted);margin:2px 0}
-.th-period-stat span{color:var(--white);font-weight:600}
-.th-period-stat.highlight span{color:var(--green);font-weight:700}
+.th-period-table{width:100%;border-collapse:collapse;font-size:11px}
+.th-period-table th{padding:6px 12px;text-align:right;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);background:#0a0d16;border-bottom:1px solid var(--border);white-space:nowrap}
+.th-period-table th:first-child{text-align:left}
+.th-period-table td{padding:6px 12px;text-align:right;border-bottom:1px solid #1a1f2e;color:var(--white);white-space:nowrap}
+.th-period-table td:first-child{text-align:left;font-weight:600;color:var(--dim)}
+.th-period-table tr:last-child td{border-bottom:none}
+.th-period-table tr:hover td{background:#ffffff06}
+.th-period-table .act-val{font-weight:700;color:var(--green)}
+.th-period-table .act-zero{color:var(--dim)}
+.th-period-table .cpa-val{color:#f97316;font-weight:700}
+.th-period-table .dep-val{color:#a78bfa}
+.th-period-table .conv-hi{color:var(--green)}
+.th-period-table .conv-lo{color:var(--dim)}
+.th-period-table-wrap{padding:0 0 4px 0;overflow-x:auto}
 .th-period-empty{padding:14px 16px;color:var(--dim);font-size:12px;font-style:italic}
 .th-subtoggle{display:flex;gap:6px;align-items:center}
 .th-sub-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
@@ -717,25 +725,41 @@ function renderThemesView(){
       <div class="th-chevron" id="chev-${t.code}">${hasData?'›':''}</div>
     </div>`;
 
-    // Period breakdown panel (monthly or weekly cards)
+    // Period breakdown panel — compact table
     if(hasData){
-      let phtml = '';
+      let rows = '';
       periodArr.forEach(p => {
-        const pcpa = p.act>0 ? '$'+Math.round(p.spend/p.act).toLocaleString() : '—';
-        phtml += `<div class="th-period-card">
-          <div class="th-period-label">${p.label}</div>
-          <div class="th-period-stat ${p.act>0?'highlight':''}">Active: <span>${p.act}</span></div>
-          <div class="th-period-stat">Leads: <span>${p.leads.toLocaleString()}</span></div>
-          <div class="th-period-stat">Onb: <span>${p.onb.toLocaleString()}</span></div>
-          <div class="th-period-stat">L→O: <span>${p.l2o}%</span></div>
-          <div class="th-period-stat">Spend: <span>$${(p.spend/1000).toFixed(1)}k</span></div>
-          <div class="th-period-stat">Deposits: <span>${p.dep>0?'$'+Math.round(p.dep/1000)+'k':'—'}</span></div>
-          <div class="th-period-stat">Cost/Active: <span>${pcpa}</span></div>
-        </div>`;
+        const pcpa  = p.act>0 ? '$'+Math.round(p.spend/p.act).toLocaleString() : '—';
+        const pdep  = p.dep>0 ? '$'+Math.round(p.dep/1000)+'k' : '—';
+        const pl2o  = p.l2o >= 50 ? 'conv-hi' : 'conv-lo';
+        const po2a  = p.o2a >= 3  ? 'conv-hi' : 'conv-lo';
+        rows += `<tr>
+          <td>${p.label}</td>
+          <td>${p.leads.toLocaleString()}</td>
+          <td>${p.onb.toLocaleString()}</td>
+          <td class="${p.act>0?'act-val':'act-zero'}">${p.act}</td>
+          <td class="${pl2o}">${p.l2o}%</td>
+          <td class="${po2a}">${p.o2a}%</td>
+          <td style="color:var(--dim)">$${(p.spend/1000).toFixed(1)}k</td>
+          <td class="dep-val">${pdep}</td>
+          <td class="cpa-val">${pcpa}</td>
+        </tr>`;
       });
-      html += `<div class="th-expand" id="tr-${t.code}">
-        <div class="th-period-grid">${phtml}</div>
+      const tbl = `<div class="th-period-table-wrap">
+        <table class="th-period-table">
+          <thead><tr>
+            <th style="min-width:80px">Period</th>
+            <th>Leads</th><th>Onboarded</th>
+            <th style="color:var(--green)">Active</th>
+            <th>L→O%</th><th>O→A%</th>
+            <th>Spend</th>
+            <th style="color:#a78bfa">Deposits</th>
+            <th style="color:#f97316">Cost/Active</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
       </div>`;
+      html += `<div class="th-expand" id="tr-${t.code}">${tbl}</div>`;
     } else {
       const emptyMsg = isMonthly ? 'No monthly data from Oct 2025.' : 'No weekly data for last 52 weeks.';
       html += `<div class="th-expand" id="tr-${t.code}">
