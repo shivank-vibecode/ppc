@@ -131,6 +131,9 @@ table.dt tfoot td.lc { position:relative; }
 .geo-nav-name { flex:1; }
 .geo-nav-funded { font-size:11px; color:#8b949e; font-variant-numeric:tabular-nums; }
 .geo-nav-item.active .geo-nav-funded { color:#58a6ff; }
+/* overall / divider */
+.geo-nav-divider { height:1px; background:#21262d; margin:6px 10px; }
+.geo-rank-all { background:rgba(88,166,255,0.15) !important; color:#58a6ff !important; font-size:14px !important; }
 /* campaign dropdown */
 .camp-select { background:#161b22; border:1px solid #30363d; border-radius:6px; padding:5px 10px; font-size:12px; color:#c9d1d9; outline:none; cursor:pointer; max-width:300px; height:28px; }
 .camp-select:focus { border-color:#58a6ff; }
@@ -142,7 +145,10 @@ table.dt tfoot td.lc { position:relative; }
 
 <div class="geo-layout">
   <aside class="geo-sidebar">
-    <div class="geo-sidebar-title">Regions</div>
+    <div class="geo-sidebar-title">Overview</div>
+    <div id="overall-nav"></div>
+    <div class="geo-nav-divider"></div>
+    <div class="geo-sidebar-title" style="margin-top:4px;">Regions</div>
     <div id="geo-nav"></div>
   </aside>
   <main class="geo-main">
@@ -150,7 +156,7 @@ table.dt tfoot td.lc { position:relative; }
       <div class="hicon">&#128205;</div>
       <div>
         <h1 id="geo-name">—</h1>
-        <p>Core vs Experiment split &nbsp;&middot;&nbsp; Oct 2025 &ndash; Mar 2026 &nbsp;&middot;&nbsp; Demo &rarr; Real &rarr; Funded</p>
+        <p id="geo-subtitle">Core vs Experiment split &nbsp;&middot;&nbsp; Oct 2025 &ndash; Mar 2026 &nbsp;&middot;&nbsp; Demo &rarr; Real &rarr; Funded</p>
       </div>
     </div>
     <div class="kpi-bar" id="kpi-bar"></div>
@@ -159,13 +165,16 @@ table.dt tfoot td.lc { position:relative; }
         <button class="vt-btn active" id="vt-monthly" data-view="monthly">Monthly</button>
         <button class="vt-btn"        id="vt-weekly"  data-view="weekly">Weekly</button>
       </div>
-      <div class="view-toggle" style="margin-left:10px;">
+      <div id="kw-toggle" class="view-toggle" style="margin-left:10px;">
         <button class="vt-btn active kw-btn" data-kw="all">All</button>
         <button class="vt-btn kw-btn" data-kw="brand">Brand</button>
         <button class="vt-btn kw-btn" data-kw="nonbrand">Non-Brand</button>
       </div>
-      <select id="camp-select" class="camp-select" style="margin-left:10px;"></select>
+      <span id="camp-select-wrap">
+        <select id="camp-select" class="camp-select" style="margin-left:10px;"></select>
+      </span>
       <div class="legend">
+        <div class="legend-item" id="legend-total" style="display:none;"><div class="legend-dot" style="background:#8b949e;"></div>Total</div>
         <div class="legend-item"><div class="legend-dot" style="background:#3fb950;"></div>Core</div>
         <div class="legend-item"><div class="legend-dot" style="background:#ffa657;"></div>Experiment</div>
       </div>
@@ -246,7 +255,7 @@ function switchView(v){
   render();
 }
 
-var currentGeo = DATA.geo_ranks[0];
+var currentGeo = '__overall__';
 var currentKw  = 'all';
 var campFilter = null;   /* null = no filter, string = campaign name */
 var geoCharts  = {};
@@ -257,6 +266,13 @@ function kwWGeo(){ return currentKw==='brand' ? DATA.w_geo_brand : currentKw==='
 function kwDaily(){ return currentKw==='brand' ? DATA.daily_geo_brand : currentKw==='nonbrand' ? DATA.daily_geo_nonbrand : DATA.daily_geo; }
 
 function render(){
+  var isOverall = currentGeo === '__overall__';
+  var kwEl   = document.getElementById('kw-toggle');
+  var campEl = document.getElementById('camp-select-wrap');
+  var totEl  = document.getElementById('legend-total');
+  if(kwEl)   kwEl.style.display   = isOverall ? 'none' : '';
+  if(campEl) campEl.style.display = isOverall ? 'none' : '';
+  if(totEl)  totEl.style.display  = isOverall ? ''     : 'none';
   buildNav();
   renderKPIs();
   renderTable();
@@ -265,8 +281,8 @@ function render(){
 
 function switchGeo(geo){
   currentGeo = geo;
-  clearCampFilter(false);      /* clear filter silently on geo switch */
-  populateCampSelect();        /* repopulate dropdown with new geo's campaigns */
+  clearCampFilter(false);
+  if(geo !== '__overall__') populateCampSelect();
   render();
 }
 
@@ -309,6 +325,15 @@ function clearCampFilter(doRender){
 }
 
 function buildNav(){
+  /* Overall item */
+  var oActive = currentGeo === '__overall__' ? ' active' : '';
+  document.getElementById('overall-nav').innerHTML =
+    '<div class="geo-nav-item'+oActive+'" data-geo="__overall__">'+
+      '<span class="geo-rank geo-rank-all">&#9679;</span>'+
+      '<span class="geo-nav-name">All Regions</span>'+
+      '<span class="geo-nav-funded">'+DATA.total_funded.toLocaleString()+'</span>'+
+    '</div>';
+  /* Geo items */
   var html = '';
   DATA.geo_ranks.forEach(function(geo, i){
     var rank = i + 1;
@@ -322,13 +347,30 @@ function buildNav(){
             '</div>';
   });
   document.getElementById('geo-nav').innerHTML = html;
-  document.getElementById('geo-name').textContent = currentGeo;
+  document.getElementById('geo-name').textContent =
+    currentGeo === '__overall__' ? 'Overall Funnel' : currentGeo;
+  document.getElementById('geo-subtitle').textContent =
+    currentGeo === '__overall__'
+      ? 'All regions combined \u00b7 Oct 2025 \u2013 Mar 2026 \u00b7 Demo \u2192 Real \u2192 Funded'
+      : 'Core vs Experiment split \u00b7 Oct 2025 \u2013 Mar 2026 \u00b7 Demo \u2192 Real \u2192 Funded';
+  /* Attach listeners to every nav item */
   document.querySelectorAll('.geo-nav-item[data-geo]').forEach(function(el){
     el.addEventListener('click', function(){ switchGeo(this.dataset.geo); });
   });
 }
 
 function renderKPIs(){
+  if(currentGeo === '__overall__'){
+    var tf=DATA.total_funded, cf=DATA.core_funded, ef=DATA.exp_funded;
+    var cpct=tf?Math.round(100*cf/tf):0, epct=tf?Math.round(100*ef/tf):0;
+    var ratio=ef?(cf/ef).toFixed(1):'\u2014';
+    document.getElementById('kpi-bar').innerHTML=
+      '<div class="kpi k-all"><div class="kpi-lbl">Total Funded</div><div class="kpi-val">'+tf.toLocaleString()+'</div><div class="kpi-sub">All campaigns</div></div>'+
+      '<div class="kpi k-core"><div class="kpi-lbl">Core Funded</div><div class="kpi-val">'+cf.toLocaleString()+'</div><div class="kpi-sub">'+DATA.core_campaigns+' campaigns \u00b7 '+cpct+'% of total</div></div>'+
+      '<div class="kpi k-exp"><div class="kpi-lbl">Exp Funded</div><div class="kpi-val">'+ef.toLocaleString()+'</div><div class="kpi-sub">'+DATA.exp_campaigns+' campaigns \u00b7 '+epct+'% of total</div></div>'+
+      '<div class="kpi k-share"><div class="kpi-lbl">Core / Exp Ratio</div><div class="kpi-val">'+ratio+'x</div><div class="kpi-sub">Core funded per Exp funded</div></div>';
+    return;
+  }
   if(campFilter){
     var list = DATA.campaign_geo[currentGeo]||[];
     var c = list.find(function(x){ return x.name===campFilter; });
@@ -355,6 +397,78 @@ function renderKPIs(){
 }
 
 function renderTable(){
+  if(currentGeo === '__overall__'){
+    var rows = currentView==='monthly' ? DATA.m_funnel : DATA.w_funnel;
+    document.getElementById('period-badge').textContent = rows.length+' periods';
+    var cD2R=rows.map(function(r){return r.core.d2r;}), cR2F=rows.map(function(r){return r.core.r2f;});
+    var eD2R=rows.map(function(r){return r.exp.d2r;}),  eR2F=rows.map(function(r){return r.exp.r2f;});
+    var cd=0,cr=0,cf=0,ed=0,er=0,ef=0,td=0,tr2=0,tf=0;
+    var csp=0,esp=0,tsp=0,crv=0,erv=0,trv=0;
+    var csD=0,csR=0,cc=0,esD=0,esR=0,ec=0,tsD=0,tsR=0,tc2=0;
+    rows.forEach(function(r){
+      cd+=r.core.demo; cr+=r.core.real; cf+=r.core.funded;
+      ed+=r.exp.demo;  er+=r.exp.real;  ef+=r.exp.funded;
+      td+=r.total.demo; tr2+=r.total.real; tf+=r.total.funded;
+      csp+=r.core.spend||0;  esp+=r.exp.spend||0;  tsp+=r.total.spend||0;
+      crv+=r.core.revenue||0; erv+=r.exp.revenue||0; trv+=r.total.revenue||0;
+      if(r.core.d2r!=null){csD+=r.core.d2r;cc++;}  if(r.core.r2f!=null) csR+=r.core.r2f;
+      if(r.exp.d2r!=null) {esD+=r.exp.d2r; ec++;}  if(r.exp.r2f!=null)  esR+=r.exp.r2f;
+      if(r.total.d2r!=null){tsD+=r.total.d2r;tc2++;} if(r.total.r2f!=null) tsR+=r.total.r2f;
+    });
+    var acD2R=cc?csD/cc:null, acR2F=cc?csR/cc:null;
+    var aeD2R=ec?esD/ec:null, aeR2F=ec?esR/ec:null;
+    var acCPA=cf>0?csp/cf:null, aeCPA=ef>0?esp/ef:null;
+    var h='<table>'+
+      '<thead>'+
+      '<tr class="seg-row">'+
+        '<th class="lc"></th>'+
+        '<th colspan="8" class="c-sep core-hdr" style="text-align:center;">\u25a0 CORE</th>'+
+        '<th colspan="8" class="c-sep exp-hdr" style="text-align:center;">\u25a0 EXPERIMENT</th>'+
+        '<th colspan="5" class="c-sep tot-hdr" style="text-align:center;">TOTAL</th>'+
+      '</tr>'+
+      '<tr>'+
+        '<th class="lc">Period</th>'+
+        '<th class="c-sep">Demo</th><th>Real</th><th class="f-core" style="color:#3fb950">Funded</th><th>D\u2192R</th><th>R\u2192F</th><th>Spend</th><th>CPA</th><th>Revenue</th>'+
+        '<th class="c-sep">Demo</th><th>Real</th><th class="f-exp" style="color:#ffa657">Funded</th><th>D\u2192R</th><th>R\u2192F</th><th>Spend</th><th>CPA</th><th>Revenue</th>'+
+        '<th class="c-sep">Demo</th><th>Real</th><th>Funded</th><th>Spend</th><th>Revenue</th>'+
+      '</tr></thead><tbody>';
+    rows.forEach(function(r,i){
+      var p=i>0?rows[i-1]:null;
+      var c=r.core,e=r.exp,t=r.total,pc=p?p.core:null,pe=p?p.exp:null,pt=p?p.total:null;
+      h+='<tr>'+
+        '<td class="lc">'+r.label+'</td>'+
+        '<td class="c-sep">'+arr(c.demo,pc?pc.demo:null)+fmtN(c.demo)+'</td>'+
+        '<td>'+arr(c.real,pc?pc.real:null)+fmtN(c.real)+'</td>'+
+        '<td class="f-core">'+arr(c.funded,pc?pc.funded:null)+fmtN(c.funded)+'</td>'+
+        '<td>'+chip(c.d2r,'cd2r',tier(c.d2r,cD2R))+'</td>'+
+        '<td>'+chip(c.r2f,'cr2f',tier(c.r2f,cR2F))+'</td>'+
+        '<td>'+fmtC(c.spend)+'</td><td>'+fmtC(c.cpa)+'</td><td>'+fmtC(c.revenue)+'</td>'+
+        '<td class="c-sep">'+arr(e.demo,pe?pe.demo:null)+fmtN(e.demo)+'</td>'+
+        '<td>'+arr(e.real,pe?pe.real:null)+fmtN(e.real)+'</td>'+
+        '<td class="f-exp">'+arr(e.funded,pe?pe.funded:null)+fmtN(e.funded)+'</td>'+
+        '<td>'+chip(e.d2r,'cd2r',tier(e.d2r,eD2R))+'</td>'+
+        '<td>'+chip(e.r2f,'cr2f',tier(e.r2f,eR2F))+'</td>'+
+        '<td>'+fmtC(e.spend)+'</td><td>'+fmtC(e.cpa)+'</td><td>'+fmtC(e.revenue)+'</td>'+
+        '<td class="c-sep">'+arr(t.demo,pt?pt.demo:null)+fmtN(t.demo)+'</td>'+
+        '<td>'+arr(t.real,pt?pt.real:null)+fmtN(t.real)+'</td>'+
+        '<td class="f-total">'+arr(t.funded,pt?pt.funded:null)+fmtN(t.funded)+'</td>'+
+        '<td>'+fmtC(t.spend)+'</td><td>'+fmtC(t.revenue)+'</td>'+
+        '</tr>';
+    });
+    h+='</tbody><tfoot><tr>'+
+      '<td class="lc">Avg / Total</td>'+
+      '<td class="c-sep">'+fmtN(cd)+'</td><td>'+fmtN(cr)+'</td><td class="f-core">'+fmtN(cf)+'</td>'+
+      '<td>'+chip(acD2R,'cd2r','')+'</td><td>'+chip(acR2F,'cr2f','')+'</td>'+
+      '<td>'+fmtC(csp)+'</td><td>'+fmtC(acCPA)+'</td><td>'+fmtC(crv)+'</td>'+
+      '<td class="c-sep">'+fmtN(ed)+'</td><td>'+fmtN(er)+'</td><td class="f-exp">'+fmtN(ef)+'</td>'+
+      '<td>'+chip(aeD2R,'cd2r','')+'</td><td>'+chip(aeR2F,'cr2f','')+'</td>'+
+      '<td>'+fmtC(esp)+'</td><td>'+fmtC(aeCPA)+'</td><td>'+fmtC(erv)+'</td>'+
+      '<td class="c-sep">'+fmtN(td)+'</td><td>'+fmtN(tr2)+'</td><td class="f-total">'+fmtN(tf)+'</td>'+
+      '<td>'+fmtC(tsp)+'</td><td>'+fmtC(trv)+'</td>'+
+      '</tr></tfoot></table>';
+    document.getElementById('geo-ind-tbl').innerHTML=h;
+    return;
+  }
   if(campFilter){
     var list = DATA.campaign_geo[currentGeo]||[];
     var c = list.find(function(x){ return x.name===campFilter; });
@@ -479,35 +593,21 @@ function renderCharts(){
   if(campFilter) return;
 
   var CORE_CLR='#3fb950', EXP_CLR='#ffa657', MA_CLR='#58a6ff';
+  var TOTAL_CLR='#8b949e';
   var GRID_CLR='rgba(48,54,61,0.8)', TICK_CLR='#8b949e';
 
-  var daily   = kwDaily()[currentGeo];
-  document.getElementById('days-badge').textContent = daily.length + ' days';
-  var dlabels = daily.map(function(d){return d.label;});
-  var cDemo   = daily.map(function(d){return d.c_demo;});
-  var eDemo   = daily.map(function(d){return d.e_demo;});
-  var cReal   = daily.map(function(d){return d.c_real;});
-  var eReal   = daily.map(function(d){return d.e_real;});
-  var cFunded = daily.map(function(d){return d.c_funded;});
-  var eFunded = daily.map(function(d){return d.e_funded;});
-
-  function movingAvg(arr,win){
+  /* shared helpers used by both overall and geo branches */
+  function movingAvgLocal(arr,win){
     return arr.map(function(_,i){
       var s=arr.slice(Math.max(0,i-win+1),i+1);
       return parseFloat((s.reduce(function(a,b){return a+b;},0)/s.length).toFixed(1));
     });
   }
-  var maDemo   = movingAvg(cDemo.map(function(v,i){return v+eDemo[i];}),7);
-  var maReal   = movingAvg(cReal.map(function(v,i){return v+eReal[i];}),7);
-  var maFunded = movingAvg(cFunded.map(function(v,i){return v+eFunded[i];}),7);
-
-  var barOpts = {
-    responsive:true, maintainAspectRatio:true, aspectRatio:5,
+  var baseBarOpts={
+    responsive:true,maintainAspectRatio:true,aspectRatio:5,
     plugins:{
       legend:{position:'top',labels:{color:TICK_CLR,font:{size:11},boxWidth:12,padding:12}},
-      tooltip:{
-        mode:'index',
-        footerColor:'#e6edf3',footerFont:{weight:'bold',size:12},footerMarginTop:6,
+      tooltip:{mode:'index',footerColor:'#e6edf3',footerFont:{weight:'bold',size:12},footerMarginTop:6,
         callbacks:{
           label:function(item){if(item.dataset.type==='line')return null;return item.dataset.label+': '+item.parsed.y.toLocaleString();},
           footer:function(items){var t=items.filter(function(i){return i.dataset.type!=='line';}).reduce(function(s,i){return s+i.parsed.y;},0);return 'Total: '+t.toLocaleString();}
@@ -519,33 +619,8 @@ function renderCharts(){
       y:{stacked:true,ticks:{color:TICK_CLR,font:{size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'k':v;}},grid:{color:GRID_CLR}}
     }
   };
-
-  function makeBarChart(id,cData,eData,maData){
-    return new Chart(document.getElementById(id).getContext('2d'),{
-      type:'bar',
-      data:{labels:dlabels,datasets:[
-        {label:'Core',data:cData,backgroundColor:CORE_CLR,stack:'stack'},
-        {label:'Experiment',data:eData,backgroundColor:EXP_CLR,stack:'stack'},
-        {type:'line',label:'7-day MA',data:maData,borderColor:MA_CLR,borderWidth:2,pointRadius:0,pointHoverRadius:4,fill:false,tension:0.35,order:-1}
-      ]},
-      options:JSON.parse(JSON.stringify(barOpts))
-    });
-  }
-
-  geoCharts.demo   = makeBarChart('gi-chart-demo',   cDemo,   eDemo,   maDemo);
-  geoCharts.real   = makeBarChart('gi-chart-real',   cReal,   eReal,   maReal);
-  geoCharts.funded = makeBarChart('gi-chart-funded', cFunded, eFunded, maFunded);
-
-  var weekly  = kwWGeo()[currentGeo].periods;
-  document.getElementById('weeks-badge').textContent = weekly.length + ' weeks';
-  var wlabels = weekly.map(function(w){return w.label;});
-  var cD2R    = weekly.map(function(w){return w.core.d2r;});
-  var eD2R    = weekly.map(function(w){return w.exp.d2r;});
-  var cR2F    = weekly.map(function(w){return w.core.r2f;});
-  var eR2F    = weekly.map(function(w){return w.exp.r2f;});
-
-  var convOpts = {
-    responsive:true, maintainAspectRatio:true, aspectRatio:5,
+  var baseConvOpts={
+    responsive:true,maintainAspectRatio:true,aspectRatio:5,
     plugins:{
       legend:{position:'top',labels:{color:TICK_CLR,font:{size:11},boxWidth:12,padding:12}},
       tooltip:{mode:'index',callbacks:{label:function(item){var v=item.parsed.y;return item.dataset.label+': '+(v!=null?v.toFixed(1)+'%':'—');}}}
@@ -555,20 +630,75 @@ function renderCharts(){
       y:{ticks:{color:TICK_CLR,font:{size:10},callback:function(v){return v+'%';}},grid:{color:GRID_CLR}}
     }
   };
-
-  function makeConvChart(id,cData,eData){
+  function makeBarChart2(id,labels,cData,eData,maData){
+    return new Chart(document.getElementById(id).getContext('2d'),{
+      type:'bar',
+      data:{labels:labels,datasets:[
+        {label:'Core',data:cData,backgroundColor:CORE_CLR,stack:'stack'},
+        {label:'Experiment',data:eData,backgroundColor:EXP_CLR,stack:'stack'},
+        {type:'line',label:'7-day MA',data:maData,borderColor:MA_CLR,borderWidth:2,pointRadius:0,pointHoverRadius:4,fill:false,tension:0.35,order:-1}
+      ]},
+      options:JSON.parse(JSON.stringify(baseBarOpts))
+    });
+  }
+  function makeConvChart2(id,labels,cData,eData){
     return new Chart(document.getElementById(id).getContext('2d'),{
       type:'line',
-      data:{labels:wlabels,datasets:[
+      data:{labels:labels,datasets:[
         {label:'Core',data:cData,borderColor:CORE_CLR,fill:false,borderWidth:2,pointRadius:3,pointHoverRadius:5,tension:0.3},
         {label:'Experiment',data:eData,borderColor:EXP_CLR,fill:false,borderWidth:2,pointRadius:3,pointHoverRadius:5,tension:0.3}
       ]},
-      options:JSON.parse(JSON.stringify(convOpts))
+      options:JSON.parse(JSON.stringify(baseConvOpts))
     });
   }
 
-  geoCharts.d2r = makeConvChart('gi-chart-d2r', cD2R, eD2R);
-  geoCharts.r2f = makeConvChart('gi-chart-r2f', cR2F, eR2F);
+  /* ── Overall Funnel view ── */
+  if(currentGeo === '__overall__'){
+    var od=DATA.daily_funnel;
+    document.getElementById('days-badge').textContent=od.length+' days';
+    var ol=od.map(function(d){return d.label;});
+    var ocD=od.map(function(d){return d.c_demo;}),  oeD=od.map(function(d){return d.e_demo;});
+    var ocR=od.map(function(d){return d.c_real;}),  oeR=od.map(function(d){return d.e_real;});
+    var ocF=od.map(function(d){return d.c_funded;}),oeF=od.map(function(d){return d.e_funded;});
+    geoCharts.demo   = makeBarChart2('gi-chart-demo',   ol,ocD,oeD, movingAvgLocal(ocD.map(function(v,i){return v+oeD[i];}),7));
+    geoCharts.real   = makeBarChart2('gi-chart-real',   ol,ocR,oeR, movingAvgLocal(ocR.map(function(v,i){return v+oeR[i];}),7));
+    geoCharts.funded = makeBarChart2('gi-chart-funded', ol,ocF,oeF, movingAvgLocal(ocF.map(function(v,i){return v+oeF[i];}),7));
+    var ow=DATA.w_funnel;
+    document.getElementById('weeks-badge').textContent=ow.length+' weeks';
+    var owl=ow.map(function(w){return w.label;});
+    geoCharts.d2r = makeConvChart2('gi-chart-d2r',owl,ow.map(function(w){return w.core.d2r;}),ow.map(function(w){return w.exp.d2r;}));
+    geoCharts.r2f = makeConvChart2('gi-chart-r2f',owl,ow.map(function(w){return w.core.r2f;}),ow.map(function(w){return w.exp.r2f;}));
+    return;
+  }
+
+  var daily   = kwDaily()[currentGeo];
+  document.getElementById('days-badge').textContent = daily.length + ' days';
+  var dlabels = daily.map(function(d){return d.label;});
+  var cDemo   = daily.map(function(d){return d.c_demo;});
+  var eDemo   = daily.map(function(d){return d.e_demo;});
+  var cReal   = daily.map(function(d){return d.c_real;});
+  var eReal   = daily.map(function(d){return d.e_real;});
+  var cFunded = daily.map(function(d){return d.c_funded;});
+  var eFunded = daily.map(function(d){return d.e_funded;});
+
+  var maDemo   = movingAvgLocal(cDemo.map(function(v,i){return v+eDemo[i];}),7);
+  var maReal   = movingAvgLocal(cReal.map(function(v,i){return v+eReal[i];}),7);
+  var maFunded = movingAvgLocal(cFunded.map(function(v,i){return v+eFunded[i];}),7);
+
+  geoCharts.demo   = makeBarChart2('gi-chart-demo',   dlabels, cDemo,   eDemo,   maDemo);
+  geoCharts.real   = makeBarChart2('gi-chart-real',   dlabels, cReal,   eReal,   maReal);
+  geoCharts.funded = makeBarChart2('gi-chart-funded', dlabels, cFunded, eFunded, maFunded);
+
+  var weekly  = kwWGeo()[currentGeo].periods;
+  document.getElementById('weeks-badge').textContent = weekly.length + ' weeks';
+  var wlabels = weekly.map(function(w){return w.label;});
+  var cD2R    = weekly.map(function(w){return w.core.d2r;});
+  var eD2R    = weekly.map(function(w){return w.exp.d2r;});
+  var cR2F    = weekly.map(function(w){return w.core.r2f;});
+  var eR2F    = weekly.map(function(w){return w.exp.r2f;});
+
+  geoCharts.d2r = makeConvChart2('gi-chart-d2r', wlabels, cD2R, eD2R);
+  geoCharts.r2f = makeConvChart2('gi-chart-r2f', wlabels, cR2F, eR2F);
 }
 
 document.querySelectorAll('.vt-btn[data-view]').forEach(function(b){
