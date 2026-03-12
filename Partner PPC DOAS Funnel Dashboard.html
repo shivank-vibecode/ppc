@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -149,6 +150,8 @@ tbody tr{cursor:pointer}
 .th-sub-btn{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
 .th-sub-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .th-sub-btn:hover:not(.active){color:var(--white);border-color:var(--muted)}
+
+#themes-page{max-width:1600px;margin:0 auto;padding:0 28px 24px}
 </style>
 </head>
 <body>
@@ -263,7 +266,8 @@ tbody tr{cursor:pointer}
 
 </div>
 <!-- ── Themes page ─────────────────────────────────────────────────────── -->
-<div id="themes-page" style="display:none;padding:0 20px 24px">
+<div id="themes-page" style="display:none">
+  <div id="themes-debug" style="padding:6px 28px;font-size:10px;font-family:monospace;color:#666;background:#0a0d16;border-bottom:1px solid #1e2535;display:none"></div>
   <div id="themes-content"></div>
 </div>
 
@@ -339,7 +343,14 @@ function selectRegion(r){
   document.getElementById('period-tag').classList.remove('show');
   document.getElementById('daily-zoom-label').textContent = '';
   renderRegionBtns();
-  renderAll();
+  console.log('[Themes] selectRegion called — currentRegion='+currentRegion+' currentView='+currentView);
+  const dbg = document.getElementById('themes-debug');
+  if(dbg){ dbg.style.display='block'; dbg.textContent = 'selectRegion() called → currentRegion='+currentRegion+' | currentView='+currentView+' | '+(new Date().toLocaleTimeString()); }
+  if(currentView === 'themes'){
+    renderThemesView();
+  } else {
+    renderAll();
+  }
 }
 
 // ── KPI Hero ──────────────────────────────────────────────────────────────
@@ -413,9 +424,13 @@ function renderFunnelTable(){
     <th style="color:var(--amber)">Onboarded</th>
     <th style="color:var(--green)">Active</th>
     <th>L→O %</th><th>O→A %</th><th>MoM</th>
+    <th style="color:#a78bfa">Deposits</th>
+    <th style="color:#f97316">Cost/Active</th>
   </tr></thead><tbody>`;
 
-  data.forEach((row,i)=>{
+  const displayIndices = data.map((_,i)=>i).reverse();
+  displayIndices.forEach((i)=>{
+    const row=data[i];
     const sel=i===selectedIndex?'selected':'';
     const prev=i>0?data[i-1]:null;
     let momHtml='<span style="color:var(--dim)">—</span>';
@@ -429,6 +444,14 @@ function renderFunnelTable(){
     const periodCell=currentView==='monthly'
       ?`<strong>${row.label}</strong>`
       :`<strong>${row.label}</strong> <span style="font-size:10px;color:var(--dim)">${row.isoLabel}</span>`;
+    const dep = row.dep || 0;
+    const cpa = row.act > 0 ? Math.round(row.spend / row.act) : null;
+    const depHtml = dep > 0
+      ? `<span style="color:#a78bfa;font-weight:700">$${Math.round(dep/1000)}k</span>`
+      : `<span style="color:var(--dim)">—</span>`;
+    const cpaHtml = cpa !== null
+      ? `<span style="color:#f97316;font-weight:700">${cpa.toLocaleString()}</span>`
+      : `<span style="color:var(--dim)">—</span>`;
 
     html+=`<tr class="${sel}" onclick="selectPeriod(${i})">
       <td>${periodCell}</td>
@@ -446,6 +469,8 @@ function renderFunnelTable(){
       <td><span class="${convCls(row.l2o,40,55)}">${fmtp(row.l2o)}</span></td>
       <td><span class="${convCls(row.o2a,1,3)}">${fmtp(row.o2a)}</span></td>
       <td>${momHtml}</td>
+      <td>${depHtml}</td>
+      <td>${cpaHtml}</td>
     </tr>`;
   });
   html+='</tbody>';
@@ -612,9 +637,12 @@ function setThemesPeriod(p){
 }
 
 function renderThemesView(){
+  try {
   const region  = currentRegion === 'All' ? 'all' : currentRegion;
   const themes  = (THEMES_DATA[region] || []);
   const el      = document.getElementById('themes-content');
+  if(!el){ console.error('[Themes] themes-content element NOT FOUND'); return; }
+  console.log('[Themes] renderThemesView called — currentRegion='+currentRegion+' region='+region+' themes='+themes.length+' currentView='+currentView);
 
   if(!themes.length){
     el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--dim)">No theme data for this region.</div>';
@@ -717,7 +745,17 @@ function renderThemesView(){
   });
 
   html += '</div>';
-  el.innerHTML = html;
+  try {
+    el.innerHTML = html;
+  } catch(err) {
+    el.innerHTML = '<div style="padding:20px;color:red;font-family:monospace">Render error: '+err.message+'</div>';
+    console.error('[Themes] innerHTML error:', err);
+  }
+  } catch(outerErr) {
+    console.error('[Themes] OUTER ERROR in renderThemesView:', outerErr);
+    const el2 = document.getElementById('themes-content');
+    if(el2) el2.innerHTML = '<div style="padding:20px;color:red;font-family:monospace">Error: '+outerErr.message+'<br>Stack: '+outerErr.stack+'</div>';
+  }
 }
 
 function toggleThemeRow(id, hasData){
