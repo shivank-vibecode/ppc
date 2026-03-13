@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Geo Individual Performance</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
 <style>
 
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -145,6 +146,23 @@ table.dt tfoot td.lc { position:relative; }
 .camp-select { background:#161b22; border:1px solid #30363d; border-radius:6px; padding:5px 10px; font-size:12px; color:#c9d1d9; outline:none; cursor:pointer; max-width:300px; height:28px; }
 .camp-select:focus { border-color:#58a6ff; }
 .camp-no-chart { display:none; background:#161b22; border:1px solid #21262d; border-radius:8px; padding:20px; text-align:center; color:#8b949e; font-size:13px; }
+/* attribution panel */
+.attrib-pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; margin:0 2px; }
+.attrib-callout { background:rgba(30,40,55,0.7); border-left:3px solid #58a6ff; padding:10px 14px; margin:6px 0; border-radius:4px; }
+.insights-bar{padding:0;margin:0 0 4px;}
+.insights-bar:empty{display:none;}
+.ib-row{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;margin:2px 0;border-radius:5px;background:rgba(13,17,23,0.5);border:1px solid #21262d;font-size:11px;line-height:1.45;color:#c9d1d9;}
+.ib-row .ib-icon{flex-shrink:0;font-size:13px;margin-top:1px;}
+.ib-row .ib-text{flex:1;}
+.ib-row .ib-sub{font-size:10px;color:#8b949e;margin-top:3px;line-height:1.4;}
+.ib-row .ib-cause{color:#58a6ff;font-weight:600;}
+.ib-row .ib-camp{font-size:9px;color:#6e7681;font-family:monospace;display:block;margin-top:3px;word-break:break-all;padding-top:3px;border-top:1px solid rgba(33,38,45,0.7);}
+.ib-row .ib-no-cause{color:#d29922;font-style:italic;}
+#attrib-summary{padding:8px 12px;margin:4px 0;border-radius:6px;background:rgba(13,17,23,0.5);border:1px solid #21262d;font-size:11px;color:#c9d1d9;line-height:1.5;}
+#attrib-summary .as-geo{font-weight:600;color:#e6edf3;font-size:12px;margin-bottom:4px;}
+#attrib-summary .as-summary{margin-bottom:4px;}
+#attrib-summary .as-action{border-top:1px solid #21262d;padding-top:4px;color:#3fb950;}
+#attrib-summary .as-action b{color:#3fb950;}
 
 </style>
 </head>
@@ -204,6 +222,7 @@ table.dt tfoot td.lc { position:relative; }
         <div class="chart-card"><div class="chart-title">Daily Real</div><canvas id="gi-chart-real"></canvas></div>
         <div class="chart-card"><div class="chart-title">Daily Funded</div><canvas id="gi-chart-funded"></canvas></div>
       </div>
+      <div id="daily-insights-bar" class="insights-bar"></div>
     </div>
     <div class="section">
       <div class="section-header">
@@ -214,6 +233,7 @@ table.dt tfoot td.lc { position:relative; }
         <div class="chart-card"><div class="chart-title">Demo &rarr; Real Rate</div><canvas id="gi-chart-d2r"></canvas></div>
         <div class="chart-card"><div class="chart-title">Real &rarr; Funded Rate</div><canvas id="gi-chart-r2f"></canvas></div>
       </div>
+      <div id="weekly-insights-bar" class="insights-bar"></div>
     </div>
     </div>
     <div id="camp-no-chart" class="section camp-no-chart">
@@ -226,6 +246,7 @@ table.dt tfoot td.lc { position:relative; }
       </div>
       <div class="tbl-wrap"><div id="theme-tbl"></div></div>
     </div>
+    <div id="attrib-summary" style="display:none;"></div>
   </main>
 </div>
 
@@ -274,6 +295,208 @@ var currentKw  = 'all';
 var campFilter = null;   /* null = no filter, string = campaign name */
 var geoCharts  = {};
 
+/* ── Google Ads Change Events for chart annotations & attribution panel ── */
+var CHANGE_EVENTS = [
+  {date:'2026-01-02',label:'Mass pause: Benin, Mexico, Guatemala, Botswana, Angola',conf:'Medium',assess:'Mixed',geo:['Africa Tier 1','Africa Tier 3','Africa Tier 5','LATAM'],
+   campaigns:['africa_tier1-bw-prosp-cpa-all-dbot-1125-en-google','africa_tier1-bw-prosp-cpa-all-multi_asset-1125-en-google-permax','africa_tier1-bw-prosp-cpa-all-chart-patterns-1125-en-google-permax','africa_tier3-bj-prosp-all-trading-1024-fr-google','africa_tier3-bj-prosp-cpa-all-gold-1125-fr-google-permax','africa_tier5-ao-prosp-cpa-all-tradingview-1125-en-google-permax','latam-mx-prosp-cpa-all-trading-1125-es-google-permax','latam-gt-prosp-cpa-all-trading-1125-es-google-permax']},
+  {date:'2026-01-05',label:'Nigeria Tradingview budget \u221233% ($902\u2192$602)',conf:'High',assess:'Positive',geo:['Nigeria'],
+   campaigns:['ng-prosp-cpa-all-tradingview-0623-en-google']},
+  {date:'2026-01-05',label:'Bolivia / Costa Rica permax pauses + S.Leone brand CPC increases',conf:'High',assess:'Positive',geo:['LATAM','Africa Tier 2'],
+   campaigns:['latam-bo-prosp-cpa-all-*-permax (6 pauses)','africa_tier2-sl-prosp-all-brand_keyword-0424-en-google (CPC $0.01\u2192$5)']},
+  {date:'2026-01-11',label:'Mass Nigeria keyword pauses (19 changes)',conf:'High',assess:'Positive',geo:['Nigeria'],
+   campaigns:['ng-prosp-cpa-all-chart-patterns-0623-en-google-experiment (7)','ng-prosp-cpa-all-brand_keyword-1023-en-google-experiment-landing_page (4)','ng-prosp-cpa-all-chart-patterns-0623-en-google (3)','ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment (2)']},
+  {date:'2026-01-19',label:'Sri Lanka & Saudi brand KW budget cuts; JM Chart Patterns \u2212$218',conf:'High',assess:'Positive',geo:['Asia Tier 1','Middle East','Jamaica'],
+   campaigns:['asia_tier1-lk-prosp-cpa-all-chart-patterns-1125-en-google-permax','jm-prosp-cpa-all-chart-patterns-1125-en-google-permax','jm-prosp-cpa-all-brand_keyword-1125-en-yt-tagline (18 KWs added)','africa_tier2-ug-prosp-cpa-all-chart-patterns-1125-en-google-permax (paused)']},
+  {date:'2026-01-21',label:'Mass Nigeria ad group pauses (42 changes)',conf:'High',assess:'Positive',geo:['Nigeria'],
+   campaigns:['ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment (8)','ng-prosp-cpa-all-brand_keyword-1023-en-google-experiment-landing_page (8)','ng-prosp-cpa-all-chart-patterns-0623-en-google-experiment (7)','ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-new-lp-experiment (4)','ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code (4)']},
+  {date:'2026-01-23',label:'Silver experiment launch across 11 geos',conf:'Medium',assess:'Inconclusive',geo:['LATAM','Africa Tier 3','Nigeria'],
+   campaigns:['latam-ve-prosp-cpa-all-silver-0126-es-google','latam-pe-prosp-cpa-all-silver-0126-es-google','latam-cl-prosp-cpa-all-silver-0126-es-google','latam-co-prosp-cpa-all-silver-0126-es-google','latam-ar-prosp-cpa-all-silver-0126-es-google','africa_tier3-ci-prosp-cpa-all-silver-0126-fr-google','africa_tier3-cd-prosp-cpa-all-silver-0126-fr-google','africa_tier3-cm-prosp-cpa-all-silver-0126-fr-google','africa_tier3-bj-prosp-cpa-all-silver-0126-fr-google']},
+  {date:'2026-01-28',label:'Uruguay, Uganda, Venezuela, CI, Benin pauses (13)',conf:'High',assess:'Positive',geo:['LATAM','Africa Tier 2','Africa Tier 3'],
+   campaigns:['latam-ve-prosp-cpa-all-trading-1125-es-google-permax','latam-uy-prosp-cpa-all-dmt5-1125-es-google-permax','latam-ve-prosp-cpa-all-silver-0126-es-google','latam-cl-prosp-cpa-all-fx_ebook-1125-es-google-permax','latam-cl-prosp-cpa-all-silver-0126-es-google','africa_tier2-ug-prosp-cpa-all-brand_keyword-1125-en-google-tagline-permax','africa_tier3-ci-prosp-cpa-all-silver-0126-fr-google','africa_tier3-bj-prosp-cpa-all-silver-0126-fr-google']},
+  {date:'2026-01-29',label:'Trading Tournament launch (NG); CR silver paused',conf:'Low',assess:'Inconclusive',geo:['Nigeria','LATAM'],
+   campaigns:['ng-prosp-cpa-all-trading_tournament-0126-en-dgen','latam-cr-prosp-cpa-all-silver-0126-es-google (paused)','latam-bo-prosp-cpa-all-silver-0126-es-google (paused)']},
+  {date:'2026-02-05',label:'Gold POD experiment launch (Africa Tier 3 + LATAM)',conf:'Medium',assess:'Inconclusive',geo:['Africa Tier 3','LATAM'],
+   campaigns:['africa_tier3-ci-prosp-cpa-all-gold-0226-fr-google-pod','africa_tier3-cm-prosp-cpa-all-gold-0226-fr-google-pod','africa_tier3-cd-prosp-cpa-all-gold-0226-fr-google-pod','latam-prosp-cpa-all-gold-0226-es-google-pod']},
+  {date:'2026-02-10',label:'DRC CPA +$12; Uganda/Lesotho \u2192 Max Conversions; silver pauses',conf:'Medium',assess:'Positive',geo:['Africa Tier 2','Africa Tier 3','LATAM'],
+   campaigns:['africa_tier3-cd-prosp-cpa-all-brand_keyword-1023-fr-google (CPA $13\u2192$25)','africa_tier3-ci-prosp-cpa-all-brand_keyword-1023-fr-google (budget +)','africa_tier2-ug-prosp-cpa-all-brand_keyword-1023-en-google (\u2192Max Conv)','latam-cr/cl/co/pe-silver-0126 (paused)','ng-prosp-cpa-all-trading_tournament-0126-en-dgen (paused)']},
+  {date:'2026-02-16',label:'Broad CPA increases + KW cleanup across West Africa brands',conf:'Medium',assess:'Positive',geo:['Africa Tier 3','Africa Tier 4','Africa Tier 1','LATAM','Nigeria'],
+   campaigns:['latam-co-prosp-cpa-all-brand_keyword-0623-es-google (30 changes)','latam-gt-prosp-cpa-all-brand_keyword-0723-es-google (13)','africa_tier1-zw-prosp-cpa-all-brand_keyword-1023-en-google (16)','africa_tier3-cd/cm/bf/tg-brand_keyword (CPA raises)','ng-prosp-cpa-all-silver-0126-en-google-permax (asset paused)']},
+  {date:'2026-02-17',label:'West Africa brand CPA raises + negative KW cleanup',conf:'Medium',assess:'Positive',geo:['Africa Tier 3','Africa Tier 2'],
+   campaigns:['africa_tier3-cd-prosp-cpa-all-brand_keyword-1023-fr-google (17 changes)','africa_tier3-bf-prosp-cpa-all-brand_keyword-1023-fr-google (CPA\u2192$25)','africa_tier3-tg-prosp-cpa-all-brand_keyword-1023-fr-google (CPA $6\u2192$15)','africa_tier3-cm-prosp-cpa-all-brand_keyword-1023-fr-google (CPA $10.5\u2192$14)','africa_tier2-ug-prosp-cpa-all-brand_keyword-1023-en-google (neg KW cleanup)']},
+  {date:'2026-02-19',label:'Nigeria Chart Patterns CPA 6\u219213.50; Gold POD paused (LATAM)',conf:'Low',assess:'Positive',geo:['Nigeria','LATAM'],
+   campaigns:['ng-prosp-cpa-all-chart-patterns-0623-en-google (CPA $9\u2192$13.50)','ng-prosp-cpa-all-brand_keyword-1023-en-google (neg KW adds)','latam-prosp-cpa-all-gold-0226-es-google-pod (paused)']},
+  {date:'2026-02-27',label:'Gold/Silver POD experiments launched (6 geos)',conf:'Low',assess:'Inconclusive',geo:['Jamaica','Africa Tier 2','LATAM'],
+   campaigns:['jm-prosp-cpa-all-silver-0226-en-google-pod (10)','jm-prosp-cpa-all-gold-0226-en-google-pod (10)','jm-prosp-cpa-all-silver-0126-en-google-pod ($200\u2192$15k)','africa_tier2-ug-prosp-cpa-all-silver-0226-en-google-pod','africa_tier2-ug-prosp-cpa-all-gold-0226-en-google-pod','latam-bo-prosp-cpa-all-gold/silver-0226-es-google-pod','latam-cr-prosp-cpa-all-gold/silver-0226-es-google-pod']},
+  {date:'2026-03-06',label:'Gold POD budgets \u2192$15k across 4 geos',conf:'Low',assess:'Inconclusive',geo:['Africa Tier 2','Jamaica','LATAM'],
+   campaigns:['jm-prosp-cpa-all-gold-0226-en-google-pod ($500\u2192$15k)','jm-prosp-cpa-all-silver-0226-en-google-pod ($500\u2192$15k)','africa_tier2-ug-prosp-cpa-all-gold-0226-en-google-pod ($500\u2192$15k)','jm-prosp-cpa-all-silver-0126-en-google-pod ($15k\u2192$100 \u2014 shifted)']},
+  {date:'2026-03-09',label:'Nigeria brand KW CPA \u2192$40; Tradingview +$100; JM brand \u2212$373',conf:'High',assess:'Mixed',geo:['Nigeria','Jamaica'],
+   campaigns:['ng-prosp-cpa-all-brand_keyword-1023-en-google (CPA\u2192$40)','ng-prosp-cpa-all-tradingview-0623-en-google ($602\u2192$702)','ng-prosp-cpa-all-chart-patterns-0623-en-google (CPA was $6)','jm-prosp-cpa-all-brand_keyword-0623-en-google (neg KW adds, budget \u2212$373)','jm-prosp-cpa-all-silver-0226-en-google-pod (paused)','ng-prosp-cpa-all-fx_ebook-0326-en-google-whatsapp (41 KWs paused)']},
+  {date:'2026-03-06',label:'Nigeria FX Ebook WhatsApp campaign enabled',conf:'Low',assess:'Inconclusive',geo:['Nigeria'],
+   campaigns:['ng-prosp-cpa-all-fx_ebook-0326-en-google-whatsapp (activated, 17 changes)']}
+];
+
+/* ── Geo-specific attribution narratives ─────────────────────────────── */
+var GEO_ATTRIB = {
+  'Nigeria': {
+    summary:'170 total changes. Two massive pause waves (Jan 11: 19 keyword pauses, Jan 21: 42 ad group pauses) collapsed experiment volume. Demo went from ~4,659/wk to ~300/wk. R\u2192F improved from 3.9% to 31% \u2014 quality over volume.',
+    timeline:[
+      {date:'Jan 5',text:'Tradingview budget $902\u2192$602',camp:'ng-prosp-cpa-all-tradingview-0623-en-google',type:'budget'},
+      {date:'Jan 11',text:'19 keyword pauses across experiment campaigns',camp:'ng-prosp-cpa-all-chart-patterns-0623-en-google-experiment, ng-prosp-cpa-all-brand_keyword-1023-en-google-experiment-landing_page',type:'pause'},
+      {date:'Jan 21',text:'42 ad group pauses \u2014 ALL remaining experiments shut down',camp:'ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment (8), ng-prosp-cpa-all-brand_keyword-1023-en-google-experiment-landing_page (8), ng-prosp-cpa-all-chart-patterns-0623-en-google-experiment (7)',type:'pause'},
+      {date:'Jan 26\u201327',text:'Silver experiment setup + 16 keyword changes',camp:'ng-prosp-cpa-all-silver-0126-en-google, ng-prosp-cpa-all-silver-0126-en-google-permax',type:'launch'},
+      {date:'Feb 4\u20136',text:'Silver campaigns paused (both variants)',camp:'ng-prosp-cpa-all-silver-0126-en-google-permax, ng-prosp-cpa-all-silver-0126-en-google',type:'pause'},
+      {date:'Feb 19',text:'Chart Patterns CPA raised $9\u2192$13.50; brand neg KW adds',camp:'ng-prosp-cpa-all-chart-patterns-0623-en-google, ng-prosp-cpa-all-brand_keyword-1023-en-google',type:'bid'},
+      {date:'Mar 6',text:'FX Ebook WhatsApp campaign enabled (17 changes)',camp:'ng-prosp-cpa-all-fx_ebook-0326-en-google-whatsapp',type:'launch'},
+      {date:'Mar 9',text:'Brand KW CPA\u2192$40; Tradingview $602\u2192$702; 41 KWs paused',camp:'ng-prosp-cpa-all-brand_keyword-1023-en-google, ng-prosp-cpa-all-tradingview-0623-en-google, ng-prosp-cpa-all-fx_ebook-0326-en-google-whatsapp',type:'bid'}
+    ],
+    action:'Gradual Tradingview budget restoration to $800\u2013$1,000. Monitor Chart Patterns CPA improvement 3\u20134 weeks. WhatsApp channel is new \u2014 watch closely.'
+  },
+  'Jamaica': {
+    summary:'106 total changes. Consistently strongest R\u2192F at 43\u201355%. Gold/Silver POD experiments launched Feb 27 with rapid budget scaling. Mar 9 brand budget cut is the one negative signal to watch.',
+    timeline:[
+      {date:'Jan 19',text:'Chart Patterns permax budget decreased $418\u2192$200; YT Tagline 18 KWs added',camp:'jm-prosp-cpa-all-chart-patterns-1125-en-google-permax, jm-prosp-cpa-all-brand_keyword-1125-en-yt-tagline',type:'budget'},
+      {date:'Jan 20',text:'Silver POD experiment created',camp:'jm-prosp-cpa-all-silver-0126-en-google-pod',type:'launch'},
+      {date:'Feb 10',text:'YT Tagline + Silver POD paused',camp:'jm-prosp-cpa-all-brand_keyword-1125-en-yt-tagline, jm-prosp-cpa-all-silver-0126-en-google-pod',type:'pause'},
+      {date:'Feb 26\u201327',text:'Gold/Silver POD v2 launched; Silver v1 reactivated $200\u2192$15k',camp:'jm-prosp-cpa-all-silver-0226-en-google-pod, jm-prosp-cpa-all-gold-0226-en-google-pod, jm-prosp-cpa-all-silver-0126-en-google-pod',type:'launch'},
+      {date:'Mar 2\u20136',text:'POD budgets ramped $100\u2192$500\u2192$15k',camp:'jm-prosp-cpa-all-silver-0226-en-google-pod, jm-prosp-cpa-all-gold-0226-en-google-pod',type:'budget'},
+      {date:'Mar 9',text:'Brand KW neg adds; Silver v2 POD paused; FX Ebook budget +$87',camp:'jm-prosp-cpa-all-brand_keyword-0623-en-google, jm-prosp-cpa-all-silver-0226-en-google-pod, jm-prosp-cpa-all-fx_ebook-0124-en-google-global-markets',type:'mixed'},
+      {date:'Mar 10\u201311',text:'Copy Trading paused; DBot budget $30\u2192$100; Trading budget $25\u2192$45',camp:'jm-prosp-cpa-all-copy_trading-0824-en-google, jm-prosp-cpa-all-dbot-1223-en-google, jm-prosp-cpa-all-trading-1124-en-google',type:'budget'}
+    ],
+    action:'Reverse Mar 9 brand KW budget cut. Gold POD showing promise \u2014 compare funded vs Silver POD. Jamaica is the model geo for replication.'
+  },
+  'LATAM': {
+    summary:'329 total changes. Silver experiment launched Jan 23 across 5 geos, most paused by Jan 28\u201330 then reactivated. Gold/Silver POD launched Feb 5 (multi-geo) then Feb 27 (Bolivia + Costa Rica). Heavy brand KW cleanup Feb 16.',
+    timeline:[
+      {date:'Jan 2',text:'Mexico + Guatemala permax pauses',camp:'latam-mx-prosp-cpa-all-trading-1125-es-google-permax, latam-gt-prosp-cpa-all-trading-1125-es-google-permax',type:'pause'},
+      {date:'Jan 5',text:'URL updates across 6+ brand KW campaigns; Bolivia permax pauses',camp:'latam-pa/pe/ar/ve/mx-brand_keyword campaigns',type:'mixed'},
+      {date:'Jan 23',text:'Silver experiment launch: VE, PE, CL, CO, AR (47 changes)',camp:'latam-ve/pe/cl/co/ar-prosp-cpa-all-silver-0126-es-google',type:'launch'},
+      {date:'Jan 28',text:'9 campaigns paused: UY, VE, CL silver + permax',camp:'latam-ve/uy/cl-prosp-cpa-all-trading/silver-*-permax',type:'pause'},
+      {date:'Jan 30',text:'5 silver campaigns reactivated: VE, CL, AR, BO, CR',camp:'latam-ve/cl/ar/bo/cr-prosp-cpa-all-silver-0126-es-google',type:'launch'},
+      {date:'Feb 5',text:'Gold POD multi-geo experiment launched',camp:'latam-prosp-cpa-all-gold-0226-es-google-pod',type:'launch'},
+      {date:'Feb 10',text:'Silver paused in CR, CL, CO, PE',camp:'latam-cr/cl/co/pe-prosp-cpa-all-silver-0126-es-google',type:'pause'},
+      {date:'Feb 16',text:'69 brand KW changes: neg KW cleanup across CO (30), GT (13), CL, AR',camp:'latam-co-prosp-cpa-all-brand_keyword-0623-es-google, latam-gt/cl/ar-brand_keyword',type:'keyword'},
+      {date:'Feb 27',text:'Gold/Silver POD launched in Bolivia + Costa Rica',camp:'latam-bo/cr-prosp-cpa-all-gold/silver-0226-es-google-pod',type:'launch'},
+      {date:'Mar 2',text:'POD KW expansion: gold/silver exact match terms added',camp:'latam-cr/bo-gold/silver-0226-es-google-pod',type:'keyword'}
+    ],
+    action:'Consolidate silver experiments \u2014 most were short-lived. Monitor Bolivia + CR Gold/Silver POD for 4 weeks. Colombia brand KW cleanup should improve CPA.'
+  },
+  'Africa Tier 1': {
+    summary:'91 total changes. Botswana permax campaigns paused Jan 2. Major brand KW cleanup Feb 16 (Zimbabwe 16 changes). BTC POD experiment launched Feb 26, paused Mar 2.',
+    timeline:[
+      {date:'Jan 2',text:'9 Botswana permax campaigns paused',camp:'africa_tier1-bw-prosp-cpa-all-dbot/multi_asset/chart-patterns/currency_trading/fx_ebook/trading-1125-*-permax',type:'pause'},
+      {date:'Feb 16',text:'28 changes: Zimbabwe brand KW neg cleanup (16); BW Tradingview KW change; ZW permax paused',camp:'africa_tier1-zw-prosp-cpa-all-brand_keyword-1023-en-google, africa_tier1-bw-prosp-cpa-all-tradingview-1023-en-google, africa_tier1-zw-prosp-cpa-all-fx_ebook-1125-en-google-permax',type:'keyword'},
+      {date:'Feb 26',text:'BTC POD experiment launched (Botswana)',camp:'africa_tier1-prosp-cpa-all-btc-0226-en-google-pod',type:'launch'},
+      {date:'Mar 2',text:'BTC POD paused',camp:'africa_tier1-prosp-cpa-all-btc-0226-en-google-pod',type:'pause'},
+      {date:'Mar 10\u201311',text:'Namibia + Zambia brand KW reactivated; AI Max enabled',camp:'africa_tier1-na/zm-prosp-cpa-all-brand_keyword-1023-en-google',type:'launch'}
+    ],
+    action:'BTC POD was extremely short-lived (4 days). Namibia/Zambia reactivation is new \u2014 monitor. Zimbabwe brand KW cleanup should reduce wasted spend.'
+  },
+  'Africa Tier 2': {
+    summary:'218 total changes. Heavy South Sudan/Lesotho brand KW CPC escalation throughout Jan. Uganda Silver POD launched Jan 27, paused Feb 10, relaunched Feb 27 with Gold. Bid strategy switch to Max Conversions (Uganda/Lesotho) Feb 12.',
+    timeline:[
+      {date:'Jan 5\u201331',text:'Progressive brand KW CPC increases: SL $0.01\u2192$9.83; LS $8.14\u2192$56.82; UG $12.50\u2192$85.26; SS $30\u2192$75.65',camp:'africa_tier2-sl/ls/ug/ss-prosp-*-brand_keyword',type:'bid'},
+      {date:'Jan 27',text:'Uganda Silver POD created (9 changes)',camp:'africa_tier2-ug-prosp-cpa-all-silver-0126-en-google-pod',type:'launch'},
+      {date:'Feb 10',text:'Uganda Silver POD paused',camp:'africa_tier2-ug-prosp-cpa-all-silver-0126-en-google-pod',type:'pause'},
+      {date:'Feb 12',text:'Uganda \u2192 Max Conversions; Lesotho auto-assets; UG spread-advantage-permax paused',camp:'africa_tier2-ug-prosp-cpa-all-brand_keyword-1023-en-google, africa_tier2-ls-prosp-cpa-all-brand_keyword-1023-en-google, africa_tier2-ug-prosp-cpa-all-brand_keyword-1225-en-google-spread-advantage-permax',type:'bid'},
+      {date:'Feb 17',text:'UG/SS/LS/SZ brand neg KW cleanup (22 changes)',camp:'africa_tier2-ug/ss/ls/sz-prosp-cpa-all-brand_keyword-1023-en-google',type:'keyword'},
+      {date:'Feb 27',text:'Uganda Gold + Silver POD v2 launched',camp:'africa_tier2-ug-prosp-cpa-all-silver/gold-0226-en-google-pod',type:'launch'},
+      {date:'Mar 2\u20136',text:'POD budgets ramped $50\u2192$500\u2192$15k',camp:'africa_tier2-ug-prosp-cpa-all-silver/gold-0226-en-google-pod',type:'budget'},
+      {date:'Mar 9\u201310',text:'Silver POD v2 paused; Gold POD paused; Burundi brand re-enabled',camp:'africa_tier2-ug-prosp-cpa-all-silver-0226/gold-0226-en-google-pod, africa_tier2-bi-prosp-cpa-all-brand_keyword-0824-fr-google',type:'pause'}
+    ],
+    action:'Brand KW CPCs escalated aggressively. R\u2192F remains low \u2014 operational audit needed for UG/LS/SS before scaling. PODs were short experiments; evaluate funded before relaunching.'
+  },
+  'Africa Tier 3': {
+    summary:'171 total changes. Silver experiment Jan 23 (CI, CD, CM, BJ) \u2014 paused/restarted/paused again by Feb 6. Gold POD Feb 5 (CI, CM, CD). Major CPA raises across all brand KWs Feb 10\u201317. Benin brand CPA tripled.',
+    timeline:[
+      {date:'Jan 2',text:'Benin trading + gold permax paused',camp:'africa_tier3-bj-prosp-all-trading-1024-fr-google, africa_tier3-bj-prosp-cpa-all-gold-1125-fr-google-permax',type:'pause'},
+      {date:'Jan 15',text:'DRC brand CPA $13\u2192$25; CM + MG brand budgets increased',camp:'africa_tier3-cd-prosp-cpa-all-brand_keyword-1023-fr-google, africa_tier3-cm/mg-prosp-cpa-all-brand_keyword-1023-fr-google',type:'bid'},
+      {date:'Jan 23',text:'Silver experiment launched: CI (11), CD (9), CM (8), BJ (5)',camp:'africa_tier3-ci/cd/cm/bj-prosp-cpa-all-silver-0126-fr-google',type:'launch'},
+      {date:'Jan 28\u201330',text:'CI + BJ silver paused then reactivated',camp:'africa_tier3-ci/bj-prosp-cpa-all-silver-0126-fr-google',type:'mixed'},
+      {date:'Feb 5',text:'Gold POD launched: CI, CM, CD',camp:'africa_tier3-ci/cm/cd-prosp-cpa-all-gold-0226-fr-google-pod',type:'launch'},
+      {date:'Feb 6',text:'ALL 4 silver campaigns paused (BJ, CM, CI, CD)',camp:'africa_tier3-bj/cm/ci/cd-prosp-cpa-all-silver-0126-fr-google',type:'pause'},
+      {date:'Feb 10',text:'Brand CPA raises: CI budget+, BJ CPA+, MG CPA\u2192$30; DRC trading AI Max enabled',camp:'africa_tier3-ci/bj/mg-prosp-cpa-all-brand_keyword-1023-fr-google, africa_tier3-cd-prosp-all-trading-1024-fr-google',type:'bid'},
+      {date:'Feb 17',text:'48 changes: DRC brand (17), BF CPA\u2192$25, TG CPA $6\u2192$15, CM CPA $10.5\u2192$14',camp:'africa_tier3-cd/bf/tg/cm-prosp-cpa-all-brand_keyword-1023-fr-google',type:'bid'},
+      {date:'Feb 26',text:'Benin brand CPA raised $19.80\u2192$29.70',camp:'africa_tier3-bj-prosp-cpa-all-brand_keyword-1023-fr-google',type:'bid'}
+    ],
+    action:'CPA raises are aggressive \u2014 monitor funded volume vs CPA trade-off. Gold POD still active in CI/CM/CD. Silver fully shut down. Brand KW neg cleanup should help quality.'
+  },
+  'Africa Tier 4': {
+    summary:'57 total changes. Mozambique brand KW CPA increases Feb 16\u201317. Brand KW neg cleanup. BTC POD experiment launched Feb 26 (Mozambique), paused Mar 2.',
+    timeline:[
+      {date:'Feb 16',text:'Mozambique brand CPA raises + KW cleanup',camp:'africa_tier4-mz-prosp-cpa-all-brand_keyword-1023-pt-google',type:'bid'},
+      {date:'Feb 26',text:'BTC POD launched (Mozambique)',camp:'africa_tier4-prosp-cpa-all-btc-0226-en-google-pod',type:'launch'},
+      {date:'Mar 2',text:'BTC POD paused',camp:'africa_tier4-prosp-cpa-all-btc-0226-en-google-pod',type:'pause'}
+    ],
+    action:'BTC POD was 4-day test. Brand CPA raises need monitoring. Low volume geo \u2014 limited levers.'
+  },
+  'Africa Tier 5': {
+    summary:'18 total changes. Angola permax campaigns paused Jan 2. Minimal activity since.',
+    timeline:[
+      {date:'Jan 2',text:'6 Angola permax campaigns paused (tradingview, multi_asset, chart-patterns, fx_ebook, brand_keyword)',camp:'africa_tier5-ao-prosp-cpa-all-*-1125-*-permax',type:'pause'}
+    ],
+    action:'Effectively dormant since Jan 2 permax pauses. Low priority geo.'
+  },
+  'Asia Tier 1': {
+    summary:'88 total changes. Sri Lanka brand budgets cut Jan 19. Silver POD launched Jan 26 (SL), BTC POD Feb 26 (SL). Brand CPA raises Feb 16\u201317.',
+    timeline:[
+      {date:'Jan 19',text:'Sri Lanka chart patterns permax budget decreased',camp:'asia_tier1-lk-prosp-cpa-all-chart-patterns-1125-en-google-permax',type:'budget'},
+      {date:'Jan 26\u201327',text:'Sri Lanka Silver POD created',camp:'asia_tier1-lk-prosp-cpa-all-silver-0126-en-google-pod',type:'launch'},
+      {date:'Feb 16',text:'Sri Lanka brand KW changes + neg cleanup',camp:'asia_tier1-lk-prosp-cpa-all-brand_keyword-1023-en-google',type:'keyword'},
+      {date:'Feb 26',text:'BTC POD launched (Sri Lanka)',camp:'asia_tier1-prosp-cpa-all-btc-0226-en-google-pod',type:'launch'},
+      {date:'Mar 6',text:'BTC POD budget ramped; Silver POD v2 launched',camp:'asia_tier1-prosp-cpa-all-btc-0226-en-google-pod, asia_tier1-lk-prosp-cpa-all-silver-0226-en-google-pod',type:'budget'}
+    ],
+    action:'Multiple POD experiments active. Monitor funded from BTC + Silver PODs before further scaling.'
+  },
+  'Asia Tier 2': {
+    summary:'Minimal changes in period. Low volume geo with limited Google Ads activity.',
+    timeline:[],
+    action:'No significant Google Ads changes. Performance is downstream-driven.'
+  },
+  'Middle East': {
+    summary:'28 total changes. Saudi brand KW budget cuts Jan 19. Brand CPA raises Feb 16\u201317.',
+    timeline:[
+      {date:'Jan 19',text:'Saudi Arabia brand KW budget adjustments',camp:'middle_east-sa-prosp-cpa-all-brand_keyword campaigns',type:'budget'},
+      {date:'Feb 16\u201317',text:'Brand KW CPA raises + neg keyword cleanup',camp:'middle_east-sa/ae-prosp-cpa-all-brand_keyword-1023-*-google',type:'bid'}
+    ],
+    action:'Low volume geo. Brand CPA raises are the main lever. Monitor for funded impact.'
+  },
+  'CIS': {
+    summary:'42 total changes. Silver experiment launched Jan 23. Brand CPA raises Feb 16. Minimal activity.',
+    timeline:[
+      {date:'Jan 23',text:'Silver experiment created',camp:'cis-prosp-cpa-all-silver-0126-*-google',type:'launch'},
+      {date:'Feb 16',text:'Brand KW adjustments',camp:'cis-prosp-cpa-all-brand_keyword-*-google',type:'bid'}
+    ],
+    action:'Low activity geo. Silver experiment fate unclear. Monitor.'
+  }
+};
+
+var ATTRIB_PHASES = [
+  {name:'Stable Core',start:'2025-10-01',end:'2025-11-17',color:'#3fb950',desc:'Daily demo 1,400\u20131,900 steady; Core 85\u201397% of demos; organic baseline period'},
+  {name:'Experiment Surge',start:'2025-11-18',end:'2026-01-15',color:'#ffa657',desc:'Exp share 75\u201388% of demos; 7-day MA peaked ~6,400; Core flat at 750\u20131,100/day'},
+  {name:'Sharp Contraction',start:'2026-01-16',end:'2026-02-15',color:'#f85149',desc:'MA fell from ~4,900 to ~1,400; Nigeria pauses drove experiment collapse; Core held steady'},
+  {name:'Core Baseline',start:'2026-02-16',end:'2026-03-11',color:'#58a6ff',desc:'Demo stabilised 750\u2013920/day; Exp only 4\u20138%; Gold/Silver POD ~40\u201356/day Exp'}
+];
+
+var ATTRIB_INSIGHTS = [
+  {title:'Experiment ROI was near-zero',text:'Large experiments (Nov\u2013Jan) consumed 75\u201388% of demos but added negligible incremental funded accounts. Core funded was essentially unchanged throughout. Jamaica was the only geo with genuine experiment contribution to funded.'},
+  {title:'R\u2192F improved dramatically without ad changes',text:'Portfolio R\u2192F improved from 4.5% (Dec) to 26%+ (Mar). This improvement is NOT explained by Google Ads changes \u2014 likely downstream operational improvements (deposit flow, KYC, onboarding). At ~100 funded/day this represents significant revenue leverage.'},
+  {title:'Nigeria structural contraction',text:'Nigeria demos went from 4,659/week to 300/week. However, R\u2192F improved from 3.9% to 31%. The quality vs volume trade-off is worth monitoring before rebuilding spend.'},
+  {title:'Jamaica outperformance model',text:'Jamaica R\u2192F consistently 43\u201355% throughout. Even after Mar 9 brand budget cut ($1400\u2192$1027), funded only dropped modestly. Jamaica represents the strongest geo-level conversion economics.'}
+];
+
+var ATTRIB_RECS = [
+  {title:'Scale Jamaica',text:'Reverse Mar 9 brand keyword budget cut; accelerate Gold/Silver POD; investigate Jamaica\u2019s outperformance model for replication.'},
+  {title:'Investigate R\u2192F Improvement',text:'Cross-functional analysis needed; document and preserve improvements; add R\u2192F as primary KPI alongside CPA.'},
+  {title:'Reassess Experiment Strategy',text:'Apply 8% R\u2192F threshold gate before scaling experiments; monitor Gold/Silver POD weekly for 4 weeks before budget increases.'},
+  {title:'Nigeria Budget Calibration',text:'Gradual Tradingview budget restoration ($702\u2192$800\u2013$1,000); monitor Chart Patterns CPA improvement for 3\u20134 weeks.'},
+  {title:'Africa Tier 2 Post-Real Conversion',text:'Operational audit for Uganda/Lesotho/South Sudan; pause new experiment spend until Core R\u2192F exceeds 5%.'},
+  {title:'Attribution Hygiene',text:'Implement real-time Google Ads change logging; add downstream event logging (deposit attempts, KYC pass rates, time-to-fund by geo).'}
+];
+
+var CONF_COLORS = {High:'#f85149',Medium:'#d29922',Low:'#8b949e'};
+var ASSESS_COLORS = {Positive:'#3fb950',Negative:'#f85149',Inconclusive:'#8b949e',Mixed:'#d29922'};
+var TYPE_ICONS = {pause:'\u23f8',launch:'\ud83d\ude80',budget:'\ud83d\udcb0',bid:'\u2696',keyword:'\ud83d\udd0d',mixed:'\u26a1'};
+
 /* Return the right data source based on kw filter */
 function kwMGeo(){ return currentKw==='brand' ? DATA.m_geo_brand : currentKw==='nonbrand' ? DATA.m_geo_nonbrand : DATA.m_geo; }
 function kwWGeo(){ return currentKw==='brand' ? DATA.w_geo_brand : currentKw==='nonbrand' ? DATA.w_geo_nonbrand : DATA.w_geo; }
@@ -292,6 +515,7 @@ function render(){
   renderTable();
   renderCharts();
   renderThemeTable();
+  renderAttribPanel();
 }
 
 function switchGeo(geo){
@@ -310,6 +534,7 @@ function switchKw(kw){
   renderTable();
   renderCharts();
   renderThemeTable();
+  renderAttribPanel();
 }
 
 /* ── Theme performance table ────────────────────────────────────────────────── */
@@ -378,6 +603,366 @@ function toggleTheme(uid){
   if(arr) arr.classList.toggle('open',!open);
   rows.forEach(function(r){ r.style.display=open?'none':''; });
 }
+
+/* ── Trend Detection Engine (inline chart insights) ──────────────────── */
+
+function computeMA7(arr){
+  return arr.map(function(_,i){
+    var s=arr.slice(Math.max(0,i-6),i+1);
+    return s.reduce(function(a,b){return a+b;},0)/s.length;
+  });
+}
+
+function detectInflections(ma, dates, metric, threshold){
+  threshold=threshold||0.20;
+  var inflections=[];
+  for(var i=7;i<ma.length;i++){
+    var prev=ma[i-7], curr=ma[i];
+    if(prev<5&&curr<5) continue;
+    var pct=prev>0?(curr-prev)/prev:0;
+    if(Math.abs(pct)>=threshold){
+      var dominated=false;
+      for(var j=inflections.length-1;j>=0&&inflections[j].idx>i-5;j--){
+        if(inflections[j].metric===metric){
+          if(Math.abs(pct)>Math.abs(inflections[j].pctChange)) inflections.splice(j,1);
+          else dominated=true;
+        }
+      }
+      if(!dominated) inflections.push({idx:i,date:dates[i],direction:pct<0?'drop':'spike',
+        fromVal:Math.round(prev),toVal:Math.round(curr),pctChange:pct,metric:metric});
+    }
+  }
+  return inflections;
+}
+
+function matchToChangeEvents(inflDate,geo){
+  var iTime=new Date(inflDate).getTime(), matched=[];
+  CHANGE_EVENTS.forEach(function(ev){
+    if(geo!=='__overall__'&&ev.geo.indexOf(geo)===-1) return;
+    var eTime=new Date(ev.date).getTime(), dd=Math.abs(iTime-eTime)/86400000;
+    if(dd<=5) matched.push({event:ev,dayDiff:Math.round(dd),before:eTime<iTime});
+  });
+  matched.sort(function(a,b){return a.dayDiff-b.dayDiff;});
+  return matched;
+}
+
+function matchWeekToEvents(weekLabel,geo){
+  var months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  var parts=weekLabel.split(' ');
+  if(parts.length<2) return [];
+  var mon=months[parts[0]],day=parseInt(parts[1]);
+  if(mon==null||isNaN(day)) return [];
+  var yr=mon>=9?2025:2026;
+  var ws=new Date(yr,mon,day),we=new Date(ws.getTime()+7*86400000);
+  var matched=[];
+  CHANGE_EVENTS.forEach(function(ev){
+    if(geo!=='__overall__'&&ev.geo.indexOf(geo)===-1) return;
+    var eTime=new Date(ev.date).getTime();
+    if(eTime>=ws.getTime()-2*86400000&&eTime<=we.getTime()+2*86400000)
+      matched.push({event:ev,dayDiff:0});
+  });
+  return matched;
+}
+
+/* ── Compact insight row builder ── */
+function ibRow(icon, color, main, sub, camps){
+  var h='<div class="ib-row" style="border-left:3px solid '+color+';">'+
+    '<span class="ib-icon">'+icon+'</span>'+
+    '<div class="ib-text"><div>'+main+'</div>';
+  if(sub) h+='<div class="ib-sub">'+sub+'</div>';
+  if(camps&&camps.length){
+    h+='<div class="ib-camp">'+camps.slice(0,3).join(' | ');
+    if(camps.length>3) h+=' <span style="color:#8b949e;">+'+(camps.length-3)+' more</span>';
+    h+='</div>';
+  }
+  h+='</div></div>';
+  return h;
+}
+
+/* format helpers */
+function pctF(v){return (v>0?'+':'')+(v*100).toFixed(0)+'%';}
+function ppF(v){return (v>0?'+':'')+v.toFixed(1)+'pp';}
+function $F(v){return '$'+Math.round(v).toLocaleString();}
+function nF(v){return Math.round(v).toLocaleString();}
+
+/* ── Main: render inline insight bars + summary strip ─────────────────── */
+function renderAttribPanel(){
+  var isOverall=currentGeo==='__overall__';
+  var geoData=!isOverall&&GEO_ATTRIB[currentGeo];
+
+  var daily,weekly;
+  if(isOverall){ daily=DATA.daily_funnel; weekly=DATA.w_funnel; }
+  else { daily=kwDaily()[currentGeo]; weekly=kwWGeo()[currentGeo]; }
+  var wPeriods=weekly?(weekly.periods||weekly):[];
+  if(weekly&&weekly.periods) wPeriods=weekly.periods;
+
+  /* ═══════════════ DAILY INSIGHT BAR ═══════════════ */
+  var dailyBar=document.getElementById('daily-insights-bar');
+  if(dailyBar){
+    var rows=[];
+    if(daily&&daily.length>14){
+      var dates=daily.map(function(d){return d.date;});
+      var totalDemo=daily.map(function(d){return d.c_demo+d.e_demo;});
+      var totalReal=daily.map(function(d){return d.c_real+d.e_real;});
+      var totalFunded=daily.map(function(d){return d.c_funded+d.e_funded;});
+      var coreDemo=daily.map(function(d){return d.c_demo;});
+      var expDemo=daily.map(function(d){return d.e_demo;});
+      var coreFunded=daily.map(function(d){return d.c_funded;});
+      var expFunded=daily.map(function(d){return d.e_funded;});
+
+      /* MA7 for all series */
+      var maD=computeMA7(totalDemo),maR=computeMA7(totalReal),maF=computeMA7(totalFunded);
+      var maCD=computeMA7(coreDemo),maED=computeMA7(expDemo);
+      var maCF=computeMA7(coreFunded),maEF=computeMA7(expFunded);
+
+      /* ── 1. Key volume inflections with Core/Exp breakdown ── */
+      var demoInfl=detectInflections(maD,dates,'Demo',0.25);
+      var fundedInfl=detectInflections(maF,dates,'Funded',0.30);
+      var allInfl=demoInfl.concat(fundedInfl);
+      allInfl.sort(function(a,b){return Math.abs(b.pctChange)-Math.abs(a.pctChange);});
+
+      allInfl.slice(0,3).forEach(function(infl){
+        var matched=matchToChangeEvents(infl.date,currentGeo);
+        var i=infl.idx;
+        var icon=infl.direction==='drop'?'\u2b07':'\u2b06';
+        var color=infl.direction==='drop'?'#f85149':'#3fb950';
+
+        /* Core vs Exp split at the inflection point */
+        var coreAtPoint=infl.metric==='Demo'?maCD[i]:maCF[i];
+        var expAtPoint=infl.metric==='Demo'?maED[i]:maEF[i];
+        var totalAtPoint=coreAtPoint+expAtPoint;
+        var expShare=totalAtPoint>0?Math.round(100*expAtPoint/totalAtPoint):0;
+        var coreAtPrev=infl.metric==='Demo'?maCD[i-7]:maCF[i-7];
+        var expAtPrev=infl.metric==='Demo'?maED[i-7]:maEF[i-7];
+        var totalPrev=coreAtPrev+expAtPrev;
+        var expSharePrev=totalPrev>0?Math.round(100*expAtPrev/totalPrev):0;
+
+        /* Main line */
+        var main='<b style="color:'+color+';">'+infl.metric+' '+pctF(infl.pctChange)+'</b> around <b>'+infl.date.slice(5)+'</b>';
+        main+=' <span style="color:#8b949e;">('+nF(infl.fromVal)+' \u2192 '+nF(infl.toVal)+'/day)</span>';
+
+        /* Sub line: core/exp split + cause */
+        var sub='Core: '+nF(coreAtPrev)+' \u2192 '+nF(coreAtPoint);
+        sub+=' &nbsp;\u00b7&nbsp; Exp: '+nF(expAtPrev)+' \u2192 '+nF(expAtPoint);
+        if(expSharePrev!==expShare) sub+=' &nbsp;\u00b7&nbsp; Exp share: '+expSharePrev+'% \u2192 '+expShare+'%';
+
+        if(matched.length){
+          sub+=' &nbsp;\u00b7&nbsp; <span class="ib-cause">\u2190 '+matched[0].event.label+'</span>';
+        } else {
+          sub+=' &nbsp;\u00b7&nbsp; <span class="ib-no-cause">No ads change found (organic?)</span>';
+        }
+
+        var camps=[];
+        matched.forEach(function(m){if(m.event.campaigns) camps=camps.concat(m.event.campaigns);});
+        rows.push({idx:infl.idx,html:ibRow(icon,color,main,sub,camps)});
+      });
+
+      /* ── 2. Experiment share collapse/expansion (unique signal for trading PPC) ── */
+      var expShareArr=totalDemo.map(function(v,i){return v>0?100*expDemo[i]/v:0;});
+      var maExpShare=computeMA7(expShareArr);
+      for(var i=14;i<maExpShare.length;i+=7){
+        var prev7=maExpShare[Math.max(0,i-7)];
+        var curr7=maExpShare[i];
+        var diff=curr7-prev7;
+        if(Math.abs(diff)>=10){  /* 10+ pp shift in experiment share */
+          /* Don't duplicate if already covered by a volume inflection within 3 days */
+          var dominated=false;
+          rows.forEach(function(r){if(Math.abs(r.idx-i)<4) dominated=true;});
+          if(!dominated){
+            var matched=matchToChangeEvents(dates[i],currentGeo);
+            var icon=diff<0?'\u2696\ufe0f':'\ud83e\uddea';
+            var color=diff<0?'#d29922':'#ffa657';
+            var main='<b style="color:'+color+';">Exp share '+(diff>0?'+':'')+Math.round(diff)+'pp</b> around <b>'+dates[i].slice(5)+'</b>';
+            main+=' <span style="color:#8b949e;">('+Math.round(prev7)+'% \u2192 '+Math.round(curr7)+'%)</span>';
+            var sub=diff<0
+              ?'Portfolio consolidating toward core. If intentional, expect higher R\u2192F and lower CPA.'
+              :'Experiment volume expanding. Watch R\u2192F closely \u2014 experiment conversion is historically weaker.';
+            if(matched.length) sub+=' <span class="ib-cause">\u2190 '+matched[0].event.label+'</span>';
+            var camps=[];
+            matched.forEach(function(m){if(m.event.campaigns) camps=camps.concat(m.event.campaigns);});
+            rows.push({idx:i,html:ibRow(icon,color,main,sub,camps)});
+          }
+        }
+      }
+
+      /* ── 3. Current trajectory (last 7 vs prev 7) ── */
+      if(daily.length>=14){
+        var last7=daily.slice(-7), prev7d=daily.slice(-14,-7);
+        var l7demo=last7.reduce(function(s,d){return s+d.c_demo+d.e_demo;},0);
+        var p7demo=prev7d.reduce(function(s,d){return s+d.c_demo+d.e_demo;},0);
+        var l7funded=last7.reduce(function(s,d){return s+d.c_funded+d.e_funded;},0);
+        var p7funded=prev7d.reduce(function(s,d){return s+d.c_funded+d.e_funded;},0);
+        var l7real=last7.reduce(function(s,d){return s+d.c_real+d.e_real;},0);
+        var p7real=prev7d.reduce(function(s,d){return s+d.c_real+d.e_real;},0);
+        var l7r2f=l7real>0?(100*l7funded/l7real):0;
+        var p7r2f=p7real>0?(100*p7funded/p7real):0;
+        var dPct=p7demo>0?(l7demo-p7demo)/p7demo:0;
+        var fPct=p7funded>0?(l7funded-p7funded)/p7funded:0;
+
+        var tColor=l7funded>=p7funded?'#3fb950':'#f85149';
+        var tIcon=l7funded>=p7funded?'\ud83d\udfe2':'\ud83d\udfe1';
+        var main='<b style="color:'+tColor+';">Current trajectory:</b> Last 7d vs prev 7d';
+        var sub='Demo: '+nF(p7demo)+' \u2192 '+nF(l7demo)+' ('+pctF(dPct)+')';
+        sub+=' &nbsp;\u00b7&nbsp; Funded: '+nF(p7funded)+' \u2192 '+nF(l7funded)+' ('+pctF(fPct)+')';
+        sub+=' &nbsp;\u00b7&nbsp; R\u2192F: '+p7r2f.toFixed(1)+'% \u2192 '+l7r2f.toFixed(1)+'%';
+        rows.push({idx:999,html:ibRow(tIcon,tColor,main,sub,null)});
+      }
+    }
+    rows.sort(function(a,b){return a.idx-b.idx;});
+    dailyBar.innerHTML=rows.map(function(r){return r.html;}).join('');
+  }
+
+  /* ═══════════════ WEEKLY INSIGHT BAR ═══════════════ */
+  var weeklyBar=document.getElementById('weekly-insights-bar');
+  if(weeklyBar){
+    var wRows=[];
+    if(wPeriods&&wPeriods.length>3){
+      var last=wPeriods[wPeriods.length-1], prev=wPeriods[wPeriods.length-2];
+      var last2=wPeriods.length>2?wPeriods[wPeriods.length-3]:null;
+
+      /* ── 1. Latest week snapshot with spend/CPA/ROAS context ── */
+      var hasCPA=last.total.cpa!=null&&prev.total.cpa!=null;
+      var hasROAS=last.total.roas!=null&&prev.total.roas!=null;
+      var hasSpend=last.total.spend!=null&&prev.total.spend!=null;
+      var lD2R=last.total.d2r, pD2R=prev.total.d2r;
+      var lR2F=last.total.r2f, pR2F=prev.total.r2f;
+
+      var snapColor=(lR2F!=null&&pR2F!=null&&lR2F>=pR2F)?'#3fb950':'#d29922';
+      var main='<b style="color:#e6edf3;">Week of '+last.label+'</b>';
+      var parts=[];
+      if(last.total.demo!=null) parts.push('Demo: <b>'+nF(last.total.demo)+'</b>');
+      if(last.total.funded!=null) parts.push('Funded: <b>'+nF(last.total.funded)+'</b>');
+      if(lD2R!=null) parts.push('D\u2192R: <b>'+lD2R.toFixed(1)+'%</b>');
+      if(lR2F!=null) parts.push('R\u2192F: <b>'+lR2F.toFixed(1)+'%</b>');
+      if(hasCPA) parts.push('CPA: <b>'+$F(last.total.cpa)+'</b>');
+      if(hasROAS) parts.push('ROAS: <b>'+last.total.roas.toFixed(2)+'x</b>');
+      main+=' &mdash; '+parts.join(' &nbsp;\u00b7&nbsp; ');
+
+      /* WoW change sub */
+      var changes=[];
+      if(prev.total.demo&&last.total.demo) changes.push('Demo '+pctF((last.total.demo-prev.total.demo)/prev.total.demo));
+      if(prev.total.funded&&last.total.funded) changes.push('Funded '+pctF((last.total.funded-prev.total.funded)/prev.total.funded));
+      if(pD2R!=null&&lD2R!=null) changes.push('D\u2192R '+ppF(lD2R-pD2R));
+      if(pR2F!=null&&lR2F!=null) changes.push('R\u2192F '+ppF(lR2F-pR2F));
+      if(hasCPA) changes.push('CPA '+(last.total.cpa<prev.total.cpa?'\u2193':'\u2191')+' '+$F(last.total.cpa-prev.total.cpa));
+      var sub='<span style="color:#8b949e;">WoW:</span> '+changes.join(' &nbsp;\u00b7&nbsp; ');
+      wRows.push(ibRow('\ud83d\udcca',snapColor,main,sub,null));
+
+      /* ── 2. Biggest conversion rate movements (scan all weeks) ── */
+      var rateShifts=[];
+      for(var wi=1;wi<wPeriods.length;wi++){
+        var wP=wPeriods[wi-1],wC=wPeriods[wi];
+        [{name:'D\u2192R',pV:wP.total.d2r,cV:wC.total.d2r},{name:'R\u2192F',pV:wP.total.r2f,cV:wC.total.r2f}].forEach(function(m){
+          if(m.pV==null||m.cV==null) return;
+          var pt=m.cV-m.pV;
+          if(Math.abs(pt)>=4||(m.pV>1&&Math.abs(pt/m.pV)>=0.30))
+            rateShifts.push({weekLabel:wC.label,metric:m.name,from:m.pV,to:m.cV,pt:pt,wi:wi});
+        });
+      }
+      rateShifts.sort(function(a,b){return Math.abs(b.pt)-Math.abs(a.pt);});
+
+      rateShifts.slice(0,2).forEach(function(rs){
+        var matched=matchWeekToEvents(rs.weekLabel,currentGeo);
+        var icon=rs.pt>0?'\ud83d\udcc8':'\ud83d\udcc9';
+        var color=rs.pt>0?(rs.metric==='R\u2192F'?'#3fb950':'#58a6ff'):'#f85149';
+        var main='<b style="color:'+color+';">'+rs.metric+' '+ppF(rs.pt)+'</b> wk of <b>'+rs.weekLabel+'</b>';
+        main+=' <span style="color:#8b949e;">('+rs.from.toFixed(1)+'% \u2192 '+rs.to.toFixed(1)+'%)</span>';
+
+        /* Add spend/CPA context from that week */
+        var wk=wPeriods[rs.wi], prevWk=wPeriods[rs.wi-1];
+        var subParts=[];
+        if(wk.total.funded!=null) subParts.push('Funded: '+nF(wk.total.funded));
+        if(wk.total.cpa!=null&&prevWk.total.cpa!=null){
+          var cpaDiff=wk.total.cpa-prevWk.total.cpa;
+          subParts.push('CPA: '+$F(wk.total.cpa)+' ('+(cpaDiff>0?'+':'')+$F(cpaDiff)+')');
+        }
+        if(wk.total.spend!=null) subParts.push('Spend: '+$F(wk.total.spend));
+
+        var sub=subParts.join(' &nbsp;\u00b7&nbsp; ');
+        if(matched.length) sub+=' &nbsp;\u00b7&nbsp; <span class="ib-cause">\u2190 '+matched[0].event.label+'</span>';
+        else sub+=' &nbsp;\u00b7&nbsp; <span class="ib-no-cause">No ads change (operational?)</span>';
+
+        var camps=[];
+        matched.forEach(function(m){if(m.event.campaigns) camps=camps.concat(m.event.campaigns);});
+        wRows.push(ibRow(icon,color,main,sub,camps));
+      });
+
+      /* ── 3. CPA/Spend efficiency trend (last 4 weeks) ── */
+      if(wPeriods.length>=4){
+        var recent4=wPeriods.slice(-4);
+        var hasCPAData=recent4.every(function(w){return w.total.cpa!=null;});
+        if(hasCPAData){
+          var cpas=recent4.map(function(w){return w.total.cpa;});
+          var cpaFirst=cpas[0],cpaLast=cpas[cpas.length-1];
+          var cpaTrend=(cpaLast-cpaFirst)/cpaFirst;
+          /* Only show if meaningful change */
+          if(Math.abs(cpaTrend)>=0.10){
+            var tIcon=cpaTrend<0?'\ud83d\udcb0':'\u26a0\ufe0f';
+            var tColor=cpaTrend<0?'#3fb950':'#f85149';
+            var main='<b style="color:'+tColor+';">CPA trend (4wk): '+pctF(cpaTrend)+'</b>';
+            main+=' <span style="color:#8b949e;">'+$F(cpaFirst)+' \u2192 '+$F(cpaLast)+'</span>';
+            var coreRoas=recent4.map(function(w){return w.core.roas;}).filter(function(v){return v!=null;});
+            var sub='';
+            if(coreRoas.length>=2){
+              sub+='Core ROAS: '+coreRoas[0].toFixed(2)+'x \u2192 '+coreRoas[coreRoas.length-1].toFixed(2)+'x';
+            }
+            var totalSpend4=recent4.reduce(function(s,w){return s+(w.total.spend||0);},0);
+            var totalFunded4=recent4.reduce(function(s,w){return s+(w.total.funded||0);},0);
+            if(totalSpend4>0&&totalFunded4>0) sub+=(sub?' &nbsp;\u00b7&nbsp; ':'')+'4wk avg CPA: '+$F(totalSpend4/totalFunded4);
+            if(cpaTrend<0) sub+=' &nbsp;\u00b7&nbsp; <span style="color:#3fb950;">Efficiency improving. Consider cautious budget increase.</span>';
+            else sub+=' &nbsp;\u00b7&nbsp; <span style="color:#f85149;">Efficiency declining. Investigate high-CPA campaigns.</span>';
+            wRows.push(ibRow(tIcon,tColor,main,sub,null));
+          }
+        }
+      }
+
+      /* ── 4. Core vs Exp efficiency comparison (latest period) ── */
+      if(last.core&&last.exp&&last.core.funded>0&&last.exp.funded>0){
+        var cCPA=last.core.cpa, eCPA=last.exp.cpa;
+        var cR2F2=last.core.r2f, eR2F2=last.exp.r2f;
+        if(cCPA!=null&&eCPA!=null&&cCPA>0&&eCPA>0){
+          var cpaRatio=eCPA/cCPA;
+          var icon=cpaRatio>2?'\u26a0\ufe0f':cpaRatio>1.2?'\ud83d\udfe1':'\u2705';
+          var color=cpaRatio>2?'#f85149':cpaRatio>1.2?'#d29922':'#3fb950';
+          var main='<b style="color:'+color+';">Core vs Exp efficiency</b> ('+last.label+')';
+          var sub='Core CPA: '+$F(cCPA)+' &nbsp;\u00b7&nbsp; Exp CPA: '+$F(eCPA)+' &nbsp;\u00b7&nbsp; Exp costs <b>'+cpaRatio.toFixed(1)+'x</b> core';
+          if(cR2F2!=null&&eR2F2!=null) sub+=' &nbsp;\u00b7&nbsp; Core R\u2192F: '+cR2F2.toFixed(1)+'% vs Exp: '+eR2F2.toFixed(1)+'%';
+          if(cpaRatio>2) sub+=' &nbsp;\u00b7&nbsp; <span style="color:#f85149;">Experiment ROI is weak. Re-evaluate before scaling.</span>';
+          wRows.push(ibRow(icon,color,main,sub,null));
+        }
+      }
+    }
+    weeklyBar.innerHTML=wRows.map(function(r){return r;}).join('');
+  }
+
+  /* ═══════════════ BOTTOM SUMMARY STRIP ═══════════════ */
+  var summary=document.getElementById('attrib-summary');
+  if(summary){
+    if(geoData){
+      summary.style.display='';
+      summary.innerHTML=
+        '<div class="as-geo">\ud83d\udcca '+currentGeo+' Attribution Summary</div>'+
+        '<div class="as-summary">'+geoData.summary+'</div>'+
+        '<div class="as-action"><b>\u26a1 Action:</b> '+geoData.action+'</div>';
+    } else if(isOverall){
+      summary.style.display='';
+      var sh='<div class="as-geo">\ud83d\udcca Portfolio Attribution Summary</div>';
+      ATTRIB_PHASES.forEach(function(p){
+        sh+='<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:3px;font-size:10px;border:1px solid '+p.color+';color:'+p.color+';">'+p.name+' ('+p.start.slice(5)+' \u2192 '+p.end.slice(5)+')</span>';
+      });
+      sh+='<div style="margin-top:6px;">';
+      ATTRIB_INSIGHTS.slice(0,2).forEach(function(item){
+        sh+='<div style="margin-top:4px;"><b style="color:#58a6ff;">'+item.title+':</b> '+item.text+'</div>';
+      });
+      sh+='</div>';
+      summary.innerHTML=sh;
+    } else {
+      summary.style.display='none';
+      summary.innerHTML='';
+    }
+  }
+}
+
 
 /* ── Campaign filter ───────────────────────────────────────────────────────── */
 function populateCampSelect(){
@@ -687,6 +1272,36 @@ function renderCharts(){
       return parseFloat((s.reduce(function(a,b){return a+b;},0)/s.length).toFixed(1));
     });
   }
+  /* Build annotation lines from CHANGE_EVENTS for a given dates array */
+  function buildAnnotations(dates, geo){
+    var annots={};
+    var dateMap={};
+    dates.forEach(function(d,i){ dateMap[d]=i; });
+    CHANGE_EVENTS.forEach(function(ev,ei){
+      if(!(ev.date in dateMap)) return;
+      /* filter by geo: show all for __overall__, else only matching */
+      if(geo!=='__overall__' && ev.geo.indexOf(geo)===-1) return;
+      var idx=dateMap[ev.date];
+      var clr=CONF_COLORS[ev.conf]||'#8b949e';
+      annots['ev'+ei]={
+        type:'line',
+        xMin:idx,xMax:idx,
+        borderColor:clr,
+        borderWidth:1.5,
+        borderDash:[5,3],
+        label:{
+          display:true,
+          content:ev.conf==='High'?'\u26a0':ev.conf==='Medium'?'\u25c6':'\u25cb',
+          position:'start',
+          backgroundColor:'transparent',
+          color:clr,
+          font:{size:10,weight:'bold'},
+          padding:2
+        }
+      };
+    });
+    return annots;
+  }
   var baseBarOpts={
     responsive:true,maintainAspectRatio:true,aspectRatio:5,
     plugins:{
@@ -694,7 +1309,25 @@ function renderCharts(){
       tooltip:{mode:'index',footerColor:'#e6edf3',footerFont:{weight:'bold',size:12},footerMarginTop:6,
         callbacks:{
           label:function(item){if(item.dataset.type==='line')return null;return item.dataset.label+': '+item.parsed.y.toLocaleString();},
-          footer:function(items){var t=items.filter(function(i){return i.dataset.type!=='line';}).reduce(function(s,i){return s+i.parsed.y;},0);return 'Total: '+t.toLocaleString();}
+          footer:function(items){
+            var t=items.filter(function(i){return i.dataset.type!=='line';}).reduce(function(s,i){return s+i.parsed.y;},0);
+            var foot='Total: '+t.toLocaleString();
+            /* append change event info if any on this index */
+            var xi=items[0]?items[0].dataIndex:null;
+            if(xi!==null){
+              var chart=items[0].chart;
+              var anns=chart.options.plugins.annotation&&chart.options.plugins.annotation.annotations;
+              if(anns){
+                Object.keys(anns).forEach(function(k){
+                  var a=anns[k]; if(a.xMin===xi){
+                    var ev=CHANGE_EVENTS[parseInt(k.replace('ev',''))];
+                    if(ev) foot+='\n\u26a1 '+ev.label+' ['+ev.conf+']';
+                  }
+                });
+              }
+            }
+            return foot;
+          }
         }
       }
     },
@@ -707,14 +1340,41 @@ function renderCharts(){
     responsive:true,maintainAspectRatio:true,aspectRatio:5,
     plugins:{
       legend:{position:'top',labels:{color:TICK_CLR,font:{size:11},boxWidth:12,padding:12}},
-      tooltip:{mode:'index',callbacks:{label:function(item){var v=item.parsed.y;return item.dataset.label+': '+(v!=null?v.toFixed(1)+'%':'—');}}}
+      tooltip:{mode:'index',callbacks:{label:function(item){var v=item.parsed.y;return item.dataset.label+': '+(v!=null?v.toFixed(1)+'%':'\u2014');}}}
     },
     scales:{
       x:{ticks:{color:TICK_CLR,font:{size:9},maxRotation:45},grid:{color:GRID_CLR}},
       y:{ticks:{color:TICK_CLR,font:{size:10},callback:function(v){return v+'%';}},grid:{color:GRID_CLR}}
     }
   };
-  function makeBarChart2(id,labels,cData,eData,maData){
+  function makeBarChart2(id,labels,cData,eData,maData,dates,geo){
+    var opts=JSON.parse(JSON.stringify(baseBarOpts));
+    if(dates&&geo){
+      var anns=buildAnnotations(dates,geo);
+      opts.plugins.annotation={annotations:anns};
+    }
+    /* re-attach tooltip callbacks (lost during JSON clone) */
+    opts.plugins.tooltip.callbacks={
+      label:function(item){if(item.dataset.type==='line')return null;return item.dataset.label+': '+item.parsed.y.toLocaleString();},
+      footer:function(items){
+        var t=items.filter(function(i){return i.dataset.type!=='line';}).reduce(function(s,i){return s+i.parsed.y;},0);
+        var foot='Total: '+t.toLocaleString();
+        var xi=items[0]?items[0].dataIndex:null;
+        if(xi!==null){
+          var chart=items[0].chart;
+          var anns2=chart.options.plugins.annotation&&chart.options.plugins.annotation.annotations;
+          if(anns2){
+            Object.keys(anns2).forEach(function(k){
+              var a=anns2[k]; if(a.xMin===xi){
+                var ev=CHANGE_EVENTS[parseInt(k.replace('ev',''))];
+                if(ev) foot+='\n\u26a1 '+ev.label+' ['+ev.conf+']';
+              }
+            });
+          }
+        }
+        return foot;
+      }
+    };
     return new Chart(document.getElementById(id).getContext('2d'),{
       type:'bar',
       data:{labels:labels,datasets:[
@@ -722,7 +1382,7 @@ function renderCharts(){
         {label:'Experiment',data:eData,backgroundColor:EXP_CLR,stack:'stack'},
         {type:'line',label:'7-day MA',data:maData,borderColor:MA_CLR,borderWidth:2,pointRadius:0,pointHoverRadius:4,fill:false,tension:0.35,order:-1}
       ]},
-      options:JSON.parse(JSON.stringify(baseBarOpts))
+      options:opts
     });
   }
   function makeConvChart2(id,labels,cData,eData){
@@ -744,9 +1404,10 @@ function renderCharts(){
     var ocD=od.map(function(d){return d.c_demo;}),  oeD=od.map(function(d){return d.e_demo;});
     var ocR=od.map(function(d){return d.c_real;}),  oeR=od.map(function(d){return d.e_real;});
     var ocF=od.map(function(d){return d.c_funded;}),oeF=od.map(function(d){return d.e_funded;});
-    geoCharts.demo   = makeBarChart2('gi-chart-demo',   ol,ocD,oeD, movingAvgLocal(ocD.map(function(v,i){return v+oeD[i];}),7));
-    geoCharts.real   = makeBarChart2('gi-chart-real',   ol,ocR,oeR, movingAvgLocal(ocR.map(function(v,i){return v+oeR[i];}),7));
-    geoCharts.funded = makeBarChart2('gi-chart-funded', ol,ocF,oeF, movingAvgLocal(ocF.map(function(v,i){return v+oeF[i];}),7));
+    var odates=od.map(function(d){return d.date;});
+    geoCharts.demo   = makeBarChart2('gi-chart-demo',   ol,ocD,oeD, movingAvgLocal(ocD.map(function(v,i){return v+oeD[i];}),7), odates,'__overall__');
+    geoCharts.real   = makeBarChart2('gi-chart-real',   ol,ocR,oeR, movingAvgLocal(ocR.map(function(v,i){return v+oeR[i];}),7), odates,'__overall__');
+    geoCharts.funded = makeBarChart2('gi-chart-funded', ol,ocF,oeF, movingAvgLocal(ocF.map(function(v,i){return v+oeF[i];}),7), odates,'__overall__');
     var ow=DATA.w_funnel;
     document.getElementById('weeks-badge').textContent=ow.length+' weeks';
     var owl=ow.map(function(w){return w.label;});
@@ -768,10 +1429,11 @@ function renderCharts(){
   var maDemo   = movingAvgLocal(cDemo.map(function(v,i){return v+eDemo[i];}),7);
   var maReal   = movingAvgLocal(cReal.map(function(v,i){return v+eReal[i];}),7);
   var maFunded = movingAvgLocal(cFunded.map(function(v,i){return v+eFunded[i];}),7);
+  var ddates   = daily.map(function(d){return d.date;});
 
-  geoCharts.demo   = makeBarChart2('gi-chart-demo',   dlabels, cDemo,   eDemo,   maDemo);
-  geoCharts.real   = makeBarChart2('gi-chart-real',   dlabels, cReal,   eReal,   maReal);
-  geoCharts.funded = makeBarChart2('gi-chart-funded', dlabels, cFunded, eFunded, maFunded);
+  geoCharts.demo   = makeBarChart2('gi-chart-demo',   dlabels, cDemo,   eDemo,   maDemo,   ddates, currentGeo);
+  geoCharts.real   = makeBarChart2('gi-chart-real',   dlabels, cReal,   eReal,   maReal,   ddates, currentGeo);
+  geoCharts.funded = makeBarChart2('gi-chart-funded', dlabels, cFunded, eFunded, maFunded, ddates, currentGeo);
 
   var weekly  = kwWGeo()[currentGeo].periods;
   document.getElementById('weeks-badge').textContent = weekly.length + ' weeks';
