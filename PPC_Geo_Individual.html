@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1112,11 +1111,13 @@ function renderCharts(){
     };
     opts.scales.y.stacked=true;
     opts.scales.y.ticks.callback=function(v){return v>=1000?'$'+(v/1000).toFixed(0)+'K':'$'+v;};
+    var maSpend=movingAvgLocal(cData.map(function(v,i){return v+eData[i];}),7);
     return new Chart(document.getElementById(id).getContext('2d'),{
       type:'bar',
       data:{labels:labels,datasets:[
         {label:'Core',data:cData,backgroundColor:GI_CORE_CLR,stack:'stack'},
-        {label:'Experiment',data:eData,backgroundColor:GI_EXP_CLR,stack:'stack'}
+        {label:'Experiment',data:eData,backgroundColor:GI_EXP_CLR,stack:'stack'},
+        {type:'line',label:'7-day MA',data:maSpend,borderColor:GI_MA_CLR,borderWidth:2,pointRadius:0,pointHoverRadius:4,fill:false,tension:0.35,order:-1}
       ]},
       options:opts
     });
