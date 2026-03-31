@@ -433,10 +433,14 @@ table.dt tfoot td { background:#f6f8fa !important; }
 .ca-kpi.bad .ca-kpi-val  { color:#cf222e; }
 .ca-kpi.ok  .ca-kpi-val  { color:#1a7f37; }
 .ca-kpi-lbl  { font-size:10px; color:#57606a; margin-top:5px; text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
-.ca-section-hdr { font-size:13px; font-weight:700; padding:8px 12px; border-radius:6px; margin:20px 0 8px; }
+.ca-section-hdr { font-size:13px; font-weight:700; padding:8px 12px; border-radius:6px; margin:20px 0 8px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
 .ca-section-hdr.missing { background:#fff0ee; color:#cf222e; border:1px solid #ff818266; }
 .ca-section-hdr.covered { background:#f0fff4; color:#1a7f37; border:1px solid #56d36466; }
 .ca-section-hdr.pending { background:#fff8e1; color:#9a6700; border:1px solid #d4a72c66; }
+.ca-stat-pills { display:flex; gap:6px; flex-shrink:0; }
+.ca-stat-pill { font-size:11px; font-weight:600; padding:3px 9px; border-radius:10px; white-space:nowrap; }
+.ca-stat-pill.spend { background:#fff; color:#0969da; border:1px solid #0969da44; }
+.ca-stat-pill.demo  { background:#fff; color:#6e40c9; border:1px solid #6e40c944; }
 .ca-pend-bar-wrap { flex:1; height:6px; background:#eaeef2; border-radius:3px; overflow:hidden; min-width:80px; }
 .ca-pend-bar { height:100%; border-radius:3px; transition:width .3s; }
 .ca-pend-summary td { padding:6px 8px; }
@@ -2165,17 +2169,18 @@ function renderConvAuditPanel(){
   /* Last 4 month labels */
   var last4  = DATA.m_funnel.slice(-4).map(function(r){ return r.label; });
 
-  /* ── Build campMeta: geo, type, spendByMonth, fundedByMonth ── */
+  /* ── Build campMeta: geo, type, spendByMonth, fundedByMonth, demoByMonth ── */
   var campMeta = {};
   DATA.geo_ranks.forEach(function(geo){
     (DATA.campaign_geo[geo]||[]).forEach(function(c){
       if(campMeta[c.name]) return;
-      var spendByMonth = {}, fundedByMonth = {};
+      var spendByMonth = {}, fundedByMonth = {}, demoByMonth = {};
       (c.months||[]).forEach(function(m){
-        spendByMonth[m.label]  = m.spend   || 0;
-        fundedByMonth[m.label] = m.funded  || 0;
+        spendByMonth[m.label]  = m.spend  || 0;
+        fundedByMonth[m.label] = m.funded || 0;
+        demoByMonth[m.label]   = m.demo   || 0;
       });
-      campMeta[c.name] = {geo:geo, type:c.type, spendByMonth:spendByMonth, fundedByMonth:fundedByMonth};
+      campMeta[c.name] = {geo:geo, type:c.type, spendByMonth:spendByMonth, fundedByMonth:fundedByMonth, demoByMonth:demoByMonth};
     });
   });
 
@@ -2270,6 +2275,8 @@ function renderConvAuditPanel(){
       hasFTD:hasFTD, hasPFTD:hasPFTD,
       needsFTD:needsFTD, needsPFTD:needsPFTD,
       actions:actions, section:section,
+      totalSpend: meta.spendByMonth[last4[last4.length-1]] || 0,
+      totalDemo:  meta.demoByMonth[last4[last4.length-1]]  || 0,
       fundedVals: getFundedVals(campName),
       pftdVals:   getPftdVals(campName)
     });
@@ -2348,19 +2355,41 @@ function renderConvAuditPanel(){
   var coveredRows = rows.filter(function(r){ return r.section==='covered'; });
   var pendingRows = rows.filter(function(r){ return r.section==='pending'; });
 
+  /* Aggregate spend + demo for a set of rows */
+  function sectionStats(sRows){
+    var spend=0, demo=0;
+    sRows.forEach(function(r){ spend+=r.totalSpend; demo+=r.totalDemo; });
+    return {spend:spend, demo:demo};
+  }
+  function fmtSpend(v){ return v>=1000?'$'+(v/1000).toFixed(1)+'k':'$'+Math.round(v); }
+  var curMonthLbl = last4[last4.length-1];
+  function statPills(s){
+    return '<span class="ca-stat-pill spend">\ud83d\udcb8 '+fmtSpend(s.spend)+' spend</span>'+
+           '<span class="ca-stat-pill demo">\ud83d\udc64 '+s.demo.toLocaleString()+' demos</span>'+
+           '<span style="font-size:10px;opacity:.6;align-self:center;">'+curMonthLbl+'</span>';
+  }
+
   var sectionsHtml = '';
   if(missingRows.length){
+    var ms = sectionStats(missingRows);
     sectionsHtml +=
-      '<div class="ca-section-hdr missing">\u26a0 Missing conversion action — '+missingRows.length+' campaign'+(missingRows.length>1?'s':'')+
-      (activeGeoFilter!=='ALL'?' in '+activeGeoFilter:'')+
-      ' <span style="font-size:11px;font-weight:400;">(crossed \u226530, action not assigned)</span></div>'+
+      '<div class="ca-section-hdr missing">'+
+        '<span>\u26a0 Missing conversion action — '+missingRows.length+' campaign'+(missingRows.length>1?'s':'') +
+        (activeGeoFilter!=='ALL'?' in '+activeGeoFilter:'')+
+        ' <span style="font-size:11px;font-weight:400;">(crossed \u226530, action not assigned)</span></span>'+
+        '<span class="ca-stat-pills">'+statPills(ms)+'</span>'+
+      '</div>'+
       '<div class="ca-tbl-wrap">'+buildTable(missingRows)+'</div>';
   }
   if(coveredRows.length){
+    var cs = sectionStats(coveredRows);
     sectionsHtml +=
-      '<div class="ca-section-hdr covered">\u2705 Qualified &amp; covered — '+coveredRows.length+' campaign'+(coveredRows.length>1?'s':'')+
-      (activeGeoFilter!=='ALL'?' in '+activeGeoFilter:'')+
-      ' <span style="font-size:11px;font-weight:400;">(crossed \u226530, correct action assigned)</span></div>'+
+      '<div class="ca-section-hdr covered">'+
+        '<span>\u2705 Qualified &amp; covered — '+coveredRows.length+' campaign'+(coveredRows.length>1?'s':'')+
+        (activeGeoFilter!=='ALL'?' in '+activeGeoFilter:'')+
+        ' <span style="font-size:11px;font-weight:400;">(crossed \u226530, correct action assigned)</span></span>'+
+        '<span class="ca-stat-pills">'+statPills(cs)+'</span>'+
+      '</div>'+
       '<div class="ca-tbl-wrap">'+buildTable(coveredRows)+'</div>';
   }
   if(pendingRows.length){
@@ -2395,11 +2424,14 @@ function renderConvAuditPanel(){
         '<th style="min-width:160px;">Best pFTD/month <span style="font-weight:400;color:#8c959f;">(of 30)</span></th>'+
       '</tr></thead><tbody>'+summaryRows+'</tbody></table>';
 
+    var ps = sectionStats(pendingRows);
     var pendingId = 'pending-full-'+Math.random().toString(36).slice(2);
     sectionsHtml +=
-      '<div class="ca-section-hdr pending">\u23f3 Pending — '+pendingRows.length+' campaign'+(pendingRows.length>1?'s':'')+
-      (activeGeoFilter!=='ALL'?' in '+activeGeoFilter:'')+
-      ' <span style="font-size:11px;font-weight:400;">(active \u2265$10 spend, not yet at 30 funded or pFTD)</span>'+
+      '<div class="ca-section-hdr pending">'+
+        '<span>\u23f3 Pending — '+pendingRows.length+' campaign'+(pendingRows.length>1?'s':'')+
+        (activeGeoFilter!=='ALL'?' in '+activeGeoFilter:'')+
+        ' <span style="font-size:11px;font-weight:400;">(active \u2265$10 spend, not yet at 30 funded or pFTD)</span></span>'+
+        '<span class="ca-stat-pills">'+statPills(ps)+'</span>'+
       '</div>'+
       '<div class="ca-tbl-wrap">'+summaryTbl+'</div>'+
       '<button class="ca-expand-btn" onclick="(function(btn){'+
