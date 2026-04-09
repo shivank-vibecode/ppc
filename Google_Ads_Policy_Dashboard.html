@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Ads Policy Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; background: #f3f4f6; color: #1e293b; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  .header { background: #ffffff; border-bottom: 1px solid #e5e7eb; padding: 16px 32px; position: sticky; top: 0; z-index: 100; }
+  .header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #4f46e5, #6366f1); display: flex; align-items: center; justify-content: center; }
+  .header-title { font-size: 18px; font-weight: 700; color: #111827; letter-spacing: -0.02em; }
+  .header-sub { font-size: 12px; color: #9ca3af; font-weight: 400; }
+
+  .upload-section { display: flex; align-items: center; gap: 8px; }
+  .btn-upload { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; border: 1px solid #e0e7ff; background: #eef2ff; color: #4338ca; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+  .btn-upload:hover { background: #e0e7ff; }
+  .btn-resolved { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; border: 1px solid #e5e7eb; background: #ffffff; color: #6b7280; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+  .btn-resolved:hover { background: #f9fafb; }
+  .btn-resolved.active { border-color: #86efac; background: #f0fdf4; color: #15803d; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-card { background: #ffffff; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02); }
+  .stat-card-inner { display: flex; justify-content: space-between; align-items: flex-start; }
+  .stat-label { font-size: 11px; color: #9ca3af; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .stat-value { font-size: 28px; font-weight: 700; color: #111827; }
+  .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+  .breakdown { background: #ffffff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02); margin-bottom: 20px; }
+  .breakdown-title { font-size: 11px; color: #9ca3af; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .breakdown-row { display: flex; gap: 24px; }
+  .breakdown-item { flex: 1; }
+  .breakdown-item-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .breakdown-item-label { font-size: 13px; color: #374151; font-weight: 500; }
+  .breakdown-item-count { font-size: 13px; color: #9ca3af; }
+  .bar-bg { height: 6px; border-radius: 3px; background: #f3f4f6; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+  .filters { background: #ffffff; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02); display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .filter-group { display: flex; align-items: center; gap: 6px; }
+  .filter-label { font-size: 12px; color: #9ca3af; font-weight: 500; }
+  .filter-select { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 10px; color: #374151; font-size: 13px; outline: none; cursor: pointer; min-width: 120px; }
+  .filter-select:focus { border-color: #a5b4fc; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  .search-box { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 8px; background: #ffffff; border-radius: 8px; padding: 6px 12px; border: 1px solid #e5e7eb; }
+  .search-box:focus-within { border-color: #a5b4fc; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  .search-input { flex: 1; background: none; border: none; outline: none; color: #374151; font-size: 13px; }
+  .search-input::placeholder { color: #d1d5db; }
+  .search-clear { background: none; border: none; cursor: pointer; color: #9ca3af; display: flex; padding: 0; }
+  .filter-count { font-size: 12px; color: #9ca3af; }
+
+  .campaign-list { display: flex; flex-direction: column; gap: 6px; }
+  .campaign-card { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02); transition: box-shadow 0.15s ease; }
+  .campaign-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); }
+  .campaign-card.resolved-border { box-shadow: 0 0 0 1px #86efac, 0 1px 3px rgba(0,0,0,0.04); }
+  .campaign-header { padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+  .expand-btn { background: none; border: none; cursor: pointer; padding: 0; display: flex; color: #9ca3af; transition: color 0.15s; }
+  .expand-btn:hover { color: #6b7280; }
+
+  .campaign-info { flex: 1; min-width: 0; }
+  .campaign-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+  .campaign-region { font-size: 11px; color: #4f46e5; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .campaign-sep { font-size: 11px; color: #d1d5db; }
+  .campaign-country { font-size: 13px; color: #111827; font-weight: 600; }
+  .campaign-name { font-size: 12px; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .policy-tags { display: flex; gap: 5px; flex-shrink: 0; flex-wrap: wrap; }
+  .policy-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .tag-destination { background: #fef2f2; color: #b91c1c; }
+  .tag-speculative { background: #fffbeb; color: #92400e; }
+  .tag-disclosures { background: #f5f3ff; color: #6d28d9; }
+
+  .disapproved-badge { background: #fef2f2; border-radius: 8px; padding: 4px 10px; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .disapproved-badge span { font-size: 13px; color: #dc2626; font-weight: 600; }
+  .adgroup-count { font-size: 12px; color: #9ca3af; flex-shrink: 0; min-width: 70px; text-align: center; }
+
+  .progress-section { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .progress-check { display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+  .progress-check input { accent-color: #16a34a; width: 14px; height: 14px; cursor: pointer; }
+  .progress-check-label { font-size: 11px; color: #9ca3af; font-weight: 400; }
+  .progress-check-label.checked { color: #15803d; font-weight: 600; }
+  .progress-bar-bg { width: 60px; height: 5px; border-radius: 3px; background: #e5e7eb; overflow: hidden; flex-shrink: 0; }
+  .progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease, background 0.3s ease; }
+  .progress-pct { font-size: 11px; color: #9ca3af; font-weight: 600; min-width: 32px; }
+  .progress-pct.complete { color: #15803d; }
+
+  .btn-remove { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
+  .btn-remove.default { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
+  .btn-remove.default:hover { background: #f3f4f6; }
+  .btn-remove.ready { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+  .btn-remove.restore { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
+
+  .campaign-details { border-top: 1px solid #f3f4f6; background: #f9fafb; display: none; }
+  .campaign-details.open { display: block; }
+  .details-header { display: grid; grid-template-columns: 1fr 220px 100px 100px; gap: 8px; padding: 8px 20px 6px 52px; border-bottom: 1px solid #f3f4f6; }
+  .details-header span { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+  .details-header span:last-child { text-align: right; }
+  .detail-row { display: grid; grid-template-columns: 1fr 220px 100px 100px; gap: 8px; padding: 8px 20px 8px 52px; border-bottom: 1px solid #f3f4f6; }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-adgroup { font-size: 13px; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .detail-policy { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px; width: fit-content; }
+  .detail-type { font-size: 11px; font-weight: 500; }
+  .type-prohibited { color: #dc2626; }
+  .type-limited { color: #d97706; }
+  .detail-count { font-size: 13px; color: #111827; font-weight: 600; text-align: right; }
+
+  .empty-state { background: #ffffff; border-radius: 12px; padding: 48px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .empty-state p { font-size: 15px; color: #6b7280; margin-top: 12px; }
+
+  .drop-overlay { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(249,250,251,0.95); backdrop-filter: blur(8px); justify-content: center; align-items: center; }
+  .drop-overlay.active { display: flex; }
+  .drop-box { border: 2px dashed #c7d2fe; border-radius: 24px; padding: 60px 80px; text-align: center; pointer-events: none; background: rgba(238,242,255,0.5); }
+  .drop-box p { font-size: 20px; color: #374151; font-weight: 600; margin-top: 16px; margin-bottom: 6px; }
+  .drop-box span { font-size: 14px; color: #9ca3af; }
+
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 10000; display: flex; align-items: center; gap: 8px; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 1200px) { .progress-section { min-width: unset; } .campaign-header { flex-wrap: wrap; } }
+  @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .breakdown-row { flex-direction: column; gap: 12px; } .filters { flex-direction: column; align-items: stretch; } .container { padding: 16px; } }
+</style>
+</head>
+<body>
+
+<div class="drop-overlay" id="dropOverlay">
+  <div class="drop-box">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <p>Drop CSV file here</p>
+    <span>Release to update dashboard data</span>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <span id="toastText"></span>
+</div>
+
+<input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFileSelect(event)">
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <div class="header-title">Google Ads Policy Dashboard</div>
+        <div class="header-sub" id="headerSub">Disapprovals &amp; Policy Flags Tracker</div>
+      </div>
+    </div>
+    <div class="upload-section">
+      <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload CSV
+      </button>
+      <button id="btnShowResolved" class="btn-resolved" onclick="toggleShowResolved()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        <span id="resolvedBtnText">Show Resolved (0)</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stats-grid" id="statsGrid"></div>
+  <div class="breakdown">
+    <div class="breakdown-title">Policy Issues Breakdown</div>
+    <div class="breakdown-row" id="breakdownRow"></div>
+  </div>
+  <div class="filters">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+    <div class="filter-group"><span class="filter-label">Region:</span><select class="filter-select" id="regionFilter" onchange="onRegionChange()"></select></div>
+    <div class="filter-group"><span class="filter-label">Country:</span><select class="filter-select" id="countryFilter" onchange="render()"></select></div>
+    <div class="filter-group"><span class="filter-label">Policy Issue:</span><select class="filter-select" id="policyFilter" onchange="render()" style="min-width:200px"></select></div>
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search campaigns, ad groups..." oninput="render()">
+      <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+  <div class="campaign-list" id="campaignList"></div>
+</div>
+
+<script>
+
+let RAW_DATA = [{"account":"Argentina","campaign":"latam-ar-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"ar-brand_keyword-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Argentina","campaign":"latam-ar-prosp-all-dmt5-0724-es-google-es-ads","adGroup":"ar-prosp-all-dmt5-0724-es-google-es-ads-phrase","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Argentina","campaign":"latam-ar-prosp-all-dmt5-0724-es-google-es-ads","adGroup":"ar-prosp-all-dmt5-0724-es-google-es-ads-exact","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Argentina","campaign":"latam-ar-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"ar-brand_keyword-exact_match-performance_keywords","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Argentina","campaign":"latam-ar-prosp-all-dmt5-0724-es-google-es-ads","adGroup":"ar-prosp-all-dmt5-0724-es-google-es-ads-converting_keywords","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Bolivia","campaign":"latam-bo-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"bo-brand_keyword-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Bolivia","campaign":"latam-bo-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"bo-brand_keyword-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Bolivia","campaign":"latam-bo-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"bo-brand_keyword-exact_match-converting_keywords","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Bolivia","campaign":"latam-bo-prosp-cpa-all-silver-0226-es-google-pod","adGroup":"latam-bo-prosp-cpa-all-silver-0226-es-google-pod-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-chart-patterns-0823-en-gdn-experiment-landingpage","adGroup":"bw-chart-patterns-0823-topics","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":40,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-chart-patterns-0823-en-gdn-experiment-landingpage","adGroup":"bw-chart-patterns-0823-topics","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-chart-patterns-0823-en-gdn-experiment-landingpage","adGroup":"bw-chart-patterns-0823-keywords","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":39,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-chart-patterns-0823-en-gdn-experiment-landingpage","adGroup":"bw-chart-patterns-0823-keywords","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-chart-patterns-0823-en-gdn-experiment-landingpage","adGroup":"bw-chart-patterns-0823-placements","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":40,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-chart-patterns-0823-en-gdn-experiment-landingpage","adGroup":"bw-chart-patterns-0823-placements","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google","adGroup":"bw-brand_keyword-exact_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google","adGroup":"bw-brand_keyword-phrase_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-all-btc-0224-en-google -landingpage","adGroup":"bw-prosp-all-btc-0224-en-google-adgroup","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-chart-patterns-0823-en-google-experiment-landingpage","adGroup":"bw-chart-patterns-0823-experiment","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-landing_page-experiment","adGroup":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-landing_page-experiment","adGroup":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-landing_page-experiment","adGroup":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google","adGroup":"bw-brand_keyword-exact_match_3","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google","adGroup":"bw-brand_keyword-exact_match_2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google-landing_page-experiment","adGroup":"bw-brand_keyword-exact_match_3","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"bw-brand_keyword-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"bw-brand_keyword-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"bw-brand_keyword-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"bw-brand_keyword-exact_match_3","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"bw-brand_keyword-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"bw-brand_keyword-exact_match_2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Botswana","campaign":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"africa_tier1-bw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Cambodia","campaign":"asia_tier2-kh-prosp-cpa-all-brand_keyword-0723-en-google","adGroup":"kh-brand_keyword-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Asia Tier 2"},{"account":"Cambodia","campaign":"asia_tier2-kh-prosp-cpa-all-brand_keyword-0723-en-google","adGroup":"kh-brand_keyword-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Asia Tier 2"},{"account":"Chile","campaign":"latam-cl-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"cl-brand_keyword-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Chile","campaign":"latam-cl-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"cl-brand_keyword-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-prosp-cpa-all-dmt5-0623-es-google","adGroup":"latam_co_dmt5-exact_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-lal-all-dmt5-0724-es-google-es-ads-dgen","adGroup":"latam-co-lal-all-dmt5-0724-es-google-es-ads-dgen-adgroup","topic":"FINANCIAL_SERVICES_DISCLOSURES","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-lal-all-dmt5-0724-es-google-es-ads-dgen","adGroup":"latam-co-lal-all-dmt5-0724-es-google-es-ads-dgen-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":2,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-prosp-cpa-all-brand_keyword-0623-es-google-flag-lp-experiment","adGroup":"brand_keywords-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-prosp-cpa-all-brand_keyword-0623-es-google-flag-lp-experiment","adGroup":"brand_keywords-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-prosp-cpa-all-brand_keyword-0623-es-google-flag-lp-experiment","adGroup":"brand_keywords-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-prosp-cpa-all-brand_keyword-0623-es-google-flag-lp-experiment","adGroup":"brand_keywords-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Colombia","campaign":"latam-co-rtg-all-allproducts-0326-en-google-dgen","adGroup":"latam-co-rtg-all-allproducts-0326-en-google-dgen","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Costa Rica","campaign":"latam-cr-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"CR-brand_keywords-0723-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Costa Rica","campaign":"latam-cr-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"CR-brand_keywords-0723-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Costa Rica","campaign":"latam-cr-prosp-all-dmt5-0724-es-google-es-ads","adGroup":"cr-prosp-all-dmt5-0724-es-google-es-ads-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Cote d'Ivoire","campaign":"africa_tier3-ci-prosp-cpa-all-gold-0226-fr-google-pod","adGroup":"africa_tier3-ci-prosp-cpa-all-gold-0226-fr-google-pod","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 3"},{"account":"Deriv Partners","campaign":"latam_caribbean-prosp-brand_keyword-0925-en-google","adGroup":"prosp-brand_awareness-0925-google-generic_keywords-phrase","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Deriv Partners","campaign":"latam_south-prosp-brand_awareness-0326-es-yt","adGroup":"prosp-brand_awareness-0326-es-yt","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Deriv.com","campaign":"latam-prosp-cpa-stocks-0222-es-google","adGroup":"latam-prosp-cpa-stocks-broad_match_og","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Deriv.com","campaign":"latam-prosp-cpa-stocks-0222-es-google","adGroup":"latam-prosp-cpa-stocks-phrase_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Deriv.com","campaign":"latam-prosp-cpa-stocks-0222-es-google","adGroup":"latam-prosp-cpa-stocks-exact_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Deriv.com","campaign":"ng-prosp-all-dmt5-0624-en-google-voluum-landing_page-experiment","adGroup":"ng-prosp-all-dmt5-0624-en-google-voluum-landing_page-experiment-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Deriv.com","campaign":"jm-prosp-all-dmt5-0624-en-google-voluum-landing_page","adGroup":"jm-prosp-all-dmt5-0624-en-google-voluum-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Deriv.com","campaign":"africa_tier1-prosp-cpa-all-fx_ebook-1024-en-google-updated_code-old_code","adGroup":"africa_tier1-prosp-cpa-all-fx_ebook-1024-en-google-updated_code","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Deriv.com","campaign":"africa_tier1-prosp-cpa-all-fx_ebook-1024-en-google-updated_code","adGroup":"africa_tier1-prosp-cpa-all-fx_ebook-1024-en-google-updated_code","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Deriv.com","campaign":"latam-prosp-cpa-all-crypto_ebook-0725-es-google","adGroup":"Ad group 1","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Deriv.com","campaign":"latam-prosp-cpa-stocks-0222-es-google","adGroup":"latam-prosp-cpa-stocks-broad_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Deriv.com","campaign":"latam-br-prosp-cpc-all-brand_keyword-0326-pt-google","adGroup":"latam-br-prosp-cpc-all-brand_keyword-0326-pt-google-exact-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Dominican Republic","campaign":"latam-do-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"do-prosp-cpa-all-brand_keyword-1023-es-google-adgroup-broad_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Dominican Republic","campaign":"latam-do-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"do-prosp-cpa-all-brand_keyword-1023-es-google-adgroup-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Dominican Republic","campaign":"latam-do-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"do-prosp-cpa-all-brand_keyword-1023-es-google-adgroup-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Dominican Republic","campaign":"latam-do-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"do-prosp-cpa-all-brand_keyword-1023-es-google-adgroup-exact_match-converting_keywords","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ecuador","campaign":"latam-ec-prosp-cpa-all-brand_keyword-1123-es-google","adGroup":"ec-prosp-cpa-all-brand_keyword-1123-es-google-broad_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ecuador","campaign":"latam-ec-prosp-cpa-all-brand_keyword-1123-es-google","adGroup":"ec-prosp-cpa-all-brand_keyword-1123-es-google-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ecuador","campaign":"latam-ec-prosp-cpa-all-brand_keyword-1123-es-google","adGroup":"ec-prosp-cpa-all-brand_keyword-1123-es-google-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ecuador","campaign":"latam-ec-prosp-cpa-all-brand_keyword-1123-es-google","adGroup":"ec-prosp-cpa-all-brand_keyword-1123-es-google-exact_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ecuador","campaign":"latam-ec-prosp-cpa-all-brand_keyword-1123-es-google","adGroup":"ec-prosp-cpa-all-brand_keyword-1123-es-google-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ecuador","campaign":"latam-ec-prosp-cpa-all-brand_keyword-1123-es-google","adGroup":"ec-prosp-cpa-all-brand_keyword-1123-es-google-phrase_match-3","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ecuador","campaign":"latam-ec-prosp-cpa-all-brand_keyword-1123-es-google","adGroup":"ec-prosp-cpa-all-brand_keyword-1123-es-google-exact_match-converting_keywords","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"El Salvador","campaign":"latam-sv-prosp-all-brand_keyword-0524-es-google","adGroup":"sv-prosp-cpm-brand_keyword-0524-google-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"El Salvador","campaign":"latam-sv-prosp-all-brand_keyword-0524-es-google","adGroup":"sv-prosp-cpm-brand_keyword-0524-google-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Ghana","campaign":"africa_tier1-gh-prosp-all-btc-0224-en-google -landingpage","adGroup":"africa_tier1-gh-prosp-all-btc-0224-en-google-adgroup","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Guatemala","campaign":"latam-gt-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"GT-brand_keywords-0723-broad_match__","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Guatemala","campaign":"latam-gt-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"GT-brand_keywords-0723-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Guatemala","campaign":"latam-gt-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"GT-brand_keywords-0723-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Guatemala","campaign":"latam-gt-prosp-cpa-all-brand_keyword-0723-es-google","adGroup":"GT-brand_keywords-0723-broad_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Jamaica","campaign":"jm-prosp-all-btc-0224-en-google -landingpage","adGroup":"jm-prosp-all-btc-0224-en-google-adgroup","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-fx_ebook-0124-en-google-global-markets","adGroup":"jm-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-adgroup-phrase_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-dbot-1223-en-google","adGroup":"jm-prosp-cpa-all-dbot-1223-en-google-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-dbot-1223-en-google","adGroup":"jm-prosp-cpa-all-dbot-1223-en-google-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-brand_keyword-0623-en-google","adGroup":"jm-brand_keywords-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"jm-brand_keywords-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"jm-brand_keywords-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"jm-brand_keywords-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":2,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-brand_keyword-0623-en-google-experiment-landing_page","adGroup":"jm-brand_keywords-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-brand_keyword-0623-en-google-experiment-landing_page","adGroup":"jm-brand_keywords-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-brand_keyword-0623-en-google-experiment-landing_page","adGroup":"jm-brand_keywords-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-fx_ebook-0124-en-google-global-markets","adGroup":"jm-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-adgroup-exact_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Jamaica","campaign":"jm-prosp-cpa-all-money-0426-en-google","adGroup":"jm-prosp-cpa-all-money-0426-en-google-exact_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Kyrgyzstan","campaign":"cis-kg-prosp-all-brand_keyword-1024-ru-google","adGroup":"kg-brand_keyword-ru-en","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":2,"limitedCount":0,"region":"CIS"},{"account":"Lesotho","campaign":"africa_tier2-ls-prosp-cpa-all-brand_keyword-1023-en-google","adGroup":"africa_tier2-ls-brand_keyword-1023-exact_and_phrase_match_","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 2"},{"account":"Lesotho","campaign":"africa_tier2-ls-prosp-cpa-all-brand_keyword-1023-en-google","adGroup":"africa_tier2-ls-brand_keyword-1023-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 2"},{"account":"Lesotho","campaign":"africa_tier2-ls-prosp-cpa-all-brand_keyword-1023-en-google","adGroup":"africa_tier2-ls-brand_keyword-1023-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 2"},{"account":"Mexico","campaign":"latam-mx-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"mx-prosp-cpa-brand_keyword-1023-google-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Mexico","campaign":"latam-mx-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"mx-prosp-cpa-brand_keyword-1023-google-exact_match-converting_keywords","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Mexico","campaign":"latam-mx-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"mx-prosp-cpa-brand_keyword-1023-google-phase_match-3","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Mexico","campaign":"latam-mx-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"mx-prosp-cpa-brand_keyword-1023-google-exact_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Mexico","campaign":"latam-mx-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"mx-prosp-cpa-brand_keyword-1023-google-broad_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Mexico","campaign":"latam-mx-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"mx-prosp-cpa-brand_keyword-1023-google-phase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Mexico","campaign":"latam-mx-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"mx-prosp-cpa-brand_keyword-1023-google-phase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-landing_page-experiment","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-landingpage-experiment-adgroup","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match-4","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match-4","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match-5","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match-3","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-exact_match_2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-flag-lp-experiment","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-all-btc-0224-en-google-landingpage","adGroup":"ng-prosp-all-btc-0224-en-google-adgroup","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-experiment-landing_page","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match-4","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-experiment-landing_page","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-brand_keyword-1023-en-google-experiment-landing_page","adGroup":"ng-prosp-cpa-all-brand_keyword-1023-en-google-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-stock_ebook-1223-en-google-old-lp-experiment","adGroup":"ng-prosp-cpa-all-stock_ebook-1223-en-google-adgroup-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-stock_ebook-1223-en-google-old-lp-experiment","adGroup":"ng-prosp-cpa-all-stock_ebook-1223-en-google-adgroup-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-stock_ebook-1223-en-google-old-lp-experiment","adGroup":"ng-prosp-cpa-all-stock_ebook-1223-en-google-adgroup-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-all-competitor-0624-en-google-landing_page","adGroup":"ng-prosp-all-competitor-0624-en-google-ad_group","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-new-lp-experiment","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-new-lp-experiment","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-new-lp-experiment","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-new-lp-experiment","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Nigeria","campaign":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"ng-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Other"},{"account":"Pakistan","campaign":"asia_tier1-pk-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"pk-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-adgroup","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Asia Tier 1"},{"account":"Pakistan","campaign":"asia_tier1-pk-prosp-cpa-all-brand_keyword-0623-en-google-flag-lp-experiment","adGroup":"pk-brand_keyword","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Asia Tier 1"},{"account":"Panama","campaign":"latam-pa-lal-all-dmt5-0724-es-google-es-ads-dgen","adGroup":"pa-lal-all-dmt5-0724-es-google-es-ads-dgen-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":2,"limitedCount":0,"region":"LATAM"},{"account":"Panama","campaign":"latam-pa-prosp-all-brand_keyword-0524-es-google","adGroup":"pa-prosp-cpm-brand_keyword-0524-google-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Panama","campaign":"latam-pa-prosp-all-brand_keyword-0524-es-google","adGroup":"pa-prosp-cpm-brand_keyword-0524-google-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Panama","campaign":"latam-pa-prosp-all-trading-0924-es-google","adGroup":"latam-pa-prosp-all-trading-0924-es-google-broad_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Qatar","campaign":"middle_east-qa-prosp-cpa-all-brand_keyword-0723-en-google","adGroup":"qa-brand_keyword-broad_match","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Saudi Arabia","campaign":"middle_east-sa-prosp-cpa-all-brand_keyword-0723-en-google","adGroup":"SA-brand_keywords-0723-adgroup-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Saudi Arabia","campaign":"middle_east-sa-prosp-cpa-all-brand_keyword-0723-en-google","adGroup":"SA-brand_keywords-0723-adgroup-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Saudi Arabia","campaign":"middle_east-sa-prosp-cpa-all-brand_keyword-0723-en-google","adGroup":"SA-brand_keywords-0723-adgroup-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Saudi Arabia","campaign":"middle_east-sa-prosp-cpa-all-brand_keyword-1025-ar-google","adGroup":"SA-brand_keywords-0723-adgroup-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Saudi Arabia","campaign":"middle_east-sa-prosp-cpa-all-brand_keyword-1025-ar-google","adGroup":"SA-brand_keywords-0723-adgroup-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Saudi Arabia","campaign":"middle_east-sa-prosp-cpa-all-brand_keyword-1025-ar-google","adGroup":"SA-brand_keywords-0723-adgroup-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Saudi Arabia","campaign":"middle_east-sa-prosp-cpa-all-brand_keyword-1025-ar-google","adGroup":"SA-brand_keywords-1025-ar-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Middle East"},{"account":"Sierra Leone","campaign":"africa_tier2-sl-prosp-all-brand_keyword-0424-en-google","adGroup":"sl-prosp-brand_keyword-0424-google","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 2"},{"account":"Uganda","campaign":"africa_tier2-ug-prosp-cpa-all-dmt5-0824-en-google-dgen","adGroup":"africa_tier2-ug-prosp-cpa-all-dmt5-0824-en-google-dgen-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 2"},{"account":"Uganda","campaign":"africa_tier2-ug-lal-all-allproducts-0326-en-google-dgen","adGroup":"africa_tier2-ug-lal-allproducts-0326-google-dgen","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 2"},{"account":"Uruguay","campaign":"latam-uy-prosp-cpa-all-brand_keyword-1123-es-google_disapproved","adGroup":"uy-prosp-cpa-all-brand_keyword-1123-es-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Uruguay","campaign":"latam-uy-prosp-cpa-all-brand_keyword-1123-es-google_disapproved","adGroup":"uy-prosp-cpa-all-brand_keyword-1123-es-exactt_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Uruguay","campaign":"latam-uy-prosp-cpa-all-brand_keyword-1123-es-google_disapproved","adGroup":"uy-prosp-cpa-all-brand_keyword-1123-es-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Uruguay","campaign":"latam-uy-lal-all-dmt5-0724-es-google-es-ads-dgen","adGroup":"uy-lal-all-dmt5-0724-es-google-es-ads-dgen-adgroup","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":2,"limitedCount":0,"region":"LATAM"},{"account":"Venezuela","campaign":"latam-ve-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"ve-prosp-cpa-brand_keyword-1023-google-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Venezuela","campaign":"latam-ve-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"ve-prosp-cpa-brand_keyword-1023-google-phase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Venezuela","campaign":"latam-ve-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"ve-prosp-cpa-brand_keyword-1023-google-exact_match-2","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Venezuela","campaign":"latam-ve-prosp-cpa-all-brand_keyword-1023-es-google","adGroup":"ve-prosp-cpa-brand_keyword-1023-google-exact_match-converting_keyword","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"LATAM"},{"account":"Zimbabwe","campaign":"africa_tier1-zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code","adGroup":"zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Zimbabwe","campaign":"africa_tier1-zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code","adGroup":"zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Zimbabwe","campaign":"africa_tier1-zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-lp-utm-issue-new-code","adGroup":"zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Zimbabwe","campaign":"africa_tier1-zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-broad_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Zimbabwe","campaign":"africa_tier1-zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-phrase_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Zimbabwe","campaign":"africa_tier1-zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-experiment-old_lp","adGroup":"zw-prosp-cpa-all-fx_ebook-0124-en-google-global-markets-exact_match","topic":"DESTINATION_NOT_WORKING","policyType":"PROHIBITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"},{"account":"Zimbabwe","campaign":"africa_tier1-zw-rtg-all-allproducts-0326-en-google-dgen","adGroup":"africa_tier1-zw-rtg-allproducts-0326-google-dgen","topic":"COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS","policyType":"FULLY_LIMITED","status":"Disapproved","disapprovedCount":1,"limitedCount":0,"region":"Africa Tier 1"}];
+
+const TOPIC_LABELS = {
+  DESTINATION_NOT_WORKING: "Destination Not Working",
+  COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS: "Complex Speculative Financial Products",
+  FINANCIAL_SERVICES_DISCLOSURES: "Financial Services Disclosures"
+};
+const TYPE_LABELS = { PROHIBITED: "Prohibited", FULLY_LIMITED: "Fully Limited" };
+const TOPIC_BAR_COLORS = { DESTINATION_NOT_WORKING: "#dc2626", COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS: "#d97706", FINANCIAL_SERVICES_DISCLOSURES: "#7c3aed" };
+const TOPIC_TAG_CLASS = { DESTINATION_NOT_WORKING: "tag-destination", COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS: "tag-speculative", FINANCIAL_SERVICES_DISCLOSURES: "tag-disclosures" };
+
+let showResolved = false;
+const progressState = {};
+const removedState = {};
+const expandedState = {};
+
+function init() {
+  populateRegions();
+  populateCountries();
+  populatePolicyFilter();
+  render();
+}
+
+function populateRegions() {
+  const regions = ["All", ...new Set(RAW_DATA.map(d => d.region))].sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b));
+  document.getElementById("regionFilter").innerHTML = regions.map(r => `<option value="${esc(r)}">${esc(r)}</option>`).join("");
+}
+
+function populateCountries() {
+  const region = document.getElementById("regionFilter").value;
+  let items = RAW_DATA;
+  if (region !== "All") items = items.filter(d => d.region === region);
+  const countries = ["All", ...new Set(items.map(d => d.account))].sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b));
+  document.getElementById("countryFilter").innerHTML = countries.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+}
+
+function populatePolicyFilter() {
+  document.getElementById("policyFilter").innerHTML = `<option value="All">All</option>` + Object.entries(TOPIC_LABELS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("");
+}
+
+function onRegionChange() { populateCountries(); render(); }
+function clearSearch() { document.getElementById("searchInput").value = ""; render(); }
+function toggleShowResolved() {
+  showResolved = !showResolved;
+  document.getElementById("btnShowResolved").classList.toggle("active", showResolved);
+  render();
+}
+
+function getFiltered() {
+  const region = document.getElementById("regionFilter").value;
+  const country = document.getElementById("countryFilter").value;
+  const policy = document.getElementById("policyFilter").value;
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  document.getElementById("searchClear").style.display = search ? "flex" : "none";
+  return RAW_DATA.filter(d => {
+    if (region !== "All" && d.region !== region) return false;
+    if (country !== "All" && d.account !== country) return false;
+    if (policy !== "All" && d.topic !== policy) return false;
+    if (search && !d.campaign.toLowerCase().includes(search) && !d.adGroup.toLowerCase().includes(search) && !d.account.toLowerCase().includes(search)) return false;
+    return true;
+  });
+}
+
+function groupByCampaign(filtered) {
+  const map = {};
+  filtered.forEach(d => {
+    const key = d.account + "||" + d.campaign;
+    if (!map[key]) map[key] = { account: d.account, campaign: d.campaign, region: d.region, items: [], topics: new Set(), totalDisapproved: 0 };
+    map[key].items.push(d);
+    map[key].topics.add(d.topic);
+    map[key].totalDisapproved += d.disapprovedCount;
+  });
+  return Object.entries(map).map(([key, val]) => ({ key, ...val, topics: [...val.topics] })).sort((a, b) => b.totalDisapproved - a.totalDisapproved);
+}
+
+function getProgress(key) { return progressState[key] || { madeChanges: false, appealed: false, approved: false }; }
+function getProgressPct(key) { const p = getProgress(key); return ((p.madeChanges?1:0)+(p.appealed?1:0)+(p.approved?1:0))/3*100; }
+function toggleProgress(key, field) {
+  if (!progressState[key]) progressState[key] = { madeChanges: false, appealed: false, approved: false };
+  progressState[key][field] = !progressState[key][field];
+  render();
+}
+function toggleExpand(key) { expandedState[key] = !expandedState[key]; render(); }
+function removeCampaign(key) { removedState[key] = true; render(); }
+function restoreCampaign(key) { delete removedState[key]; render(); }
+
+function render() {
+  const filtered = getFiltered();
+  const grouped = groupByCampaign(filtered);
+  const visible = showResolved ? grouped.filter(g => removedState[g.key]) : grouped.filter(g => !removedState[g.key]);
+  const active = grouped.filter(g => !removedState[g.key]);
+
+  const totalDisapproved = active.reduce((s, g) => s + g.totalDisapproved, 0);
+  const uniqueCountries = new Set(active.map(g => g.account)).size;
+  const resolvedCount = Object.keys(removedState).length;
+
+  document.getElementById("statsGrid").innerHTML = [
+    { label: "Active Campaigns", value: active.length, color: "#4f46e5", bg: "#eef2ff", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>' },
+    { label: "Disapproved Items", value: totalDisapproved, color: "#dc2626", bg: "#fef2f2", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' },
+    { label: "Countries Affected", value: uniqueCountries, color: "#d97706", bg: "#fffbeb", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' },
+    { label: "Resolved", value: resolvedCount, color: "#16a34a", bg: "#f0fdf4", icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' }
+  ].map(c => `<div class="stat-card"><div class="stat-card-inner"><div><p class="stat-label">${c.label}</p><p class="stat-value">${c.value}</p></div><div class="stat-icon" style="background:${c.bg};color:${c.color}">${c.icon}</div></div></div>`).join("");
+
+  document.getElementById("breakdownRow").innerHTML = Object.entries(TOPIC_LABELS).map(([key, label]) => {
+    const count = filtered.filter(d => d.topic === key).length;
+    const pct = filtered.length > 0 ? (count / filtered.length * 100) : 0;
+    return `<div class="breakdown-item"><div class="breakdown-item-header"><span class="breakdown-item-label">${label}</span><span class="breakdown-item-count">${count} (${pct.toFixed(0)}%)</span></div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${TOPIC_BAR_COLORS[key]}"></div></div></div>`;
+  }).join("");
+
+  document.getElementById("resolvedBtnText").textContent = (showResolved ? "Showing Resolved" : "Show Resolved") + ` (${resolvedCount})`;
+  document.getElementById("filterCount").textContent = visible.length + " campaign" + (visible.length !== 1 ? "s" : "");
+
+  const list = document.getElementById("campaignList");
+  if (visible.length === 0) {
+    list.innerHTML = `<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p>${showResolved ? "No resolved campaigns match your filters" : "No active disapprovals match your filters"}</p></div>`;
+    return;
+  }
+
+  list.innerHTML = visible.map(group => {
+    const pct = getProgressPct(group.key);
+    const prog = getProgress(group.key);
+    const isExpanded = expandedState[group.key];
+    const isRemoved = removedState[group.key];
+    const tags = group.topics.map(t => `<span class="policy-tag ${TOPIC_TAG_CLASS[t]}">${TOPIC_LABELS[t]}</span>`).join("");
+    const checks = [
+      { field: "madeChanges", label: "Made Changes" },
+      { field: "appealed", label: "Appealed" },
+      { field: "approved", label: "Approved" }
+    ].map(s => {
+      const checked = prog[s.field];
+      return `<label class="progress-check"><input type="checkbox" ${checked?"checked":""} onchange="toggleProgress('${escKey(group.key)}','${s.field}')"><span class="progress-check-label ${checked?"checked":""}">${s.label}</span></label>`;
+    }).join("");
+    const barColor = pct === 100 ? "#16a34a" : pct > 0 ? "#d97706" : "transparent";
+    const btnClass = isRemoved ? "restore" : (pct === 100 ? "ready" : "default");
+    const btnLabel = isRemoved ? "Restore" : (pct === 100 ? "Mark Resolved" : "Remove");
+    const btnAction = isRemoved ? `restoreCampaign('${escKey(group.key)}')` : `removeCampaign('${escKey(group.key)}')`;
+
+    let details = "";
+    if (isExpanded) {
+      const rows = group.items.map((item) => {
+        const tagStyle = item.topic === "DESTINATION_NOT_WORKING" ? "background:#fef2f2;color:#b91c1c" : item.topic === "COMPLEX_SPECULATIVE_FINANCIAL_PRODUCTS" ? "background:#fffbeb;color:#92400e" : "background:#f5f3ff;color:#6d28d9";
+        const typeClass = item.policyType === "PROHIBITED" ? "type-prohibited" : "type-limited";
+        return `<div class="detail-row"><span class="detail-adgroup" title="${esc(item.adGroup)}">${esc(item.adGroup)}</span><span class="detail-policy" style="${tagStyle}">${TOPIC_LABELS[item.topic]}</span><span class="detail-type ${typeClass}">${TYPE_LABELS[item.policyType]}</span><span class="detail-count">${item.disapprovedCount}</span></div>`;
+      }).join("");
+      details = `<div class="campaign-details open"><div class="details-header"><span>Ad Group</span><span>Policy Issue</span><span>Type</span><span>Disapproved</span></div>${rows}</div>`;
+    }
+
+    const chevron = isExpanded
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    return `<div class="campaign-card ${pct===100?'resolved-border':''}">
+      <div class="campaign-header">
+        <button class="expand-btn" onclick="toggleExpand('${escKey(group.key)}')">${chevron}</button>
+        <div class="campaign-info">
+          <div class="campaign-meta"><span class="campaign-region">${esc(group.region)}</span><span class="campaign-sep">/</span><span class="campaign-country">${esc(group.account)}</span></div>
+          <p class="campaign-name" title="${esc(group.campaign)}">${esc(group.campaign)}</p>
+        </div>
+        <div class="policy-tags">${tags}</div>
+        <div class="disapproved-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span>${group.totalDisapproved}</span></div>
+        <span class="adgroup-count">${group.items.length} ad group${group.items.length!==1?"s":""}</span>
+        <div class="progress-section">${checks}
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <span class="progress-pct ${pct===100?'complete':''}">${Math.round(pct)}%</span>
+        </div>
+        <button class="btn-remove ${btnClass}" onclick="${btnAction}">${btnLabel}</button>
+      </div>${details}</div>`;
+  }).join("");
+}
+
+function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function escKey(s) { return s.replace(/\\/g, "\\\\").replace(/'/g, "\\'"); }
+
+function parseCSV(text) {
+  var rows = [], inQuote = false, currentRow = [], currentField = '';
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (inQuote) {
+      if (ch === '"' && i + 1 < text.length && text[i+1] === '"') { currentField += '"'; i++; }
+      else if (ch === '"') { inQuote = false; }
+      else { currentField += ch; }
+    } else {
+      if (ch === '"') { inQuote = true; }
+      else if (ch === ',') { currentRow.push(currentField.trim()); currentField = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && i + 1 < text.length && text[i+1] === '\n') i++;
+        currentRow.push(currentField.trim()); currentField = '';
+        if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) rows.push(currentRow);
+        currentRow = [];
+      } else { currentField += ch; }
+    }
+  }
+  currentRow.push(currentField.trim());
+  if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) rows.push(currentRow);
+  return rows;
+}
+
+function csvToData(csvText) {
+  var rows = parseCSV(csvText);
+  if (rows.length < 2) return [];
+  var h = rows[0], iA = h.indexOf('Account'), iC = h.indexOf('Campaign'), iAG = h.indexOf('Ad Group'), iP = h.indexOf('Policy Reason'), iS = h.indexOf('Status'), iD = h.indexOf('Disapproved Count'), iL = h.indexOf('Limited Count');
+  if (iA < 0 || iC < 0) { showToast('CSV must have Account and Campaign columns', true); return null; }
+  var data = [];
+  for (var r = 1; r < rows.length; r++) {
+    var row = rows[r]; if (row.length < 2) continue;
+    var account = (row[iA]||'').trim(), campaign = (row[iC]||'').trim();
+    if (!account || !campaign) continue;
+    var policyRaw = iP >= 0 ? (row[iP]||'') : '';
+    var topicMatch = policyRaw.match(/topic=(\w+)/), typeMatch = policyRaw.match(/type=(\w+)/);
+    var region = 'Other';
+    if (campaign.indexOf('latam') === 0) region = 'LATAM';
+    else if (campaign.indexOf('africa_tier1') === 0) region = 'Africa Tier 1';
+    else if (campaign.indexOf('africa_tier2') === 0) region = 'Africa Tier 2';
+    else if (campaign.indexOf('africa_tier3') === 0) region = 'Africa Tier 3';
+    else if (campaign.indexOf('asia_tier1') === 0) region = 'Asia Tier 1';
+    else if (campaign.indexOf('asia_tier2') === 0) region = 'Asia Tier 2';
+    else if (campaign.indexOf('cis') === 0) region = 'CIS';
+    else if (campaign.indexOf('middle_east') === 0) region = 'Middle East';
+    else if (campaign.toLowerCase().indexOf('latam') >= 0) region = 'LATAM';
+    data.push({ account: account, campaign: campaign, adGroup: iAG >= 0 ? (row[iAG]||'').trim() : '', topic: topicMatch ? topicMatch[1] : 'UNKNOWN', policyType: typeMatch ? typeMatch[1] : 'UNKNOWN', status: iS >= 0 ? (row[iS]||'').trim() : 'Disapproved', disapprovedCount: iD >= 0 ? parseInt(row[iD]) || 0 : 1, limitedCount: iL >= 0 ? parseInt(row[iL]) || 0 : 0, region: region });
+  }
+  return data;
+}
+
+function loadCSVData(csvText, fileName) {
+  var data = csvToData(csvText);
+  if (data === null) return;
+  if (data.length === 0) { showToast('No valid rows found in CSV', true); return; }
+  RAW_DATA = data;
+  Object.keys(progressState).forEach(function(k) { delete progressState[k]; });
+  Object.keys(removedState).forEach(function(k) { delete removedState[k]; });
+  Object.keys(expandedState).forEach(function(k) { delete expandedState[k]; });
+  showResolved = false;
+  document.getElementById('btnShowResolved').classList.remove('active');
+  document.getElementById('searchInput').value = '';
+  populateRegions(); populateCountries(); populatePolicyFilter(); render();
+  document.getElementById('headerSub').textContent = 'Loaded: ' + fileName + ' \u2014 ' + data.length + ' rows';
+  showToast('Loaded ' + data.length + ' rows from ' + fileName);
+}
+
+function showToast(msg, isError) {
+  var toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  toast.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
+  toast.style.background = isError ? '#fef2f2' : '#f0fdf4';
+  toast.style.color = isError ? '#dc2626' : '#15803d';
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 3000);
+}
+
+var dragCounter = 0;
+document.addEventListener('dragenter', function(e) { e.preventDefault(); dragCounter++; document.getElementById('dropOverlay').classList.add('active'); });
+document.addEventListener('dragleave', function(e) { e.preventDefault(); dragCounter--; if (dragCounter <= 0) { dragCounter = 0; document.getElementById('dropOverlay').classList.remove('active'); } });
+document.addEventListener('dragover', function(e) { e.preventDefault(); });
+document.addEventListener('drop', function(e) {
+  e.preventDefault(); dragCounter = 0; document.getElementById('dropOverlay').classList.remove('active');
+  var files = e.dataTransfer.files; if (files.length === 0) return;
+  var file = files[0];
+  if (!file.name.toLowerCase().endsWith('.csv')) { showToast('Please drop a .csv file', true); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev) { loadCSVData(ev.target.result, file.name); };
+  reader.readAsText(file);
+});
+
+function handleFileSelect(event) {
+  var file = event.target.files[0]; if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.csv')) { showToast('Please select a .csv file', true); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev) { loadCSVData(ev.target.result, file.name); };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
