@@ -261,7 +261,9 @@ tfoot td { padding:10px 8px; font-weight:700; background:var(--surface2); border
 
  <!-- ── Campaigns page ──────────────────────────────────────────────────── -->
  <div id="campaigns-page" style="display:none">
-   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+   <!-- Sticky header -->
+   <div id="camp-sticky-header" style="position:sticky;top:0;z-index:20;background:var(--bg);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px">
+   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding-top:4px">
      <span style="font-size:15px;font-weight:700">Campaign Performance</span>
      <span style="font-size:11px;color:var(--dim)">&middot;</span>
      <span id="camp-region-label" style="font-size:11px;font-weight:600"></span>
@@ -278,7 +280,7 @@ tfoot td { padding:10px 8px; font-weight:700; background:var(--surface2); border
    </div>
 
    <!-- Date range picker + search + region -->
-   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
      <div style="display:flex;align-items:center;gap:4px">
        <label style="font-size:10px;color:var(--dim);font-weight:700">FROM</label>
        <input type="date" id="camp-date-from" onchange="applyCampFilters()" style="background:var(--surface2);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:11px;font-family:inherit">
@@ -301,7 +303,8 @@ tfoot td { padding:10px 8px; font-weight:700; background:var(--surface2); border
      </select>
    </div>
 
-   <div id="camp-summary" style="font-size:11px;color:var(--muted);margin-bottom:10px"></div>
+   <div id="camp-summary" style="font-size:11px;color:var(--muted);margin:0"></div>
+   </div><!-- end sticky header -->
 
    <!-- ── Daily Insights Cards ── -->
    <div id="camp-insights" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px">
@@ -2703,6 +2706,74 @@ async function sendAgentMessage() {
     document.getElementById('agent-send-btn').textContent = 'Send';
   }
 }
+
+// ═══════════════ CAMP STICKY HEADER ═══════════════
+(function() {
+  let stickyActive = false;
+  const placeholder = document.createElement('div');
+  placeholder.style.display = 'none';
+
+  window.addEventListener('scroll', function() {
+    if (currentView !== 'campaigns') {
+      if (stickyActive) unstickCampHeader();
+      return;
+    }
+    const hdr = document.querySelector('.hdr');
+    const el = document.getElementById('camp-sticky-header');
+    if (!hdr || !el) return;
+    const hdrBottom = hdr.getBoundingClientRect().bottom;
+    const parent = el.parentElement;
+    const parentTop = parent.getBoundingClientRect().top;
+
+    if (parentTop < hdrBottom && !stickyActive) {
+      // Stick it
+      const rect = el.getBoundingClientRect();
+      placeholder.style.height = rect.height + 'px';
+      placeholder.style.display = '';
+      el.parentElement.insertBefore(placeholder, el);
+      el.style.position = 'fixed';
+      el.style.top = hdrBottom + 'px';
+      el.style.left = rect.left + 'px';
+      el.style.width = rect.width + 'px';
+      el.style.zIndex = '40';
+      el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+      stickyActive = true;
+    } else if (parentTop >= hdrBottom && stickyActive) {
+      unstickCampHeader();
+    }
+
+    // Update width on scroll in case of resize
+    if (stickyActive) {
+      const pw = placeholder.getBoundingClientRect().width;
+      el.style.width = pw + 'px';
+      el.style.top = hdrBottom + 'px';
+    }
+  });
+
+  function unstickCampHeader() {
+    const el = document.getElementById('camp-sticky-header');
+    if (!el) return;
+    el.style.position = '';
+    el.style.top = '';
+    el.style.left = '';
+    el.style.width = '';
+    el.style.zIndex = '20';
+    el.style.boxShadow = '';
+    placeholder.style.display = 'none';
+    stickyActive = false;
+  }
+
+  window.addEventListener('resize', function() {
+    if (stickyActive) {
+      const el = document.getElementById('camp-sticky-header');
+      const pw = placeholder.getBoundingClientRect();
+      if (el) {
+        el.style.left = pw.left + 'px';
+        el.style.width = pw.width + 'px';
+      }
+    }
+  });
+})();
 
 // ═══════════════ INIT ═══════════════
 renderRegionBtns();
