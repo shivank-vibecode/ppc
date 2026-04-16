@@ -208,8 +208,7 @@ tfoot td { padding:10px 8px; font-weight:700; background:var(--surface2); border
    </div>
   </div>
   <div class="toggle-group">
-   <button class="toggle-btn active" id="btn-monthly" onclick="switchView('monthly')">Monthly</button>
-   <button class="toggle-btn"        id="btn-weekly"  onclick="switchView('weekly')">Weekly</button>
+   <button class="toggle-btn active" id="btn-overview" onclick="switchView('overview')">Overview</button>
    <button class="toggle-btn"        id="btn-themes"  onclick="switchView('themes')">Themes</button>
    <button class="toggle-btn"        id="btn-campaigns" onclick="switchView('campaigns')">Campaigns</button>
    <button class="toggle-btn"        id="btn-cohorts" onclick="switchView('cohorts')">Cohorts</button>
@@ -225,6 +224,13 @@ tfoot td { padding:10px 8px; font-weight:700; background:var(--surface2); border
 <div class="content">
  <!-- S1 -->
  <div id="main-sections">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+   <span style="font-size:13px;color:#94a3b8;font-weight:500;">View:</span>
+   <div id="period-toggle" style="display:inline-flex;background:#1e293b;border-radius:8px;border:1px solid #334155;overflow:hidden;">
+    <button id="pt-monthly" onclick="setFunnelPeriod('monthly')" style="padding:6px 16px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all .2s;background:#6366f1;color:#fff;border-radius:7px 0 0 7px;">Monthly</button>
+    <button id="pt-weekly" onclick="setFunnelPeriod('weekly')" style="padding:6px 16px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all .2s;background:transparent;color:#94a3b8;border-radius:0 7px 7px 0;">Weekly</button>
+   </div>
+  </div>
   <div class="kpi-row" id="kpi-row"></div>
   <div class="section">
    <div class="section-hd"><div class="section-icon">&#128202;</div><div><div class="section-title">Funnel Table</div><div class="section-sub" id="daily-zoom-label"></div></div></div>
@@ -586,30 +592,54 @@ function convCls(v, lo, hi) { return v>=hi?'green':v>=lo?'amber':'dim'; }
 
 // ═══════════════ NAVIGATION ═══════════════
 function switchView(v) {
-  currentView=v; selectedIndex=null;
-  document.getElementById('btn-monthly').classList.toggle('active',v==='monthly');
-  document.getElementById('btn-weekly').classList.toggle('active',v==='weekly');
+  selectedIndex=null;
+  // If 'overview' selected, keep currentView as monthly/weekly (whichever was last set)
+  if(v==='overview') { if(currentView!=='monthly' && currentView!=='weekly') currentView='monthly'; }
+  else { currentView=v; }
+  const isOverview = (v==='overview');
+  document.getElementById('btn-overview').classList.toggle('active', isOverview);
   document.getElementById('btn-themes').classList.toggle('active',v==='themes');
   document.getElementById('btn-campaigns').classList.toggle('active',v==='campaigns');
   document.getElementById('btn-cohorts').classList.toggle('active',v==='cohorts');
   document.getElementById('btn-policy').classList.toggle('active',v==='policy');
   document.getElementById('btn-agent').classList.toggle('active',v==='agent');
-  if(v!=='agent') document.getElementById('btn-agent').style.background = v==='agent'?'':'linear-gradient(135deg,#6366f1,#a78bfa)';
-  if(v==='agent') document.getElementById('btn-agent').style.background = '#6366f1';
+  if(v!=='agent') document.getElementById('btn-agent').style.background = 'linear-gradient(135deg,#6366f1,#a78bfa)';
+  else document.getElementById('btn-agent').style.background = '#6366f1';
   document.getElementById('period-tag').classList.remove('show');
   document.getElementById('daily-zoom-label').textContent='';
-  document.getElementById('main-sections').style.display  = (v==='monthly'||v==='weekly') ? '' : 'none';
+  document.getElementById('main-sections').style.display  = isOverview ? '' : 'none';
   document.getElementById('themes-page').style.display     = v==='themes' ? '' : 'none';
   document.getElementById('campaigns-page').style.display  = v==='campaigns' ? '' : 'none';
   document.getElementById('cohorts-page').style.display    = v==='cohorts' ? '' : 'none';
   document.getElementById('policy-page').style.display     = v==='policy' ? '' : 'none';
   document.getElementById('agent-page').style.display      = v==='agent' ? '' : 'none';
-  if(v==='themes') { renderThemesView(); }
+  if(isOverview) { updatePeriodToggle(); renderAll(); }
+  else if(v==='themes') { renderThemesView(); }
   else if(v==='campaigns') { initCampaignsView(); }
   else if(v==='cohorts') { renderCohortsView(); }
   else if(v==='policy') { renderPolicyView(); }
   else if(v==='agent') { initAgentView(); }
-  else { renderAll(); }
+}
+
+function setFunnelPeriod(p) {
+  currentView = p;
+  selectedIndex = null;
+  document.getElementById('period-tag').classList.remove('show');
+  document.getElementById('daily-zoom-label').textContent='';
+  updatePeriodToggle();
+  renderAll();
+}
+
+function updatePeriodToggle() {
+  const m = document.getElementById('pt-monthly');
+  const w = document.getElementById('pt-weekly');
+  if(currentView==='monthly') {
+    m.style.background='#6366f1'; m.style.color='#fff';
+    w.style.background='transparent'; w.style.color='#94a3b8';
+  } else {
+    w.style.background='#6366f1'; w.style.color='#fff';
+    m.style.background='transparent'; m.style.color='#94a3b8';
+  }
 }
 
 function selectRegion(r) {
@@ -620,6 +650,7 @@ function selectRegion(r) {
   if(currentView === 'themes') { renderThemesView(); }
   else if(currentView === 'cohorts') { renderCohortsView(); }
   else if(currentView === 'policy') { renderPolicyView(); }
+  else if(currentView === 'monthly' || currentView === 'weekly') { renderAll(); }
   else { renderAll(); }
 }
 
@@ -2800,7 +2831,7 @@ async function sendAgentMessage() {
 
 // ═══════════════ INIT ═══════════════
 renderRegionBtns();
-renderAll();
+switchView('overview');
 </script>
 </body>
 </html>
