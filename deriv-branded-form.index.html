@@ -417,10 +417,10 @@
       <div>
         <div class="q-label">What is your current or planned daily budget for Google Ads?</div>
         <div class="opts" style="margin-top:10px">
-          <div class="opt"><input type="radio" name="q_budget" id="bu1"><label for="bu1">Under 0 / day</label></div>
-          <div class="opt"><input type="radio" name="q_budget" id="bu2"><label for="bu2">0 – 00 / day</label></div>
-          <div class="opt"><input type="radio" name="q_budget" id="bu3"><label for="bu3">00 – 00 / day</label></div>
-          <div class="opt"><input type="radio" name="q_budget" id="bu4"><label for="bu4">00+ / day</label></div>
+          <div class="opt"><input type="radio" name="q_budget" id="bu1"><label for="bu1">Under $10 / day</label></div>
+          <div class="opt"><input type="radio" name="q_budget" id="bu2"><label for="bu2">$10 – $50 / day</label></div>
+          <div class="opt"><input type="radio" name="q_budget" id="bu3"><label for="bu3">$50 – $100 / day</label></div>
+          <div class="opt"><input type="radio" name="q_budget" id="bu4"><label for="bu4">$100+ / day</label></div>
         </div>
       </div>
     </div>
@@ -618,12 +618,40 @@
         return;
       }
 
-      const response = await fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      // Use a hidden form + iframe to reliably POST to Google Apps Script
+      // (fetch with no-cors strips the body; this method works cross-origin)
+      const iframe = document.createElement('iframe');
+      iframe.name = 'hidden-iframe';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = GOOGLE_SHEET_URL;
+      form.target = 'hidden-iframe';
+
+      // Flatten the data: arrays become comma-separated strings
+      const flat = {};
+      for (const [key, val] of Object.entries(data)) {
+        flat[key] = Array.isArray(val) ? val.join(', ') : val;
+      }
+
+      for (const [key, val] of Object.entries(flat)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = val;
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+      }, 2000);
 
       // Show success message
       document.querySelector('.page').innerHTML = `
@@ -633,9 +661,6 @@
           <div class="form-desc" style="margin:12px auto 0; max-width:400px;">
             Your responses have been recorded. The Deriv team will review your answers and get back to you shortly.
           </div>
-        </div>
-        <div class="submit-card" style="text-align:center; margin-top:20px;">
-          <button class="btn-submit" onclick="location.reload()" style="background:var(--slate-mid);">Submit another response</button>
         </div>
       `;
 
