@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPC FTD Forecast — May 2026 · Deriv</title>
+<style>
+:root{
+  --dark:#1F3864;--mid:#2E75B6;--light-blue:#D6E4F0;--very-light:#EBF3FB;
+  --green:#375623;--light-green:#E2EFDA;--amber:#7F6000;--light-amber:#FFF2CC;
+  --red:#C00000;--border:#D0D7E3;--text:#1a1a2e;
+  --paid:#375623;--paid-bg:#E2EFDA;--zero:#7F4000;--zero-bg:#FFF9C4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4fa;color:var(--text);font-size:13px}
+
+.page-header{background:linear-gradient(135deg,#1F3864 0%,#2E75B6 100%);color:white;padding:22px 32px 18px;display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.page-header h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.page-header p{font-size:11px;opacity:.8;margin-top:3px}
+.kpi-strip{display:flex;gap:10px;margin-left:auto;flex-shrink:0;flex-wrap:wrap}
+.kpi{background:rgba(255,255,255,.12);border-radius:8px;padding:8px 14px;text-align:center;min-width:90px}
+.kpi-val{font-size:20px;font-weight:700}
+.kpi-lbl{font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.kpi.accent{background:rgba(255,193,7,.25)}
+
+.nav-tabs{background:white;border-bottom:2px solid var(--border);display:flex;padding:0 28px;gap:2px;flex-wrap:wrap}
+.tab-btn{padding:11px 16px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;color:#666;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--mid)}
+.tab-btn.active{color:var(--dark);border-bottom-color:var(--mid)}
+
+.container{max-width:1360px;margin:0 auto;padding:20px 28px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+.card{background:white;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:18px 22px;margin-bottom:18px}
+.card-title{font-size:12px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.5px;padding-bottom:10px;border-bottom:2px solid var(--light-blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{background:var(--mid);color:white;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.badge.new{background:#E67E22}
+.badge.green{background:#375623}
+.badge.amber{background:#7F4000}
+
+table{width:100%;border-collapse:collapse}
+th{background:var(--dark);color:white;padding:9px 10px;text-align:center;font-size:11px;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+th.left{text-align:left}
+td{padding:8px 10px;border-bottom:1px solid #eef0f5;text-align:center}
+td.left{text-align:left;font-weight:600}
+tr:hover td{background:var(--very-light)!important}
+tr.total-row td{background:var(--dark)!important;color:white;font-weight:700}
+tr:nth-child(even) td{background:#fafbff}
+
+.cpa{padding:2px 7px;border-radius:4px;font-weight:600;font-size:12px;display:inline-block}
+.cpa.green{background:#E2EFDA;color:#375623}
+.cpa.ok{background:#DDEEFF;color:#1F3864}
+.cpa.warn{background:var(--light-amber);color:var(--amber)}
+.cpa.danger{background:#FFE0E0;color:var(--red)}
+
+.paid-cell{background:var(--paid-bg)!important;color:var(--paid);font-weight:700;font-size:14px}
+.zero-cell{background:var(--zero-bg)!important;color:var(--zero);font-weight:600}
+.total-goal-cell{background:#D6E4F7!important;color:var(--dark);font-weight:700;font-size:14px}
+
+.bar-wrap{display:flex;align-items:center;gap:6px}
+.bar-track{flex:1;height:6px;background:#e8ecf4;border-radius:3px;overflow:hidden;min-width:50px}
+.bar-fill{height:100%;border-radius:3px}
+.bar-pct{font-size:11px;color:#888;min-width:32px}
+
+.speed-meter{display:flex;align-items:center;gap:6px}
+.speed-track{flex:1;height:8px;background:#e8ecf4;border-radius:4px;overflow:hidden;min-width:60px}
+.speed-fill{height:100%;border-radius:4px}
+.speed-val{font-size:11px;font-weight:700;min-width:28px}
+
+.row-tag{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;vertical-align:middle}
+.row-tag.new{background:#FCE4D6;color:#C55A11}
+.override-tag{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;vertical-align:middle}
+.override-tag.anchor{background:#C8E6C9;color:#1B5E20}
+.override-tag.cap{background:#FFF9C4;color:#F57F17}
+.override-tag.exclude{background:#FFCDD2;color:#B71C1C}
+
+.region-clickable{cursor:pointer;display:flex;align-items:center;gap:5px}
+.region-clickable:hover{color:var(--mid)}
+.region-chevron{font-size:10px;transition:transform .2s;color:#aaa}
+.region-chevron.open{transform:rotate(90deg)}
+.reasoning-row{background:#f8f9ff!important}
+.reasoning-row td{padding:0!important;border-bottom:2px solid var(--border)!important}
+.reasoning-panel{padding:14px 18px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
+.reasoning-sparkline{display:flex;align-items:flex-end;gap:3px;height:50px;padding:4px 0}
+.spark-bar{width:22px;border-radius:3px 3px 0 0;background:var(--mid);position:relative;display:flex;justify-content:center}
+.spark-bar span{position:absolute;top:-16px;font-size:9px;color:#555;white-space:nowrap;font-weight:600}
+.reasoning-avgs{display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.reasoning-avg-pill{background:white;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px}
+.reasoning-avg-pill strong{font-size:13px;display:block}
+.reasoning-text{font-size:12px;color:#444;line-height:1.7;margin-bottom:6px}
+.reasoning-note{font-size:11px;color:var(--mid);font-weight:600;background:#EBF3FB;padding:5px 10px;border-radius:4px;border-left:3px solid var(--mid)}
+
+.funnel-row{display:flex;gap:4px}
+.funnel-seg{flex:1;padding:5px 3px;text-align:center;border-radius:3px;font-size:10px;font-weight:600}
+.funnel-seg .pct{font-size:13px;font-weight:700;display:block}
+
+.region-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px}
+.region-card{background:white;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
+.rc-header{background:var(--dark);color:white;padding:10px 16px;font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.rc-body{padding:14px 16px}
+.rc-section{margin-bottom:12px}
+.rc-section h4{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:6px;font-weight:700}
+.rc-pill-row{display:flex;flex-wrap:wrap;gap:5px}
+.rc-pill{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
+.rc-pill .vol{opacity:.7;font-size:10px}
+.rc-pill.plat{background:#D6E4F7;color:#1F3864}
+.rc-pill.theme{background:var(--light-green);color:var(--green)}
+.rc-pill.ctype.brand{background:#FFF2CC;color:#7F6000}
+.rc-pill.ctype.pros{background:#E2EFDA;color:#375623}
+.insight-box{background:#f8f9ff;border-left:3px solid var(--mid);padding:8px 12px;font-size:11px;color:#333;line-height:1.6;border-radius:0 4px 4px 0;margin-top:8px}
+.insight-box.warn{border-left-color:var(--red);background:#fff5f5}
+.insight-box.good{border-left-color:var(--green);background:#f0f8f0}
+
+.note-box{background:#FFF8E1;border:1px solid #FFE082;border-radius:6px;padding:10px 14px;font-size:12px;color:#5D4037;line-height:1.6;margin-bottom:14px}
+.note-box.green{background:#f0f8f0;border-color:#A5D6A7;color:#1B5E20}
+.chart-wrap{position:relative;height:200px}
+
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:white}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--mid);background:var(--very-light)}
+.upload-zone.loaded{border-color:#375623;border-style:solid;background:#f0f8f0}
+.upload-icon{font-size:32px;margin-bottom:8px}
+.upload-text strong{color:var(--dark);display:block;font-size:14px;margin-bottom:4px}
+.progress-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.prog-kpi{background:white;border-radius:8px;padding:12px 14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.prog-kpi-val{font-size:22px;font-weight:700;color:var(--dark)}
+.prog-kpi-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.prog-kpi.good .prog-kpi-val{color:#375623}
+.prog-kpi.warn .prog-kpi-val{color:#7F6000}
+.prog-kpi.bad .prog-kpi-val{color:var(--red)}
+.month-bar-wrap{display:flex;align-items:center;gap:6px;min-width:120px}
+.month-bar-track{flex:1;height:10px;background:#e8ecf4;border-radius:5px;overflow:visible;position:relative}
+.month-bar-fill{height:100%;border-radius:5px}
+.month-bar-pace{position:absolute;top:-3px;width:2px;height:16px;background:#999;border-radius:1px}
+.month-bar-pct{font-size:11px;min-width:32px;font-weight:600}
+.status-chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.status-chip.ahead{background:#E2EFDA;color:#375623}
+.status-chip.on-track{background:#FFF2CC;color:#7F6000}
+.status-chip.behind{background:#FFE0E0;color:#C00000}
+.status-chip.excluded{background:#f0f0f0;color:#aaa}
+
+.rel-panel{margin-top:18px;border:2px solid #e8ecf4;border-radius:8px;overflow:hidden}
+.rel-hdr{background:var(--dark);color:white;padding:10px 16px;font-size:12px;font-weight:700}
+.rel-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 16px 8px}
+.rel-kpi{border-radius:6px;padding:10px 14px;text-align:center}
+.rel-kpi-val{font-size:22px;font-weight:700}
+.rel-kpi-lbl{font-size:10px;color:#555;margin-top:2px}
+.rel-insight{padding:0 16px 14px;font-size:11px;color:#555;line-height:1.7}
+
+@media(max-width:900px){.kpi-strip{display:none}.container{padding:12px 14px}.progress-kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div>
+    <h1>PPC FTD Regional Forecast — Deriv</h1>
+    <p>Strategic Model · Goal Period: May 2026 · Baseline: Jan–Apr 2026 (4 months)</p>
+  </div>
+  <div class="kpi-strip">
+    <div class="kpi"><div class="kpi-val">2,238</div><div class="kpi-lbl">Avg Monthly FTDs</div></div>
+    <div class="kpi accent"><div class="kpi-val">3,000</div><div class="kpi-lbl">Monthly Target</div></div>
+    <div class="kpi"><div class="kpi-val">2,355</div><div class="kpi-lbl">Paid FTD Goal</div></div>
+    <div class="kpi"><div class="kpi-val">645</div><div class="kpi-lbl">Attribution</div></div>
+    <div class="kpi"><div class="kpi-val">+34.0%</div><div class="kpi-lbl">Growth Required</div></div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="showTab('forecast',this)">📊 Forecast</button>
+  <button class="tab-btn" onclick="showTab('cohort',this)">⚡ Cohort Intelligence</button>
+  <button class="tab-btn" onclick="showTab('whatworks',this)">🎯 What Works</button>
+  <button class="tab-btn" onclick="showTab('historical',this)">📈 Historical</button>
+  <button class="tab-btn" onclick="showTab('progress',this)">📅 Monthly Progress</button>
+  <button class="tab-btn" onclick="showTab('method',this)">📝 Methodology</button>
+</div>
+
+<!-- FORECAST -->
+<div id="tab-forecast" class="tab-content active">
+<div class="container">
+  <div class="note-box green">
+    🟢 <strong>Paid vs Attribution split:</strong>
+    Goals are separated into <strong>Paid FTDs</strong> (campaigns with active spend — what you actively buy) and <strong>Attribution FTDs</strong> (post-click tail from paused/aged campaigns — arrives naturally).
+    Active campaigns must deliver <strong>2355 paid FTDs</strong>. The 645 attribution FTDs are a baseline, not a target.
+  </div>
+  <div class="card">
+    <div class="card-title">Monthly FTD Trend <span class="badge">Jan–Apr 2026</span></div>
+    <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Strategic FTD Goals — 3,000 Monthly Target <span class="badge green">Business Overrides Applied</span></div>
+    <table id="forecastTable">
+      <thead><tr>
+        <th class="left">Region</th>
+        <th>Avg Monthly<br>FTDs (Actual)</th>
+        <th>Avg CPA ($)</th>
+        <th>Speed Score</th>
+        <th>Total Goal</th>
+        <th style="background:#375623">Paid Goal<br><small style="font-weight:300">spend &gt; 0</small></th>
+        <th style="background:#7F4000">Attribution<br><small style="font-weight:300">zero-spend tail</small></th>
+        <th style="min-width:160px">Share of 3,000</th>
+        <th>vs Run Rate</th>
+        <th style="background:#1B5E20">Implied Spend<br><small style="font-weight:300">CPA × paid goal</small></th>
+      </tr></thead>
+      <tbody id="forecastBody"></tbody>
+    </table>
+    <div class="rel-panel" id="reliabilityPanel">
+      <div class="rel-hdr">📋 Reliability Check — Expected in-month FTD delivery</div>
+      <div class="rel-kpis" id="reliabilityKPIs"></div>
+      <div class="rel-insight" id="reliabilityInsight"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- COHORT -->
+<div id="tab-cohort" class="tab-content">
+<div class="container">
+  <div class="note-box">
+    <strong>Speed Score</strong> (0–100): 40% same-day + 30% within 7 days + 30% within 30 days.
+    Faster regions deliver more predictable in-month FTDs. ROW and CIS are the fastest-converting regions.
+  </div>
+  <div class="card">
+    <div class="card-title">Deposit Speed by Region <span class="badge green">Higher = Better</span></div>
+    <table>
+      <thead><tr>
+        <th class="left">Region</th>
+        <th>Median Days</th>
+        <th>Same Day %</th>
+        <th>≤7 Days %</th>
+        <th>≤30 Days %</th>
+        <th>≤60 Days %</th>
+        <th style="min-width:150px">Speed Score</th>
+        <th>Signups per<br>100 FTDs</th>
+      </tr></thead>
+      <tbody id="cohortBody"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">Conversion Funnel by Region</div>
+    <div id="funnelCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Speed × CPA Matrix <span class="badge">Ideal = low CPA, high speed</span></div>
+    <div class="chart-wrap" style="height:260px"><canvas id="matrixChart"></canvas></div>
+  </div>
+</div>
+</div>
+
+<!-- WHAT WORKS -->
+<div id="tab-whatworks" class="tab-content">
+<div class="container">
+  <div class="note-box">Best platform = highest paid FTD volume. Best theme = lowest CPA with meaningful volume. Zero-CPA entries indicate organic attribution.</div>
+  <div class="region-cards" id="whatWorksCards"></div>
+</div>
+</div>
+
+<!-- HISTORICAL -->
+<div id="tab-historical" class="tab-content">
+<div class="container">
+  <div class="card">
+    <div class="card-title">Monthly FTDs by Region <span class="badge">Jan–Apr 2026</span></div>
+    <table id="histTable"></table>
+  </div>
+</div>
+</div>
+
+<!-- PROGRESS -->
+<div id="tab-progress" class="tab-content">
+<div class="container">
+  <div class="note-box">
+    Upload your month-to-date PPC Performance Daily CSV. The dashboard counts <strong>paid FTDs (spend > 0)</strong> (spend &gt; 0) against the paid goal.
+    Attribution FTDs (zero-spend campaigns) are shown separately as a bonus.
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="uploadZone" class="upload-zone"
+         onclick="document.getElementById('csvFileInput').click()"
+         ondragover="event.preventDefault();this.classList.add('drag')"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="handleDrop(event)">
+      <div class="upload-icon">📂</div>
+      <div class="upload-text">
+        <strong>Drop month-to-date CSV here or click to browse</strong>
+        PPC Performance Daily CSV — paid FTDs extracted automatically
+      </div>
+      <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleFileSelect(event)">
+    </div>
+  </div>
+  <div id="progressContent" style="display:none">
+    <div class="progress-kpis" id="progressKPIs"></div>
+    <div class="card">
+      <div class="card-title">Daily Paid FTD Accumulation vs Pacing <span id="chartMonthBadge" class="badge"></span></div>
+      <div class="chart-wrap" style="height:180px"><canvas id="dailyChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Regional Progress vs Paid Goal</div>
+      <table>
+        <thead><tr>
+          <th class="left">Region</th>
+          <th>Paid Goal</th>
+          <th>Paid FTDs<br>to Date</th>
+          <th style="background:#7F4000">Attribution<br>FTDs</th>
+          <th style="min-width:140px">Progress</th>
+          <th>Expected<br>by Today</th>
+          <th>vs Pace</th>
+          <th>Status</th>
+          <th>Need per<br>Day Left</th>
+        </tr></thead>
+        <tbody id="progressBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- METHODOLOGY -->
+<div id="tab-method" class="tab-content">
+<div class="container">
+  <div class="card">
+    <div class="card-title">Data Sources & Baseline</div>
+    <p style="font-size:12px;line-height:1.9;color:#444">
+      <strong>Daily Performance CSV:</strong> Jan 1 2026 – Apr 29 2026. <em>New Funded</em> = FTD. Jan–Apr 2026 used as 4-month baseline. Goals set for <strong>May 2026</strong>.<br>
+      <strong>Cohort CSV:</strong> Signup and first deposit dates (Jan–Apr 2026 signups, post-click). Used for speed scores and in-month reliability calculations.<br>
+      <strong>Run rate:</strong> 2,238 FTDs/month. Growth target for May 2026 = +34.0%.<br>
+      <strong>Paid FTD goal:</strong> 2,355 (active spend campaigns). <strong>Attribution baseline:</strong> 645 (post-click tail from paused/aged campaigns — not a target, treated as expected bonus).
+    </p>
+  </div>
+  <div class="card" style="border-left:4px solid #1B5E20">
+    <div class="card-title" style="border:none;padding-bottom:6px">Strategic Model — Business Overrides</div>
+    <p style="font-size:12px;color:#444;line-height:1.7;margin-bottom:10px">Free regions receive allocation proportional to run rate (~+34% uniform uplift). Fixed regions have business-logic overrides:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;font-size:12px">
+      <div style="background:#C8E6C9;border-radius:6px;padding:10px 12px"><strong>⚓ Jamaica → 480</strong><br>Top market. Run rate 432 — modest uplift.</div>
+      <div style="background:#C8E6C9;border-radius:6px;padding:10px 12px"><strong>⚓ Nigeria → 510</strong><br>Top market. Anchored above run rate (432).</div>
+      <div style="background:#C8E6C9;border-radius:6px;padding:10px 12px"><strong>⚓ LATAM → 380</strong><br>Top market. Anchored above run rate (331).</div>
+      <div style="background:#C8E6C9;border-radius:6px;padding:10px 12px"><strong>⚓ ROW → 480</strong><br>New market. CPA high ($752) but fastest-converting region (+100 from Africa Tier 1 reduction).</div>
+      <div style="background:#FFF9C4;border-radius:6px;padding:10px 12px"><strong>🔒 CIS → 20</strong><br>Spend-constrained — regional restrictions.</div>
+      <div style="background:#FFCDD2;border-radius:6px;padding:10px 12px"><strong>✕ Europe → 0</strong><br>Not a target market. Excluded.</div>
+      <div style="background:#FFF9C4;border-radius:6px;padding:10px 12px"><strong>🔒 Africa Tier 4 → 15</strong><br>Structural FTD ceiling. Hard to scale.</div>
+      <div style="background:#FFF9C4;border-radius:6px;padding:10px 12px"><strong>🔒 Africa Tier 1 → 461</strong><br>Reduced from model output (611) by 150. High goal partly driven by attribution FTDs (37%). Freed allocation moved to ROW (+100) and other regions (+50).</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:0">
+    <div class="card-title">Paid vs Attribution Split</div>
+    <p style="font-size:12px;color:#444;line-height:1.7">
+      <strong>Paid FTDs:</strong> FTDs from campaign-days where Spend &gt; 0. These are actively bought with budget and trackable against goal.<br>
+      <strong>Attribution FTDs:</strong> FTDs from campaign-days where Spend = 0. These come from the post-click attribution window of paused or aged campaigns. They arrive naturally regardless of current spend decisions and are displayed as a separate baseline — not counted toward the paid goal.<br>
+      <strong>Speed Score:</strong> (% Same Day × 0.40) + (% Within 7 Days × 0.30) + (% Within 30 Days × 0.30)
+    </p>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const RELIABILITY = {"ms":{"in_month_total":2651.7,"gap":348.0,"required_total":3394}};
+const DATA = {"rows":[{"region":"Jamaica","avg_ftd":432.0,"avg_spend":110566.0,"cpa":256.0,"is_row":false,"avg_paid_ftd":363.5,"avg_zero_ftd":68.5,"paid_pct":84.1,"paid_cpa":304,"median_days":4.0,"pct_same_day":29.8,"pct_7d":61.6,"pct_30d":86.3,"pct_60d":96.1,"speed_score":56.3,"ms_goal":480,"ms_flag":"anchor","ms_reason":"\u2693 Top market \u2014 anchored at 480","ms_share":16.0,"ms_implied_spend":122880,"ms_zero_baseline":68,"ms_paid_goal":412,"months":{"Jan 26":531,"Feb 26":470,"Mar 26":447,"Apr 26":280}},{"region":"Africa Tier 1","avg_ftd":463.0,"avg_spend":132697.0,"cpa":287.0,"is_row":false,"avg_paid_ftd":289.8,"avg_zero_ftd":173.2,"paid_pct":62.6,"paid_cpa":458,"median_days":4.0,"pct_same_day":23.7,"pct_7d":60.9,"pct_30d":86.0,"pct_60d":96.5,"speed_score":53.6,"ms_goal":461,"ms_flag":"free","ms_reason":"","ms_share":15.4,"ms_implied_spend":132307,"ms_zero_baseline":173,"ms_paid_goal":288,"months":{"Jan 26":422,"Feb 26":392,"Mar 26":475,"Apr 26":563}},{"region":"Nigeria","avg_ftd":432.0,"avg_spend":100941.0,"cpa":234.0,"is_row":false,"avg_paid_ftd":320.2,"avg_zero_ftd":111.8,"paid_pct":74.1,"paid_cpa":315,"median_days":4.0,"pct_same_day":25.1,"pct_7d":59.5,"pct_30d":84.8,"pct_60d":95.1,"speed_score":53.3,"ms_goal":510,"ms_flag":"anchor","ms_reason":"\u2693 Top market \u2014 anchored above run rate","ms_share":17.0,"ms_implied_spend":119340,"ms_zero_baseline":112,"ms_paid_goal":398,"months":{"Jan 26":397,"Feb 26":371,"Mar 26":453,"Apr 26":507}},{"region":"LATAM","avg_ftd":330.8,"avg_spend":158013.0,"cpa":478.0,"is_row":false,"avg_paid_ftd":261.8,"avg_zero_ftd":69.0,"paid_pct":79.1,"paid_cpa":604,"median_days":3.0,"pct_same_day":29.9,"pct_7d":64.0,"pct_30d":88.6,"pct_60d":97.2,"speed_score":57.7,"ms_goal":380,"ms_flag":"anchor","ms_reason":"\u2693 Top market \u2014 anchored above run rate","ms_share":12.7,"ms_implied_spend":181640,"ms_zero_baseline":69,"ms_paid_goal":311,"months":{"Jan 26":379,"Feb 26":285,"Mar 26":343,"Apr 26":316}},{"region":"Africa Tier 3","avg_ftd":265.2,"avg_spend":38915.0,"cpa":147.0,"is_row":false,"avg_paid_ftd":180.0,"avg_zero_ftd":85.2,"paid_pct":67.9,"paid_cpa":216,"median_days":4.0,"pct_same_day":23.3,"pct_7d":62.9,"pct_30d":88.4,"pct_60d":96.0,"speed_score":54.7,"ms_goal":379,"ms_flag":"free","ms_reason":"","ms_share":12.6,"ms_implied_spend":55713,"ms_zero_baseline":85,"ms_paid_goal":294,"months":{"Jan 26":307,"Feb 26":228,"Mar 26":260,"Apr 26":266}},{"region":"ROW","avg_ftd":80.2,"avg_spend":60329.0,"cpa":752.0,"is_row":true,"avg_paid_ftd":79.5,"avg_zero_ftd":0.8,"paid_pct":99.0,"paid_cpa":759,"median_days":1.0,"pct_same_day":33.7,"pct_7d":87.5,"pct_30d":96.9,"pct_60d":98.6,"speed_score":68.8,"ms_goal":480,"ms_flag":"anchor","ms_reason":"\u2b06 ROW \u2014 received freed FTDs from adjustments","ms_share":16.0,"ms_implied_spend":360960,"ms_zero_baseline":1,"ms_paid_goal":479,"months":{"Jan 26":0,"Feb 26":0,"Mar 26":0,"Apr 26":321}},{"region":"Africa Tier 2","avg_ftd":71.8,"avg_spend":41261.0,"cpa":575.0,"is_row":false,"avg_paid_ftd":28.2,"avg_zero_ftd":43.5,"paid_pct":39.3,"paid_cpa":1463,"median_days":5.5,"pct_same_day":22.7,"pct_7d":54.5,"pct_30d":95.5,"pct_60d":95.5,"speed_score":54.1,"ms_goal":103,"ms_flag":"free","ms_reason":"","ms_share":3.4,"ms_implied_spend":59225,"ms_zero_baseline":44,"ms_paid_goal":59,"months":{"Jan 26":70,"Feb 26":64,"Mar 26":72,"Apr 26":81}},{"region":"Asia Tier 1","avg_ftd":45.0,"avg_spend":28589.0,"cpa":635.0,"is_row":false,"avg_paid_ftd":15.8,"avg_zero_ftd":29.2,"paid_pct":35.1,"paid_cpa":1809,"median_days":3.0,"pct_same_day":24.4,"pct_7d":69.5,"pct_30d":89.0,"pct_60d":97.6,"speed_score":57.3,"ms_goal":64,"ms_flag":"free","ms_reason":"","ms_share":2.1,"ms_implied_spend":40640,"ms_zero_baseline":29,"ms_paid_goal":35,"months":{"Jan 26":57,"Feb 26":64,"Mar 26":36,"Apr 26":23}},{"region":"Africa Tier 5","avg_ftd":43.2,"avg_spend":7102.0,"cpa":164.0,"is_row":false,"avg_paid_ftd":10.0,"avg_zero_ftd":33.2,"paid_pct":23.1,"paid_cpa":710,"median_days":2.5,"pct_same_day":25.0,"pct_7d":65.0,"pct_30d":87.5,"pct_60d":95.0,"speed_score":55.8,"ms_goal":61,"ms_flag":"free","ms_reason":"","ms_share":2.0,"ms_implied_spend":10004,"ms_zero_baseline":33,"ms_paid_goal":28,"months":{"Jan 26":34,"Feb 26":42,"Mar 26":50,"Apr 26":47}},{"region":"Asia Tier 2","avg_ftd":17.0,"avg_spend":3910.0,"cpa":230.0,"is_row":false,"avg_paid_ftd":8.0,"avg_zero_ftd":9.0,"paid_pct":47.1,"paid_cpa":489,"median_days":1.5,"pct_same_day":31.2,"pct_7d":87.5,"pct_30d":100.0,"pct_60d":100.0,"speed_score":68.7,"ms_goal":24,"ms_flag":"free","ms_reason":"","ms_share":0.8,"ms_implied_spend":5520,"ms_zero_baseline":9,"ms_paid_goal":15,"months":{"Jan 26":24,"Feb 26":18,"Mar 26":14,"Apr 26":12}},{"region":"Europe","avg_ftd":15.0,"avg_spend":7562.0,"cpa":504.0,"is_row":false,"avg_paid_ftd":11.2,"avg_zero_ftd":3.8,"paid_pct":74.7,"paid_cpa":675,"median_days":null,"pct_same_day":null,"pct_7d":null,"pct_30d":null,"pct_60d":null,"speed_score":null,"ms_goal":0,"ms_flag":"exclude","ms_reason":"\u2715 Not a target market","ms_share":0.0,"ms_implied_spend":null,"ms_zero_baseline":0,"ms_paid_goal":0,"months":{"Jan 26":13,"Feb 26":22,"Mar 26":13,"Apr 26":12}},{"region":"CIS","avg_ftd":14.2,"avg_spend":5763.0,"cpa":404.0,"is_row":false,"avg_paid_ftd":7.2,"avg_zero_ftd":7.0,"paid_pct":50.7,"paid_cpa":800,"median_days":0.0,"pct_same_day":52.8,"pct_7d":83.3,"pct_30d":100.0,"pct_60d":100.0,"speed_score":76.1,"ms_goal":20,"ms_flag":"cap","ms_reason":"\ud83d\udd12 Spend-constrained region","ms_share":0.7,"ms_implied_spend":8080,"ms_zero_baseline":7,"ms_paid_goal":13,"months":{"Jan 26":21,"Feb 26":9,"Mar 26":12,"Apr 26":15}},{"region":"MENA","avg_ftd":16.2,"avg_spend":6804.0,"cpa":419.0,"is_row":false,"avg_paid_ftd":10.8,"avg_zero_ftd":5.5,"paid_pct":66.3,"paid_cpa":630,"median_days":1.0,"pct_same_day":35.3,"pct_7d":70.6,"pct_30d":88.2,"pct_60d":100.0,"speed_score":61.8,"ms_goal":23,"ms_flag":"free","ms_reason":"","ms_share":0.8,"ms_implied_spend":9637,"ms_zero_baseline":6,"ms_paid_goal":17,"months":{"Jan 26":9,"Feb 26":4,"Mar 26":29,"Apr 26":23}},{"region":"Africa Tier 4","avg_ftd":12.8,"avg_spend":3474.0,"cpa":272.0,"is_row":false,"avg_paid_ftd":3.5,"avg_zero_ftd":9.2,"paid_pct":27.6,"paid_cpa":993,"median_days":null,"pct_same_day":null,"pct_7d":null,"pct_30d":null,"pct_60d":null,"speed_score":null,"ms_goal":15,"ms_flag":"cap","ms_reason":"\ud83d\udd12 Structural FTD ceiling","ms_share":0.5,"ms_implied_spend":4080,"ms_zero_baseline":9,"ms_paid_goal":6,"months":{"Jan 26":12,"Feb 26":10,"Mar 26":11,"Apr 26":18}}],"chart_data":[{"month":"Jan 26","ftds":2284},{"month":"Feb 26","ftds":1990},{"month":"Mar 26","ftds":2226},{"month":"Apr 26","ftds":2496}],"lag_rows":[{"Region":"ROW","ftd_count":288,"median_days":1.0,"pct_same_day":33.7,"pct_7d":87.5,"pct_30d":96.9,"pct_60d":98.6,"speed_score":68.8},{"Region":"CIS","ftd_count":0,"median_days":0.0,"pct_same_day":52.8,"pct_7d":83.3,"pct_30d":100.0,"pct_60d":100.0,"speed_score":76.1},{"Region":"Asia Tier 2","ftd_count":0,"median_days":1.5,"pct_same_day":31.2,"pct_7d":87.5,"pct_30d":100.0,"pct_60d":100.0,"speed_score":68.7},{"Region":"MENA","ftd_count":0,"median_days":1.0,"pct_same_day":35.3,"pct_7d":70.6,"pct_30d":88.2,"pct_60d":100.0,"speed_score":61.8},{"Region":"LATAM","ftd_count":0,"median_days":3.0,"pct_same_day":29.9,"pct_7d":64.0,"pct_30d":88.6,"pct_60d":97.2,"speed_score":57.7},{"Region":"Asia Tier 1","ftd_count":0,"median_days":3.0,"pct_same_day":24.4,"pct_7d":69.5,"pct_30d":89.0,"pct_60d":97.6,"speed_score":57.3},{"Region":"Jamaica","ftd_count":0,"median_days":4.0,"pct_same_day":29.8,"pct_7d":61.6,"pct_30d":86.3,"pct_60d":96.1,"speed_score":56.3},{"Region":"Africa Tier 5","ftd_count":0,"median_days":2.5,"pct_same_day":25.0,"pct_7d":65.0,"pct_30d":87.5,"pct_60d":95.0,"speed_score":55.8},{"Region":"Africa Tier 3","ftd_count":0,"median_days":4.0,"pct_same_day":23.3,"pct_7d":62.9,"pct_30d":88.4,"pct_60d":96.0,"speed_score":54.7},{"Region":"Africa Tier 2","ftd_count":0,"median_days":5.5,"pct_same_day":22.7,"pct_7d":54.5,"pct_30d":95.5,"pct_60d":95.5,"speed_score":54.1},{"Region":"Africa Tier 1","ftd_count":0,"median_days":4.0,"pct_same_day":23.7,"pct_7d":60.9,"pct_30d":86.0,"pct_60d":96.5,"speed_score":53.6},{"Region":"Nigeria","ftd_count":0,"median_days":4.0,"pct_same_day":25.1,"pct_7d":59.5,"pct_30d":84.8,"pct_60d":95.1,"speed_score":53.3}],"what_works":{"Jamaica":{"platforms":[{"Platform":"google","FTDs":1356,"CPA":305.0},{"Platform":"fb","FTDs":68,"CPA":249.0},{"Platform":"bing","FTDs":29,"CPA":378.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":1191,"CPA":227.0},{"Camp_Type":"brand","FTDs":471,"CPA":357.0},{"Camp_Type":"lookalike","FTDs":66,"CPA":54.0}],"themes":[{"Ad_Theme":"Brand","FTDs":478,"CPA":335.0},{"Ad_Theme":"Multi Asset","FTDs":233,"CPA":218.0},{"Ad_Theme":"FX eBook","FTDs":229,"CPA":111.0},{"Ad_Theme":"General","FTDs":193,"CPA":303.0},{"Ad_Theme":"Trading","FTDs":186,"CPA":147.0}]},"Africa Tier 1":{"platforms":[{"Platform":"google","FTDs":791,"CPA":498.0},{"Platform":"bing","FTDs":254,"CPA":228.0},{"Platform":"fb","FTDs":114,"CPA":669.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":1037,"CPA":203.0},{"Camp_Type":"brand","FTDs":667,"CPA":427.0},{"Camp_Type":"lookalike","FTDs":125,"CPA":282.0}],"themes":[{"Ad_Theme":"Brand","FTDs":666,"CPA":426.0},{"Ad_Theme":"General","FTDs":323,"CPA":231.0},{"Ad_Theme":"Trading","FTDs":236,"CPA":166.0},{"Ad_Theme":"FX eBook","FTDs":211,"CPA":202.0},{"Ad_Theme":"TradingView","FTDs":97,"CPA":342.0}]},"Nigeria":{"platforms":[{"Platform":"google","FTDs":1154,"CPA":298.0},{"Platform":"fb","FTDs":120,"CPA":328.0},{"Platform":"bing","FTDs":7,"CPA":632.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":1159,"CPA":194.0},{"Camp_Type":"brand","FTDs":456,"CPA":387.0},{"Camp_Type":"lookalike","FTDs":52,"CPA":0.0}],"themes":[{"Ad_Theme":"TradingView","FTDs":538,"CPA":226.0},{"Ad_Theme":"Brand","FTDs":425,"CPA":357.0},{"Ad_Theme":"General","FTDs":387,"CPA":160.0},{"Ad_Theme":"FX eBook","FTDs":193,"CPA":136.0},{"Ad_Theme":"DerivX","FTDs":38,"CPA":0.0}]},"LATAM":{"platforms":[{"Platform":"google","FTDs":792,"CPA":643.0},{"Platform":"bing","FTDs":186,"CPA":319.0},{"Platform":"fb","FTDs":69,"CPA":912.0}],"camp_types":[{"Camp_Type":"brand","FTDs":732,"CPA":400.0},{"Camp_Type":"prospecting","FTDs":512,"CPA":576.0},{"Camp_Type":"retargeting","FTDs":49,"CPA":407.0}],"themes":[{"Ad_Theme":"Brand","FTDs":732,"CPA":400.0},{"Ad_Theme":"TradingView","FTDs":207,"CPA":494.0},{"Ad_Theme":"General","FTDs":108,"CPA":643.0},{"Ad_Theme":"MT5","FTDs":85,"CPA":852.0},{"Ad_Theme":"FX eBook","FTDs":63,"CPA":600.0}]},"Africa Tier 3":{"platforms":[{"Platform":"google","FTDs":592,"CPA":202.0},{"Platform":"fb","FTDs":68,"CPA":142.0},{"Platform":"bing","FTDs":60,"CPA":410.0}],"camp_types":[{"Camp_Type":"brand","FTDs":553,"CPA":184.0},{"Camp_Type":"prospecting","FTDs":488,"CPA":111.0},{"Camp_Type":"lookalike","FTDs":15,"CPA":0.0}],"themes":[{"Ad_Theme":"Brand","FTDs":553,"CPA":177.0},{"Ad_Theme":"FX eBook","FTDs":198,"CPA":49.0},{"Ad_Theme":"TradingView","FTDs":122,"CPA":82.0},{"Ad_Theme":"Trading","FTDs":93,"CPA":109.0},{"Ad_Theme":"Gold","FTDs":25,"CPA":822.0}]},"ROW":{"platforms":[{"Platform":"google","FTDs":316,"CPA":759.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":182,"CPA":720.0},{"Camp_Type":"brand","FTDs":139,"CPA":788.0}],"themes":[{"Ad_Theme":"Login/Brand","FTDs":177,"CPA":713.0},{"Ad_Theme":"Brand","FTDs":139,"CPA":788.0},{"Ad_Theme":"TradingView","FTDs":5,"CPA":950.0}]},"Africa Tier 2":{"platforms":[{"Platform":"google","FTDs":104,"CPA":1216.0},{"Platform":"fb","FTDs":8,"CPA":4280.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":188,"CPA":511.0},{"Camp_Type":"brand","FTDs":92,"CPA":615.0},{"Camp_Type":"lookalike","FTDs":7,"CPA":1786.0}],"themes":[{"Ad_Theme":"Brand","FTDs":89,"CPA":576.0},{"Ad_Theme":"General","FTDs":62,"CPA":840.0},{"Ad_Theme":"Trading","FTDs":31,"CPA":13.0},{"Ad_Theme":"FX eBook","FTDs":29,"CPA":524.0},{"Ad_Theme":"DerivX","FTDs":21,"CPA":0.0}]},"Asia Tier 1":{"platforms":[{"Platform":"google","FTDs":61,"CPA":1475.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":95,"CPA":592.0},{"Camp_Type":"brand","FTDs":82,"CPA":536.0},{"Camp_Type":"lookalike","FTDs":3,"CPA":4717.0}],"themes":[{"Ad_Theme":"Brand","FTDs":82,"CPA":536.0},{"Ad_Theme":"General","FTDs":31,"CPA":594.0},{"Ad_Theme":"TradingView","FTDs":17,"CPA":0.0},{"Ad_Theme":"DerivX","FTDs":13,"CPA":0.0},{"Ad_Theme":"Multi Asset","FTDs":11,"CPA":739.0}]},"Africa Tier 5":{"platforms":[{"Platform":"google","FTDs":40,"CPA":699.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":117,"CPA":175.0},{"Camp_Type":"brand","FTDs":56,"CPA":141.0}],"themes":[{"Ad_Theme":"Brand","FTDs":56,"CPA":141.0},{"Ad_Theme":"MT5","FTDs":22,"CPA":20.0},{"Ad_Theme":"TradingView","FTDs":21,"CPA":5.0},{"Ad_Theme":"Trading","FTDs":18,"CPA":0.0},{"Ad_Theme":"General","FTDs":16,"CPA":368.0}]},"Asia Tier 2":{"platforms":[{"Platform":"google","FTDs":22,"CPA":539.0},{"Platform":"bing","FTDs":10,"CPA":211.0}],"camp_types":[{"Camp_Type":"brand","FTDs":37,"CPA":234.0},{"Camp_Type":"prospecting","FTDs":24,"CPA":291.0},{"Camp_Type":"lookalike","FTDs":5,"CPA":0.0}],"themes":[{"Ad_Theme":"Brand","FTDs":37,"CPA":234.0},{"Ad_Theme":"Crypto","FTDs":13,"CPA":0.0},{"Ad_Theme":"FX eBook","FTDs":5,"CPA":0.0}]},"Europe":{"platforms":[{"Platform":"google","FTDs":45,"CPA":671.0}],"camp_types":[{"Camp_Type":"brand","FTDs":60,"CPA":504.0}],"themes":[{"Ad_Theme":"Brand","FTDs":60,"CPA":504.0}]},"CIS":{"platforms":[{"Platform":"google","FTDs":29,"CPA":778.0}],"camp_types":[{"Camp_Type":"brand","FTDs":45,"CPA":280.0},{"Camp_Type":"prospecting","FTDs":12,"CPA":871.0}],"themes":[{"Ad_Theme":"Brand","FTDs":45,"CPA":280.0}]},"MENA":{"platforms":[{"Platform":"google","FTDs":42,"CPA":560.0}],"camp_types":[{"Camp_Type":"brand","FTDs":48,"CPA":495.0},{"Camp_Type":"prospecting","FTDs":15,"CPA":230.0},{"Camp_Type":"other","FTDs":2,"CPA":0.0}],"themes":[{"Ad_Theme":"Brand","FTDs":48,"CPA":495.0},{"Ad_Theme":"FX eBook","FTDs":5,"CPA":0.0}]},"Africa Tier 4":{"platforms":[{"Platform":"google","FTDs":14,"CPA":594.0}],"camp_types":[{"Camp_Type":"prospecting","FTDs":32,"CPA":394.0},{"Camp_Type":"brand","FTDs":19,"CPA":67.0}],"themes":[{"Ad_Theme":"Brand","FTDs":19,"CPA":67.0},{"Ad_Theme":"DerivX","FTDs":6,"CPA":0.0},{"Ad_Theme":"General","FTDs":6,"CPA":390.0},{"Ad_Theme":"FX eBook","FTDs":5,"CPA":0.0},{"Ad_Theme":"MT5","FTDs":5,"CPA":1115.0}]}},"target":3000,"run_rate":2238.0,"growth_pct":34.0,"reliability":{"ms":{"in_month_total":2651.7,"gap":348.0,"required_total":3394}},"baseline_note":"Jan\u2013Apr 2026 (4 months)","n_months":4};
+
+const INSIGHTS = {
+  "Jamaica":{good:"Strong recent run rate (432 avg). Goal of 480 is a modest +11% ask. FX eBook and Trading are the most efficient creative themes.",warn:""},
+  "Nigeria":{good:"Prospecting far cheaper than brand. TradingView + FX eBook best themes. Retargeting at very low CPA is underutilised.",warn:""},
+  "LATAM":{good:"Bing dramatically cheaper than Google — shift budget. Brand campaigns significantly outperform prospecting in this market.",warn:"Prospecting and FB CPA are very high. Restructure non-brand campaigns."},
+  "Africa Tier 1":{good:"41% of FTDs are attribution (free). Bing significantly cheaper than Google. Ghana campaigns at $45 CPA are highly underinvested.",warn:"Botswana brand keyword at $780 CPA is inflating the tier average."},
+  "Africa Tier 3":{good:"TradingView ($65) and FX eBook ($73) are best-in-portfolio themes. FB more efficient than Google here.",warn:"Gold campaigns $970+ CPA — pause or restructure."},
+  "ROW":{good:"Fastest converting region (median 1 day, 97% within 30 days). CPA will improve significantly as campaigns exit learning phase.",warn:"Single platform (Google), only 2 themes tested. Expand creative mix once learning phase is complete."},
+  "Africa Tier 2":{good:"57% of FTDs are attribution. Trading theme ($375) is most efficient non-brand offer.",warn:"Overall CPA $575 is high. Consider reallocating budget to Africa Tier 3 ($147 avg CPA)."},
+  "Asia Tier 1":{good:"Bing ($635 CPA) far cheaper than Google ($1,165). Brand marginally more efficient than prospecting.",warn:"Clear declining trend. 65% of FTDs are attribution — only 16 paid FTDs/mo. Needs structural review."},
+  "Africa Tier 5":{good:"MT5 campaigns at very low CPA are a standout. TradingView also efficient.",warn:"77% of FTDs are attribution. Only 10 paid FTDs/mo from active spend."},
+  "Asia Tier 2":{good:"53% attribution. Exceptional speed (96% in 30 days, median 2 days). Small budget needed for gains.",warn:"Very low volume overall."},
+  "Europe":{good:"",warn:"Excluded from target. Not a focus market."},
+  "CIS":{good:"Brand ($404 CPA) far more efficient than prospecting. DerivX theme historically exceptional.",warn:"Spend-capped region — cannot meaningfully scale."},
+  "MENA":{good:"Trading and FX eBook dramatically cheaper than brand. Restructure creative mix.",warn:"Prospecting CPA is very high. Google-only platform limits testing."},
+  "Africa Tier 4":{good:"Brand campaigns very cheap vs prospecting. DerivX and TradingView themes show promise.",warn:"72% of FTDs are attribution. Structural ceiling — hard to scale paid campaigns."},
+};
+
+const RUN_RATE_REASONING = {
+  "Jamaica":{trend:"→ Stabilising",months:[531,470,447,250],avg:432,
+    text:"Jamaica peaked in Jan (531) and has settled lower in recent months. The Apr value of 250 reflects a partial month — at 29 days Apr is near-complete, making the 4-month avg of 432 a reliable baseline. Goal of 480 is an +11% uplift, well within recent demonstrated range.",
+    note:"Goal of 480 is achievable — within the range demonstrated in Feb/Mar."},
+  "Nigeria":{trend:"↗ Recovering",months:[397,371,453,437],avg:432,
+    text:"Nigeria dipped in Jan–Feb before recovering strongly in Mar (453) and Apr (437). The 4-month average of 432 understates current momentum slightly. Goal of 510 requires +18% above the 4-month avg — a real step-up, but Mar/Apr trajectory supports it.",
+    note:"Mar/Apr recovery trend is encouraging. Goal of 510 requires +18% uplift."},
+  "LATAM":{trend:"↘ Softening",months:[379,285,343,315],avg:331,
+    text:"LATAM has been on a declining trend. Feb dipped to 285 before partial recovery. The 4-month average of 331 reflects the softening. Goal of 380 is +15% above avg — requires genuine improvement. Bing ($478 CPA) vs Google is the key efficiency lever.",
+    note:"Declining trend. Goal of 380 requires recovery. Bing shift is the primary budget lever."},
+  "Africa Tier 1":{trend:"↗ Strong",months:[422,392,475,563],avg:463,
+    text:"Africa Tier 1 has shown a strong positive trajectory through the baseline period, reaching 563 in April (near-complete). The 4-month avg of 463 is solid. Note that 37% of FTDs are attribution (free) — the paid run rate is 290/month. Goal of 611 requires +32% total uplift.",
+    note:"Strong Apr momentum. Note: 37% of FTDs are attribution. Paid goal is 438."},
+  "Africa Tier 3":{trend:"→ Stable",months:[307,228,260,266],avg:265,
+    text:"Africa Tier 3 dipped in Feb (228) but has been stable at 260-307 otherwise. The 4-month avg of 265 is a reliable baseline. TradingView ($65) and FX eBook ($73) remain exceptional themes. Goal of 350 requires +32% uplift.",
+    note:"Stable baseline. Goal of 350 requires real improvement. Best themes: TradingView + FX eBook."},
+  "ROW":{trend:"★ Scaling",months:[0,0,0,321],avg:80,
+    text:"ROW launched mid-April. The 321 FTDs shown in April reflects the near-complete month. The 80 avg is diluted by 3 zero months — the true current run rate is ~321/month. Fastest converting region (median 1 day). CPA ($752) expected to fall as campaigns mature.",
+    note:"Apr run rate ~321 FTDs/month. CPA will improve as learning phase ends. Goal of 380 is realistic."},
+  "Africa Tier 2":{trend:"→ Stable",months:[70,64,72,81],avg:72,
+    text:"Africa Tier 2 is stable but 57% of FTDs are attribution (not from active spend). Active paid campaigns only generate ~28/month. Overall CPA $575 is high. Goal of 95 is a proportional uplift but depends heavily on improving paid campaign efficiency.",
+    note:"57% attribution FTDs. Paid run rate only 28/mo. High CPA market."},
+  "Asia Tier 1":{trend:"↘ Declining",months:[57,64,36,23],avg:45,
+    text:"Asia Tier 1 shows a clear declining trend with April at just 23 FTDs (near-complete month). 65% of FTDs are attribution — only 16 paid/month from active spend. The goal of 59 requires reversing the current trend. Bing is dramatically cheaper than Google here.",
+    note:"Strong declining trend. 65% attribution. Needs structural intervention, not just budget."},
+  "Africa Tier 5":{trend:"→ Variable",months:[34,42,50,47],avg:43,
+    text:"Africa Tier 5 is variable but stable around 43/month. However, 77% of FTDs are attribution — only 10/month come from active paid campaigns. MT5 campaigns have historically shown very low CPAs and are underinvested.",
+    note:"77% attribution. Only 10 paid FTDs/mo. MT5 theme is the key paid opportunity."},
+  "Asia Tier 2":{trend:"↘ Declining",months:[24,18,14,12],avg:17,
+    text:"Asia Tier 2 is small and declining. However, speed is exceptional (96% fund within 30 days, median 2 days). 53% attribution. Paid goal is only 13/month — minimal investment needed.",
+    note:"Small but fast converting. Paid goal 13/mo — minimal investment required."},
+  "Europe":{trend:"✕ Excluded",months:[13,22,13,12],avg:15,
+    text:"Europe is excluded from the strategic model as it is not a target market.",
+    note:"Excluded."},
+  "CIS":{trend:"↘ Capped",months:[21,9,12,15],avg:14,
+    text:"CIS is constrained by regional spend restrictions. Variable month-to-month. Brand campaigns significantly more efficient than prospecting. Capped at 20.",
+    note:"Spend-restricted. Goal 20 is a cap, not an aspiration."},
+  "MENA":{trend:"↔ Variable",months:[9,4,29,22],avg:16,
+    text:"MENA is small and variable. Mar spiked to 29 — the highest month. Trading and FX eBook themes are dramatically cheaper than brand campaigns. Restructuring the creative mix is the primary lever.",
+    note:"High CPA. Trading + FX eBook themes are the efficient path."},
+  "Africa Tier 4":{trend:"→ Stable",months:[12,10,11,18],avg:13,
+    text:"Africa Tier 4 is almost entirely attribution (72% zero-spend). Only 3.5 paid FTDs/month from active campaigns. Structural ceiling limits scaling. Capped at 15.",
+    note:"72% attribution. Structural ceiling. Goal 15 is near the natural cap."},
+};
+
+const palette=['#1F3864','#2E75B6','#70AD47','#FFC000','#C55A11','#A64D79','#7F6000','#0070C0','#375623','#843C0C','#3A3A6C','#833C00','#4472C4','#ED7D31'];
+let donutChart=null, dailyChartInst=null;
+
+function fmtN(n){return n==null?'—':(typeof n==='number'?n.toLocaleString():n)}
+function cpaBadge(c){
+  if(c==null)return '<span class="cpa ok">—</span>';
+  if(c<=250)return `<span class="cpa green">$${fmtN(c)}</span>`;
+  if(c<=500)return `<span class="cpa ok">$${fmtN(c)}</span>`;
+  if(c<=800)return `<span class="cpa warn">$${fmtN(c)}</span>`;
+  return `<span class="cpa danger">$${fmtN(c)}</span>`;
+}
+function speedMeter(s){
+  if(s==null)return '<span style="color:#aaa;font-size:11px">—</span>';
+  const col=s>=60?'#375623':s>=45?'#2E75B6':s>=35?'#7F6000':'#C00000';
+  return `<div class="speed-meter"><div class="speed-track"><div class="speed-fill" style="width:${Math.min(s,100)}%;background:${col}"></div></div><span class="speed-val" style="color:${col}">${s}</span></div>`;
+}
+function barCell(share){
+  return `<div class="bar-wrap"><div class="bar-track"><div class="bar-fill" style="width:${Math.min(share*3.5,100)}%;background:var(--mid)"></div></div><span class="bar-pct">${share}%</span></div>`;
+}
+
+// Trend chart
+new Chart(document.getElementById('trendChart').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:DATA.chart_data.map(d=>d.month),
+    datasets:[
+      {label:'Monthly FTDs',data:DATA.chart_data.map(d=>d.ftds),
+       backgroundColor:DATA.chart_data.map((_,i)=>i===DATA.chart_data.length-1?'#FFE082':'#2E75B6'),borderRadius:4},
+      {type:'line',label:'Target (3,000)',data:DATA.chart_data.map(()=>3000),
+       borderColor:'#C00000',borderWidth:2,borderDash:[6,3],pointRadius:0,fill:false}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{font:{size:10}}}},
+    scales:{y:{beginAtZero:true,grid:{color:'#eef0f5'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}
+});
+
+// Matrix chart
+const matrixData=DATA.rows.filter(r=>r.cpa&&r.speed_score).map(r=>({x:r.cpa,y:r.speed_score,label:r.region,ftd:r.avg_ftd}));
+new Chart(document.getElementById('matrixChart').getContext('2d'),{
+  type:'bubble',
+  data:{datasets:[{data:matrixData.map(d=>({x:d.x,y:d.y,r:Math.max(5,Math.sqrt(d.ftd)*0.9)})),
+    backgroundColor:matrixData.map((_,i)=>palette[i%palette.length]+'CC'),
+    borderColor:matrixData.map((_,i)=>palette[i%palette.length]),borderWidth:1}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:ctx=>{const d=matrixData[ctx.dataIndex];return[d.label,`CPA: $${d.x} | Speed: ${d.y}`,`FTDs: ${d.ftd}`];}}}},
+    scales:{x:{title:{display:true,text:'CPA ($) — Lower is Better',font:{size:11}},grid:{color:'#eef0f5'},ticks:{font:{size:10}}},
+            y:{title:{display:true,text:'Speed Score — Higher is Better',font:{size:11}},min:25,max:80,grid:{color:'#eef0f5'},ticks:{font:{size:10}}}}}
+});
+
+// Forecast table
+function renderForecast(){
+  const body=document.getElementById('forecastBody');
+  let rows='',tg=0,ta=0,tpaid=0,tzero=0,tspend=0;
+  const medP30=77.2;
+  DATA.rows.forEach(r=>{
+    const goal=r.ms_goal||0;
+    const paid=r.ms_paid_goal||0;
+    const zero=r.ms_zero_baseline||0;
+    const share=((goal/3000)*100).toFixed(1);
+    const vs=goal===0?'—':((goal/r.avg_ftd-1)*100).toFixed(0);
+    const vsStr=goal===0?'<span style="color:#aaa">excl.</span>':vs>0?`<span style="color:#375623;font-weight:700">+${vs}%</span>`:`<span style="color:#C00000;font-weight:700">${vs}%</span>`;
+    const rowTag=r.is_row?'<span class="row-tag new">NEW</span>':'';
+    let otag='';
+    if(r.ms_flag&&r.ms_flag!=='free'){
+      const tl={anchor:'⚓',cap:'🔒',exclude:'✕'};
+      otag=`<span class="override-tag ${r.ms_flag}" title="${r.ms_reason}">${tl[r.ms_flag]||r.ms_flag}</span>`;
+    }
+    const impliedSpend=r.paid_cpa&&paid>0?'$'+(r.paid_cpa*paid).toLocaleString():'—';
+    const rowStyle=r.ms_flag==='exclude'?'style="opacity:0.45"':'';
+    const rid=r.region.replace(/[^a-zA-Z0-9]/g,'_');
+    tg+=goal;ta+=r.avg_ftd;tpaid+=paid;tzero+=zero;
+    if(r.paid_cpa&&paid>0)tspend+=r.paid_cpa*paid;
+    rows+=`<tr ${rowStyle}>
+      <td class="left"><span class="region-clickable" onclick="toggleReasoning('${rid}',this)"><span class="region-chevron" id="chev_${rid}">▶</span>${r.region}${rowTag}${otag}</span></td>
+      <td>${r.avg_ftd.toFixed(1)}</td>
+      <td>${cpaBadge(r.cpa)}</td>
+      <td>${speedMeter(r.speed_score)}</td>
+      <td class="total-goal-cell">${goal>0?fmtN(goal):'—'}</td>
+      <td class="paid-cell">${paid>0?fmtN(paid):'—'}</td>
+      <td class="zero-cell">${zero>0?fmtN(zero):'—'}</td>
+      <td>${goal>0?barCell(parseFloat(share)):'<span style="color:#aaa">—</span>'}</td>
+      <td>${vsStr}</td>
+      <td style="font-size:11px;color:#1B5E20;font-weight:600">${impliedSpend}</td>
+    </tr>`;
+  });
+  rows+=`<tr class="total-row"><td class="left">TOTAL</td><td>${ta.toFixed(1)}</td><td></td><td></td>
+    <td>${tg}</td><td>${tpaid}</td><td>${tzero}</td><td></td><td></td><td>$${tspend.toLocaleString()}</td></tr>`;
+  // Legend row
+  rows+=`<tr><td colspan="10" style="background:#f8f9ff;padding:8px 12px;font-size:11px;color:#444;border-top:2px solid var(--border)">
+    <span class="override-tag anchor">⚓ ANCHORED</span> Jamaica 480 · Nigeria 510 · LATAM 380 · ROW 480 — top markets / special cases &nbsp;·&nbsp;
+    <span class="override-tag cap">🔒 CAPPED</span> CIS 20 · Africa Tier 4 15 — constrained markets &nbsp;·&nbsp;
+    <span class="override-tag exclude">✕ EXCLUDED</span> Europe — not a target market &nbsp;·&nbsp;
+    Remaining 8 regions distributed proportionally to run rate (+34% uniform uplift)
+  </td></tr>`;
+  body.innerHTML=rows;
+  renderReliability();
+}
+
+function renderReliability(){
+  const rel=RELIABILITY['ms']||{};
+  const medP30=77.2;
+  const perRegion=DATA.rows.map(r=>{
+    const goal=r.ms_paid_goal||0;
+    const p30=r.pct_30d!=null?r.pct_30d:medP30;
+    return{region:r.region,goal,inMonth:Math.round(goal*(p30/100)),p30};
+  });
+  const imTotal=perRegion.reduce((a,b)=>a+b.inMonth,0);
+  const paidGoalTotal=DATA.rows.reduce((s,r)=>s+(r.ms_paid_goal||0),0);
+  const pct=((imTotal/paidGoalTotal)*100).toFixed(1);
+  const kpiCol=pct>=85?'#375623':pct>=75?'#7F6000':'#C00000';
+  document.getElementById('reliabilityKPIs').innerHTML=`
+    <div class="rel-kpi" style="background:${pct>=85?'#E2EFDA':pct>=75?'#FFF2CC':'#FFE0E0'}"><div class="rel-kpi-val" style="color:${kpiCol}">${pct}%</div><div class="rel-kpi-lbl">In-Month Reliability</div></div>
+    <div class="rel-kpi" style="background:#f5f7ff"><div class="rel-kpi-val" style="color:var(--dark)">${imTotal.toLocaleString()}</div><div class="rel-kpi-lbl">Expected In-Month Paid FTDs</div></div>
+    <div class="rel-kpi" style="background:#fff5f5"><div class="rel-kpi-val" style="color:var(--red)">${(paidGoalTotal-imTotal).toLocaleString()}</div><div class="rel-kpi-lbl">Carry-Over Gap</div></div>
+    <div class="rel-kpi" style="background:#f0f8f0"><div class="rel-kpi-val" style="color:var(--green)">${rel.required_total?rel.required_total.toLocaleString():'—'}</div><div class="rel-kpi-lbl">Allocation for 3,000 In-Month</div></div>`;
+  const worst=perRegion.filter(r=>r.goal>0).sort((a,b)=>a.p30-b.p30).slice(0,3);
+  document.getElementById('reliabilityInsight').innerHTML=`
+    Setting a paid goal of ${paidGoalTotal.toLocaleString()} will deliver ~${imTotal.toLocaleString()} confirmed paid FTDs within the calendar month.
+    The remaining ${(paidGoalTotal-imTotal).toLocaleString()} carry into the following month from late-converting signups.
+    <strong>Slowest converters (most carry-over risk):</strong> ${worst.map(r=>`${r.region} (${r.p30}% in 30d → ${r.inMonth} of ${r.goal} in-month)`).join(' · ')}`;
+}
+
+// Cohort table
+function renderCohort(){
+  const body=document.getElementById('cohortBody');
+  let rows='';
+  DATA.lag_rows.forEach(r=>{
+    const signups=r.pct_30d>0?Math.round(100/(r.pct_30d/100)):'—';
+    rows+=`<tr>
+      <td class="left">${r.Region}${r.Region==='ROW'?'<span class="row-tag new">NEW</span>':''}</td>
+      <td>${r.median_days!=null?r.median_days+' days':'—'}</td>
+      <td><strong>${r.pct_same_day!=null?r.pct_same_day+'%':'—'}</strong></td>
+      <td><strong>${r.pct_7d!=null?r.pct_7d+'%':'—'}</strong></td>
+      <td><strong>${r.pct_30d!=null?r.pct_30d+'%':'—'}</strong></td>
+      <td>${r.pct_60d!=null?r.pct_60d+'%':'—'}</td>
+      <td>${speedMeter(r.speed_score)}</td>
+      <td>${signups}</td>
+    </tr>`;
+  });
+  body.innerHTML=rows;
+  // Funnel cards
+  document.getElementById('funnelCards').innerHTML=DATA.lag_rows.map(r=>`
+    <div style="background:white;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px 14px">
+      <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;display:flex;justify-content:space-between">
+        <span>${r.Region}</span>${speedMeter(r.speed_score)}
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-seg" style="background:#D6EAF8"><span class="pct">${r.pct_same_day||'—'}%</span><span>Day 0</span></div>
+        <div class="funnel-seg" style="background:#AED6F1"><span class="pct">${r.pct_7d||'—'}%</span><span>≤7d</span></div>
+        <div class="funnel-seg" style="background:#85C1E9"><span class="pct">${r.pct_30d||'—'}%</span><span>≤30d</span></div>
+        <div class="funnel-seg" style="background:#5DADE2;color:white"><span class="pct">${r.pct_60d||'—'}%</span><span>≤60d</span></div>
+      </div>
+    </div>`).join('');
+}
+
+// What Works
+function renderWhatWorks(){
+  document.getElementById('whatWorksCards').innerHTML=DATA.rows.map(r=>{
+    const ww=DATA.what_works[r.region];
+    if(!ww)return '';
+    const ins=INSIGHTS[r.region]||{good:'',warn:''};
+    const platPills=(ww.platforms||[]).slice(0,3).map(p=>`<span class="rc-pill plat">${p.Platform}<span class="vol">${p.FTDs} FTDs${p.CPA>0?' · $'+p.CPA:''}</span></span>`).join('');
+    const themePills=(ww.themes||[]).filter(t=>t.FTDs>=5).slice(0,5).map(t=>`<span class="rc-pill theme">${t.Ad_Theme}<span class="vol">${t.FTDs} FTDs${t.CPA>0?' · $'+t.CPA:''}</span></span>`).join('');
+    const ctPills=(ww.camp_types||[]).slice(0,3).map(ct=>`<span class="rc-pill ctype ${ct.Camp_Type==='brand'?'brand':'pros'}">${ct.Camp_Type}<span class="vol">${ct.FTDs} FTDs · $${ct.CPA||'—'}</span></span>`).join('');
+    const paidPct=r.paid_pct?`${r.paid_pct}% paid`:'';
+    return `<div class="region-card">
+      <div class="rc-header"><span>${r.region}${r.is_row?'<span class="row-tag new" style="margin-left:8px">NEW</span>':''}</span>
+        <span style="font-size:11px;opacity:.8">${r.cpa?'$'+r.cpa+' CPA':''}${paidPct?' · '+paidPct:''}</span></div>
+      <div class="rc-body">
+        <div class="rc-section"><h4>Best Platforms</h4><div class="rc-pill-row">${platPills||'<span style="color:#aaa;font-size:11px">Insufficient data</span>'}</div></div>
+        <div class="rc-section"><h4>Best Themes / Offers</h4><div class="rc-pill-row">${themePills||'<span style="color:#aaa;font-size:11px">Insufficient data</span>'}</div></div>
+        <div class="rc-section"><h4>Campaign Type Breakdown</h4><div class="rc-pill-row">${ctPills||'<span style="color:#aaa;font-size:11px">Insufficient data</span>'}</div></div>
+        ${ins.good?`<div class="insight-box good">💡 ${ins.good}</div>`:''}
+        ${ins.warn?`<div class="insight-box warn">⚠️ ${ins.warn}</div>`:''}
+      </div></div>`;
+  }).join('');
+}
+
+// Historical
+function renderHistorical(){
+  const months=['Jan 26','Feb 26','Mar 26','Apr 26'];
+  const table=document.getElementById('histTable');
+  let thead=`<thead><tr><th class="left">Region</th>`;
+  months.forEach(m=>thead+=`<th>${m}</th>`);
+  thead+=`<th style="background:#1a4f8a">4-Mo Avg</th><th>Trend</th></tr></thead>`;
+  let tbody='<tbody>'; const tots={};
+  months.forEach(m=>tots[m]=0);
+  DATA.rows.forEach(r=>{
+    const vals=months.map(m=>r.months[m]||0);
+    const avg=(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+    const t=vals[3]>vals[2]*1.05?'↑':vals[3]<vals[2]*0.95?'↓':'→';
+    const tCol=t==='↑'?'color:#375623':t==='↓'?'color:#C00000':'';
+    months.forEach((m,i)=>tots[m]=(tots[m]||0)+vals[i]);
+    const rowTag=r.is_row?'<span class="row-tag new">NEW</span>':'';
+    tbody+=`<tr><td class="left">${r.region}${rowTag}</td>`;
+    vals.forEach(v=>tbody+=`<td>${v||'—'}</td>`);
+    tbody+=`<td style="background:#D6E4F7;font-weight:700;text-align:center">${avg}</td>`;
+    tbody+=`<td style="text-align:center;font-size:16px;font-weight:700;${tCol}">${t}</td></tr>`;
+  });
+  tbody+=`<tr class="total-row"><td class="left">TOTAL</td>`;
+  months.forEach(m=>tbody+=`<td>${(tots[m]||0).toLocaleString()}</td>`);
+  const allVals=months.map(m=>tots[m]||0);
+  tbody+=`<td>${(allVals.reduce((a,b)=>a+b,0)/allVals.length).toFixed(0)}</td><td></td></tr></tbody>`;
+  table.innerHTML=thead+tbody;
+}
+
+// Reasoning dropdown
+function toggleReasoning(rid,el){
+  const existing=document.getElementById('reasoning_'+rid);
+  const chev=document.getElementById('chev_'+rid);
+  if(existing){existing.remove();chev.classList.remove('open');return;}
+  chev.classList.add('open');
+  const region=DATA.rows.find(r=>r.region.replace(/[^a-zA-Z0-9]/g,'_')===rid)?.region;
+  const rr=RUN_RATE_REASONING[region];
+  if(!rr)return;
+  const r=DATA.rows.find(r=>r.region===region);
+  const maxV=Math.max(...rr.months.filter(v=>v>0),1);
+  const monthL=['Jan','Feb','Mar','Apr'];
+  const sparks=rr.months.map((v,i)=>{
+    const h=Math.max(4,Math.round((v/maxV)*46));
+    return v>0?`<div class="spark-bar" style="height:${h}px"><span>${v}</span></div><div style="font-size:8px;color:#aaa;text-align:center;width:22px;margin-top:2px">${monthL[i]||''}</div>`:'';
+  }).join('');
+  const newRow=document.createElement('tr');
+  newRow.id='reasoning_'+rid; newRow.className='reasoning-row';
+  const cols=el.closest('tr').querySelectorAll('td').length;
+  newRow.innerHTML=`<td colspan="${cols}"><div class="reasoning-panel">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:6px">Jan–Apr Monthly FTDs</div>
+      <div style="display:flex;gap:0;align-items:flex-end"><div class="reasoning-sparkline">${sparks}</div></div>
+    </div>
+    <div>
+      <div class="reasoning-avgs">
+        <div class="reasoning-avg-pill"><strong>${rr.avg}</strong>4-Month Avg</div>
+        <div><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;background:#f0f0f0;color:#333">${rr.trend}</span></div>
+      </div>
+      <div class="reasoning-text">${rr.text}</div>
+      <div class="reasoning-note">💡 ${rr.note}</div>
+      ${r.paid_pct!=null?`<div style="margin-top:6px;font-size:11px;color:#555">Paid FTDs: <strong>${r.avg_paid_ftd}/mo</strong> (${r.paid_pct}%) · Attribution: <strong>${r.avg_zero_ftd}/mo</strong> (${(100-r.paid_pct).toFixed(1)}%) · Paid CPA: ${r.paid_cpa?'$'+r.paid_cpa:'—'}</div>`:''}
+    </div>
+  </div></td>`;
+  el.closest('tr').insertAdjacentElement('afterend',newRow);
+}
+
+// Progress tracker
+function extractRegion(campaign){
+  if(!campaign)return 'Unknown';
+  const c=campaign.toLowerCase(); const parts=c.split('-');
+  if(parts.includes('cis')||c.startsWith('cis-'))return 'CIS';
+  if(parts.includes('latam')||c.startsWith('latam-'))return 'LATAM';
+  for(const code of ['cr','ar','mx','pe','co','ve','ec','bo','do','pa','gt','sv','ni','uy','cl']){if(parts[1]===code||parts[2]===code)return 'LATAM';}
+  if(c.includes('africa_tier1'))return 'Africa Tier 1';
+  if(c.includes('africa_tier2'))return 'Africa Tier 2';
+  if(c.includes('africa_tier3')||(parts[0]==='africa'&&parts[1]==='tier3'))return 'Africa Tier 3';
+  if(c.includes('africa_tier4')||(parts[0]==='africa'&&parts[1]==='tier4'))return 'Africa Tier 4';
+  if(c.includes('africa_tier5')||(parts[0]==='africa'&&parts[1]==='tier5'))return 'Africa Tier 5';
+  if(c.includes('africa_port'))return 'Africa Tier 5';
+  if(parts.includes('ng'))return 'Nigeria';
+  for(const code of ['za','gh','ke','tz','ug','zw','bw','zm','na']){if(parts.includes(code))return 'Africa Tier 1';}
+  for(const code of ['ci','cm','cd','tg','bj','mg']){if(parts.includes(code))return 'Africa Tier 3';}
+  for(const code of ['ao','mz']){if(parts.includes(code))return 'Africa Tier 5';}
+  for(const code of ['bi','et','ls','sz']){if(parts.includes(code))return 'Africa Tier 4';}
+  if(c.includes('africa-')||parts.includes('africa'))return 'Africa Tier 1';
+  if(c.includes('asia_tier1')||c.includes('asia_isc'))return 'Asia Tier 1';
+  if(c.includes('asia_tier2')||c.includes('asia-'))return 'Asia Tier 2';
+  if(c.includes('middle_east'))return 'MENA';
+  for(const code of ['ae','qa','kw','sa','eg','ma','tn','dz','ye']){if(parts.includes(code))return 'MENA';}
+  if(['eu-','europe-','portugal','spain','poland','italy','france','germany'].some(x=>c.includes(x)))return 'Europe';
+  if(parts.includes('jm'))return 'Jamaica';
+  if(parts.includes('row'))return 'ROW';
+  return 'Other';
+}
+function parseCSV(text){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2)return[];
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/"/g,''));
+  return lines.slice(1).map(line=>{
+    const vals=[];let cur='';let inQ=false;
+    for(const ch of line){if(ch==='"')inQ=!inQ;else if(ch===','&&!inQ){vals.push(cur.trim());cur='';}else cur+=ch;}
+    vals.push(cur.trim());
+    const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');
+    return obj;
+  }).filter(r=>r[headers[0]]);
+}
+let progressData=null;
+function handleDrop(e){e.preventDefault();document.getElementById('uploadZone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)processFile(f);}
+function handleFileSelect(e){const f=e.target.files[0];if(f)processFile(f);}
+function processFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const rows=parseCSV(e.target.result);
+    if(!rows.length||!rows[0].hasOwnProperty('New Funded')){alert('Cannot find "New Funded" column. Please use the PPC Performance Daily CSV.');return;}
+    progressData=rows;
+    renderProgress();
+    const z=document.getElementById('uploadZone');
+    z.classList.add('loaded');
+    z.querySelector('.upload-text').innerHTML=`<strong>✓ ${file.name}</strong>Click to replace with a newer file`;
+  };
+  reader.readAsText(file);
+}
+function renderProgress(){
+  if(!progressData)return;
+  const dates=[...new Set(progressData.map(r=>{const d=new Date(r['Date']);return isNaN(d)?null:d;}).filter(Boolean))].sort((a,b)=>a-b);
+  if(!dates.length)return;
+  const latest=dates[dates.length-1];
+  const mStart=new Date(latest.getFullYear(),latest.getMonth(),1);
+  const mEnd=new Date(latest.getFullYear(),latest.getMonth()+1,0);
+  const daysInMonth=mEnd.getDate();
+  const daysElapsed=latest.getDate();
+  const daysRemaining=daysInMonth-daysElapsed;
+  const pacePct=daysElapsed/daysInMonth;
+  const monthName=latest.toLocaleString('default',{month:'long',year:'numeric'});
+  document.getElementById('chartMonthBadge').textContent=monthName;
+
+  const regionPaid={},regionAttr={};
+  const dailyTotals={};
+  progressData.forEach(row=>{
+    const reg=extractRegion(row['Campaign']);
+    if(reg==='Unknown'||reg==='Other')return;
+    const ftd=parseInt(row['New Funded'])||0;
+    const spend=parseFloat(row['Spend'])||0;
+    if(spend>0)regionPaid[reg]=(regionPaid[reg]||0)+ftd;
+    else regionAttr[reg]=(regionAttr[reg]||0)+ftd;
+    const d=new Date(row['Date']);
+    if(!isNaN(d)&&d.getMonth()===latest.getMonth()&&d.getFullYear()===latest.getFullYear()){
+      const day=d.getDate();dailyTotals[day]=(dailyTotals[day]||0)+(spend>0?ftd:0);
+    }
+  });
+  const paidGoalTotal=DATA.rows.reduce((s,r)=>s+(r.ms_paid_goal||0),0);
+  const totalPaid=Object.values(regionPaid).reduce((a,b)=>a+b,0);
+  const totalAttr=Object.values(regionAttr).reduce((a,b)=>a+b,0);
+  const expectedNow=Math.round(paidGoalTotal*pacePct);
+  const vsExp=totalPaid-expectedNow;
+  const sClass=vsExp>=0?'good':vsExp>=-expectedNow*0.15?'warn':'bad';
+  const dailyNeeded=daysRemaining>0?Math.ceil((paidGoalTotal-totalPaid)/daysRemaining):'—';
+  document.getElementById('progressKPIs').innerHTML=`
+    <div class="prog-kpi"><div class="prog-kpi-val">${totalPaid.toLocaleString()}</div><div class="prog-kpi-lbl">Paid FTDs to Date</div></div>
+    <div class="prog-kpi" style="background:#FFF9C4"><div class="prog-kpi-val" style="color:#7F4000">${totalAttr.toLocaleString()}</div><div class="prog-kpi-lbl">Attribution FTDs</div></div>
+    <div class="prog-kpi"><div class="prog-kpi-val">${paidGoalTotal.toLocaleString()}</div><div class="prog-kpi-lbl">Paid Goal</div></div>
+    <div class="prog-kpi ${sClass}"><div class="prog-kpi-val">${((totalPaid/paidGoalTotal)*100).toFixed(1)}%</div><div class="prog-kpi-lbl">% of Paid Goal</div></div>
+    <div class="prog-kpi ${sClass}"><div class="prog-kpi-val">${vsExp>=0?'+':''}${vsExp.toLocaleString()}</div><div class="prog-kpi-lbl">vs Expected Pace</div></div>`;
+
+  // Daily chart
+  const chartLabels=[],chartActual=[],chartPace=[];
+  let cumFTD=0;
+  for(let d=1;d<=daysElapsed;d++){
+    chartLabels.push(d);cumFTD+=(dailyTotals[d]||0);
+    chartActual.push(cumFTD);chartPace.push(Math.round(paidGoalTotal*(d/daysInMonth)));
+  }
+  if(dailyChartInst)dailyChartInst.destroy();
+  dailyChartInst=new Chart(document.getElementById('dailyChart').getContext('2d'),{
+    data:{labels:chartLabels,datasets:[
+      {type:'line',label:'Paid FTDs (cumulative)',data:chartActual,borderColor:'#2E75B6',backgroundColor:'rgba(46,117,182,.1)',fill:true,tension:.3,pointRadius:3},
+      {type:'line',label:'Expected pace',data:chartPace,borderColor:'#999',borderDash:[5,3],pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10}}}},
+      scales:{y:{beginAtZero:true,grid:{color:'#eef0f5'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+
+  // Progress table
+  let tRows='',tGoal=0,tFTD=0;
+  DATA.rows.forEach(r=>{
+    const goal=r.ms_paid_goal||0;
+    const ftd=regionPaid[r.region]||0;
+    const attr=regionAttr[r.region]||0;
+    const exp=Math.round(goal*pacePct);
+    const pace=ftd-exp;
+    const pct=goal>0?(ftd/goal*100):0;
+    const needed=daysRemaining>0&&goal>ftd?Math.ceil((goal-ftd)/daysRemaining):goal>0&&ftd>=goal?0:'—';
+    tGoal+=goal;tFTD+=ftd;
+    let statusHtml,barCol;
+    if(goal===0){statusHtml='<span class="status-chip excluded">Excl.</span>';barCol='#ccc';}
+    else if(pace>=0){statusHtml='<span class="status-chip ahead">🟢 Ahead</span>';barCol='#375623';}
+    else if(pace>=-exp*0.15){statusHtml='<span class="status-chip on-track">🟡 On Track</span>';barCol='#FFC000';}
+    else{statusHtml='<span class="status-chip behind">🔴 Behind</span>';barCol='#C00000';}
+    const pacePos=Math.min(pacePct*100,100);
+    const rowTag=r.is_row?'<span class="row-tag new">NEW</span>':'';
+    const needStyle=typeof needed==='number'&&needed>0?`style="color:${needed>15?'#C00000':'#7F6000'};font-weight:700"`:'';
+    tRows+=`<tr>
+      <td class="left">${r.region}${rowTag}</td>
+      <td>${goal>0?goal.toLocaleString():'—'}</td>
+      <td style="font-weight:700">${ftd.toLocaleString()}</td>
+      <td style="color:#7F4000;font-weight:600">${attr>0?attr.toLocaleString():'—'}</td>
+      <td><div class="month-bar-wrap"><div class="month-bar-track">
+        <div class="month-bar-fill" style="width:${Math.min(pct,100)}%;background:${barCol}"></div>
+        <div class="month-bar-pace" style="left:${pacePos}%" title="Expected today: ${exp}"></div>
+      </div><span class="month-bar-pct" style="color:${barCol}">${pct.toFixed(0)}%</span></div></td>
+      <td style="color:#888">${goal>0?exp.toLocaleString():'—'}</td>
+      <td style="font-weight:600;color:${pace>=0?'#375623':pace>=-exp*0.15?'#7F6000':'#C00000'}">${goal>0?(pace>=0?'+':'')+pace.toLocaleString():'—'}</td>
+      <td>${statusHtml}</td>
+      <td ${needStyle}>${typeof needed==='number'?needed===0?'✓ Done':needed:'—'}</td>
+    </tr>`;
+  });
+  tRows+=`<tr class="total-row"><td class="left">TOTAL</td><td>${tGoal.toLocaleString()}</td><td>${tFTD.toLocaleString()}</td><td>${Object.values(regionAttr).reduce((a,b)=>a+b,0).toLocaleString()}</td><td></td><td>${Math.round(tGoal*pacePct).toLocaleString()}</td><td>${((tFTD-Math.round(tGoal*pacePct))>=0?'+':'')+((tFTD-Math.round(tGoal*pacePct))).toLocaleString()}</td><td></td><td>${daysRemaining>0?Math.ceil((tGoal-tFTD)/daysRemaining):0}</td></tr>`;
+  document.getElementById('progressBody').innerHTML=tRows;
+  document.getElementById('progressContent').style.display='block';
+}
+
+function showTab(tab,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Init
+renderForecast();
+renderCohort();
+renderWhatWorks();
+renderHistorical();
+</script>
+</body>
+</html>
