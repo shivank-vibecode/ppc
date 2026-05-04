@@ -547,7 +547,7 @@ def roas_rows(user_subset):
         s = len(mlist)
         f = sum(1 for u in mlist if u['ftd'])
         dep = sum(u['deposit'] for u in mlist if u['ftd'])
-        # spend allocated by signup share within subset
+        rev = sum(u['pnl'] for u in mlist if u['ftd'])
         sp = (s / total_signups_subset * total_spend_subset) if total_signups_subset else 0
         roas = round(dep / sp, 1) if sp else 0
         out.append({
@@ -558,10 +558,52 @@ def roas_rows(user_subset):
             'funded': f,
             'fund_rate': round(100*f/s, 2) if s else 0,
             'total_deposit': round(dep, 0),
+            'revenue': round(rev, 2),
             'roas': roas,
             'speed': speed_buckets(mlist),
         })
     return out
+
+
+def roas_campaigns(user_subset):
+    """Per-campaign breakdown with daily signups+funded for campaign drill-down."""
+    by_camp = defaultdict(list)
+    for u in user_subset:
+        by_camp[u['campaign']].append(u)
+    camps = []
+    for camp in sorted(by_camp.keys()):
+        ulist = by_camp[camp]
+        funded_users = [u for u in ulist if u['ftd']]
+        signups = len(ulist)
+        funded = len(funded_users)
+        dep = sum(u['deposit'] for u in funded_users)
+        rev = sum(u['pnl'] for u in funded_users)
+        sp = nc_spend.get(camp, 0)
+        roas_val = round(dep / sp, 2) if sp else 0
+        daily = defaultdict(lambda: {'signups': 0, 'funded': 0, 'deposit': 0, 'revenue': 0})
+        for u in ulist:
+            dk = u['joined'].strftime('%Y-%m-%d')
+            daily[dk]['signups'] += 1
+            if u['ftd']:
+                daily[dk]['funded'] += 1
+                daily[dk]['deposit'] += u['deposit']
+                daily[dk]['revenue'] += u['pnl']
+        daily_list = [{'date': dk, 'signups': v['signups'], 'funded': v['funded'],
+                       'deposit': round(v['deposit'], 2), 'revenue': round(v['revenue'], 2)}
+                      for dk, v in sorted(daily.items())]
+        camps.append({
+            'campaign': camp,
+            'geo': classify_geo(camp),
+            'signups': signups,
+            'funded': funded,
+            'spend': round(sp, 2),
+            'total_deposit': round(dep, 0),
+            'revenue': round(rev, 2),
+            'roas': roas_val,
+            'daily': daily_list,
+        })
+    camps.sort(key=lambda c: c['funded'], reverse=True)
+    return camps
 
 
 cr_rows = roas_rows(users)
@@ -570,8 +612,9 @@ for geo in [g for g,_ in GEO_RULES]:
     sub = [u for u in users if u['geo'] == geo]
     if not sub: continue
     cr_geo[geo] = {'rows': roas_rows(sub)}
-COHORT_ROAS = {'rows': cr_rows, 'geo_data': cr_geo}
-print(f"  COHORT_ROAS rows: {len(cr_rows)}")
+cr_campaigns = roas_campaigns(users)
+COHORT_ROAS = {'rows': cr_rows, 'geo_data': cr_geo, 'campaigns': cr_campaigns}
+print(f"  COHORT_ROAS rows: {len(cr_rows)}, campaigns: {len(cr_campaigns)}")
 
 
 # ── 5. Build SCALING_DATA ────────────────────────────────────────────
