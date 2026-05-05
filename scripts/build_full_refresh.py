@@ -992,9 +992,7 @@ def bucket_users_to_periods(period_key_fn, period_label_fn, period_kind):
             o30  = sum(1 for x in tts if x is not None and x > 30)
             rev  = sum(u['pnl'] for u in funded_users)
             dep  = sum(u['deposit'] for u in funded_users)
-            # Spend per period: pro-rate full-window NC spend by share of signups in this bucket
-            full_camp_signups = sum(1 for u in users if u['campaign'] == camp)
-            sp = nc_spend.get(camp, 0) * (len(ulist) / full_camp_signups) if full_camp_signups else 0
+            sp = _actual_period_spend(camp, period_key_fn, ulist)
             doas = round(rev/sp, 3) if sp else None
             geo_ = classify_geo(camp)
             type_ = classify_type(camp)
@@ -1040,6 +1038,25 @@ def quarter_key(d):
 
 # Pre-compute full-camp signups for perf
 full_signups_by_camp = Counter(u['campaign'] for u in users)
+
+# Build per-date spend lookup from nc_rows so period buckets use actual spend
+_nc_date_spend = defaultdict(lambda: defaultdict(float))  # camp -> date -> spend
+for r in nc_rows:
+    _nc_date_spend[r['campaign']][r['date']] += r['spend']
+
+def _actual_period_spend(camp, period_key_fn, ulist):
+    """Sum actual NC spend for a campaign across all dates that map to the same period key."""
+    if camp not in _nc_date_spend:
+        return 0.0
+    target_keys = set()
+    for u in ulist:
+        target_keys.add(period_key_fn(u['joined']))
+    total = 0.0
+    for d, sp in _nc_date_spend[camp].items():
+        if period_key_fn(d) in target_keys:
+            total += sp
+    return total
+
 # Override the inner computation with cached full count
 def _bucket_periods_fast(period_key_fn, period_label_fn):
     out = defaultdict(lambda: defaultdict(list))
@@ -1062,8 +1079,7 @@ def _bucket_periods_fast(period_key_fn, period_label_fn):
             o30  = sum(1 for x in tts if x is not None and x > 30)
             rev  = sum(u['pnl'] for u in funded_users)
             dep  = sum(u['deposit'] for u in funded_users)
-            full = full_signups_by_camp.get(camp, 0)
-            sp = nc_spend.get(camp, 0) * (len(ulist) / full) if full else 0
+            sp = _actual_period_spend(camp, period_key_fn, ulist)
             doas = round(rev/sp, 3) if sp else None
             geo_ = classify_geo(camp)
             type_ = classify_type(camp)
