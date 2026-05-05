@@ -337,12 +337,18 @@ def build_period_cohorts(period_key_fn, period_label_fn, signup_keyer):
             bucket_funded_users[b].append(u['tt_fund'])
             bucket_deposit[b] += u['deposit']
             drill_users[b][u['campaign']].append(u)
+    # Aggregate actual NC spend per period bucket
+    bucket_spend = defaultdict(float)
+    for r in nc_rows:
+        pk = period_key_fn(r['date'])
+        bucket_spend[pk] += r['spend']
     rows = []
     for b in sorted(bucket_signups.keys()):
         tt = bucket_funded_users[b]
         d = bucket_dist(tt)
         d['signups'] = bucket_signups[b]
         d['total_deposit'] = round(bucket_deposit[b], 2)
+        d['spend'] = round(bucket_spend.get(b, 0), 2)
         d['label'] = period_label_fn(b)
         rows.append((b, d))
     return rows, drill_users
