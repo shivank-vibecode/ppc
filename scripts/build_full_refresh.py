@@ -217,6 +217,7 @@ with open(COHORT_CSV, newline='', encoding='utf-8') as f:
             'tt_fund':  tt,
             'deposit':  dep,
             'pnl':      pnl,
+            'country':  (row.get('Residence') or '').strip() or 'Unknown',
         })
 print(f"  {len(users):,} users in window  (excluded {excluded_users:,} sub-region rows)")
 
@@ -1097,6 +1098,17 @@ def _bucket_periods_fast(period_key_fn, period_label_fn):
                                    spend=sp, deposit=dep, signups=signups_, is_exp=is_exp_)
             if funded == 0 and sp < 25 and rev == 0:
                 continue
+            country_agg = defaultdict(lambda: {'signups': 0, 'funded': 0, 'deposit': 0})
+            for u in ulist:
+                c_name = u.get('country', 'Unknown')
+                country_agg[c_name]['signups'] += 1
+                if u['ftd']:
+                    country_agg[c_name]['funded'] += 1
+                    country_agg[c_name]['deposit'] += u['deposit']
+            countries_list = [{'country': k, 'signups': v['signups'], 'funded': v['funded'],
+                               'deposit': round(v['deposit'], 2)}
+                              for k, v in sorted(country_agg.items(), key=lambda x: -x[1]['funded'])]
+
             bcamps.append({
                 'campaign': camp, 'geo': geo_, 'type': type_,
                 'funded': funded, 'signups': signups_, 's2f': s2f_,
@@ -1107,6 +1119,7 @@ def _bucket_periods_fast(period_key_fn, period_label_fn):
                 'total_deposit': round(dep, 2),
                 'doas': doas, 'decision': dec_, 'rule': rule_,
                 'pic': pic_for(camp, geo_), 'nc_funded': 0,
+                'countries': countries_list,
             })
         res.append({'key': pk, 'label': period_label_fn(pk), 'campaigns': bcamps})
     return res
@@ -1216,6 +1229,347 @@ SCALING_DATA = {
 print(f"  SCALING_DATA: campaigns={len(campaigns)}  apr_actual={apr_cohort_actual}  q1_cf={q1_cf}  cohort_target={cohort_target}  apr_nc_actual≈{apr_nc_actual_est}")
 for s in scoreboard:
     print(f"    {s['pic']}: q1={s['q1_funded']} ({s['q1_share']}%) target={s['apr_target']} actual={s['apr_actual']} ({s['pct']}%) kill_spend=${s['kill_spend']:,.0f}")
+
+
+# -- 5a. Build CUSTOMER_SEGMENT_DATA (Customer Segment internal view) -
+# Classify funded cohort users by deposit AND by PnL into deposit-size /
+# PnL tiers, then aggregate per (campaign / geo / platform / PIC / month)
+# so the dashboard can spot which sources bring micro vs large clients
+# AND which sources actually generate PnL vs lose money.
+print("\nBuilding CUSTOMER_SEGMENT_DATA...")
+
+# Tier definitions per metric. Both "tiers" lists are ordered ascending and
+# the FIRST tier whose 'max' exceeds the value (or has 'max'=None) wins.
+# A 'min' of None means "no lower bound" (used for negative PnL).
+
+# Deposit tiers calibrated against May 4 cohort:
+#   p50 ~ $30, p75 ~ $100, p95 ~ $700, p99 ~ $2,500.
+# Mix (~4,200 funded users): Micro ~60% / Small ~33% / Mid ~6% / Large ~1%.
+DEPOSIT_TIERS = [
+    {'key': 'micro', 'label': 'Micro', 'min': 0.01,   'max': 50.0,    'color': '#9ca3af', 'desc': '$1-$49'},
+    {'key': 'small', 'label': 'Small', 'min': 50.0,   'max': 500.0,   'color': '#0969da', 'desc': '$50-$499'},
+    {'key': 'mid',   'label': 'Mid',   'min': 500.0,  'max': 2500.0,  'color': '#1a7f37', 'desc': '$500-$2,499'},
+    {'key': 'large', 'label': 'Large', 'min': 2500.0, 'max': None,    'color': '#8250df', 'desc': '$2,500+'},
+]
+
+# PnL tiers — same scale as deposit but adds a "loss" tier on the left
+# because ~42% of funded users have negative company PnL (clients won).
+# Mix (~4,200 funded): Loss ~42% / Micro ~44% / Small ~12% / Mid ~1.4% / Large ~0.3%.
+# Mid+Large together produce ~$124k positive PnL, Loss tier costs ~$255k.
+PNL_TIERS = [
+    {'key': 'loss',  'label': 'Loss',  'min': None,   'max': 0.0,     'color': '#cf222e', 'desc': '< $0 (client won)'},
+    {'key': 'micro', 'label': 'Micro', 'min': 0.0,    'max': 50.0,    'color': '#9ca3af', 'desc': '$0-$49'},
+    {'key': 'small', 'label': 'Small', 'min': 50.0,   'max': 500.0,   'color': '#0969da', 'desc': '$50-$499'},
+    {'key': 'mid',   'label': 'Mid',   'min': 500.0,  'max': 2500.0,  'color': '#1a7f37', 'desc': '$500-$2,499'},
+    {'key': 'large', 'label': 'Large', 'min': 2500.0, 'max': None,    'color': '#8250df', 'desc': '$2,500+'},
+]
+
+def detect_platform(name):
+    n = (name or '').lower()
+    if 'facebook' in n or n.endswith('-fb') or '-fb-' in n:
+        return 'Facebook'
+    if 'bing' in n:
+        return 'Bing'
+    if 'mql5dotcom' in n:
+        return 'MQL5dotcom'
+    if 'google' in n or 'pmax' in n or 'permax' in n:
+        return 'Google'
+    return 'Others'
+
+SEGMENT_RECOS = ('Scale', 'Hold', 'Descale', 'Watch')
+
+def _classifier(tiers):
+    """Return a fn that maps a numeric value to a tier key."""
+    def cls(value):
+        try:
+            v = float(value if value is not None else 0)
+        except Exception:
+            return ''
+        for t in tiers:
+            mn = t.get('min'); mx = t.get('max')
+            if mn is not None and v < mn:
+                continue
+            if mx is None or v < mx:
+                return t['key']
+        return tiers[-1]['key']
+    return cls
+
+def _reco_deposit(funded, mix_pct, avg_val):
+    """Quality-first scaling rules driven by deposit size."""
+    if funded < 5:
+        return 'Watch', f'Only {funded} funded - insufficient signal'
+    quality = mix_pct.get('mid', 0) + mix_pct.get('large', 0)
+    micro   = mix_pct.get('micro', 0)
+    if quality >= 15.0 and avg_val >= 200:
+        return 'Scale', f'{quality:.0f}% mid+large, ${avg_val:,.0f} avg deposit'
+    if micro > 75.0 and avg_val < 50:
+        return 'Descale', f'{micro:.0f}% micro, only ${avg_val:,.0f} avg deposit'
+    if quality >= 8.0 and avg_val >= 100:
+        return 'Hold', f'{quality:.0f}% mid+large, ${avg_val:,.0f} avg deposit - monitor'
+    return 'Hold', f'Mixed quality, ${avg_val:,.0f} avg deposit'
+
+def _reco_pnl(funded, mix_pct, avg_val):
+    """PnL-driven scaling rules. Negative PnL = client beat the company,
+    so high loss share AND negative avg PnL = strong descale signal."""
+    if funded < 5:
+        return 'Watch', f'Only {funded} funded - insufficient signal'
+    loss    = mix_pct.get('loss', 0)
+    quality = mix_pct.get('mid', 0) + mix_pct.get('large', 0)
+    if quality >= 10.0 and avg_val >= 50:
+        return 'Scale', f'{quality:.0f}% mid+large PnL, ${avg_val:,.0f} avg PnL'
+    if (loss > 50.0 and avg_val < 0) or avg_val < -25:
+        return 'Descale', f'{loss:.0f}% loss-tier, ${avg_val:,.0f} avg PnL (we are losing)'
+    if quality >= 5.0 and avg_val >= 10:
+        return 'Hold', f'{quality:.0f}% mid+large PnL, ${avg_val:,.0f} avg PnL - monitor'
+    if avg_val >= 0:
+        return 'Hold', f'Net positive (${avg_val:,.0f} avg) but mostly micro PnL'
+    return 'Hold', f'Net negative (${avg_val:,.0f} avg PnL) - watching'
+
+# Per-campaign metadata (geo, platform, signups) — same for both metrics.
+seg_camp_signups = Counter()
+seg_camp_geo     = {}
+seg_camp_platform= {}
+for u in users:
+    camp = u['campaign']
+    seg_camp_signups[camp] += 1
+    seg_camp_geo[camp] = u['geo']
+    seg_camp_platform[camp] = detect_platform(camp)
+
+def build_segmentation(metric_key, tiers, value_fn, reco_fn, value_label):
+    """Build the full segmentation dataset for one metric.
+
+    metric_key   : 'deposit' | 'pnl' — used in field names and logging.
+    tiers        : list of tier dicts.
+    value_fn     : extracts the numeric value from a user dict.
+    reco_fn      : (funded, mix_pct, avg_val) -> (reco, rationale).
+    value_label  : human label for the metric ('deposit', 'PnL').
+    Returns the same nested dict CUSTOMER_SEGMENT_DATA used previously.
+    """
+    classify = _classifier(tiers)
+    tier_keys = [t['key'] for t in tiers]
+    def _empty_counts(): return {k: 0   for k in tier_keys}
+    def _empty_sums():   return {k: 0.0 for k in tier_keys}
+
+    camp_counts  = defaultdict(_empty_counts)
+    camp_values  = defaultdict(_empty_sums)
+    camp_funded  = Counter()
+    camp_total   = defaultdict(float)
+    month_counts = defaultdict(_empty_counts)
+    month_values = defaultdict(_empty_sums)
+
+    # Iterate funded users only — the segmentation is about funded clients.
+    for u in users:
+        if not u['ftd']:
+            continue
+        # Funded = has FTD AND has positive lifetime deposit.
+        try:
+            dep_val = float(u.get('deposit') or 0)
+        except Exception:
+            dep_val = 0.0
+        if dep_val <= 0:
+            continue
+        try:
+            v = float(value_fn(u) or 0)
+        except Exception:
+            v = 0.0
+        seg = classify(v)
+        if not seg:
+            continue
+        camp = u['campaign']
+        camp_funded[camp] += 1
+        camp_counts[camp][seg] += 1
+        camp_values[camp][seg] += v
+        camp_total[camp] += v
+        mk = month_key(u['joined'])
+        month_counts[mk][seg]  += 1
+        month_values[mk][seg] += v
+
+    # Per-campaign rows
+    campaigns = []
+    for camp in sorted(set(list(seg_camp_signups.keys()) + list(nc_spend.keys()))):
+        if is_excluded(camp):
+            continue
+        funded  = camp_funded.get(camp, 0)
+        signups = seg_camp_signups.get(camp, 0)
+        spend   = nc_spend.get(camp, 0)
+        counts  = camp_counts.get(camp, _empty_counts())
+        vals    = camp_values.get(camp, _empty_sums())
+        if funded == 0 and spend < 250:
+            continue
+        total_v = camp_total.get(camp, 0.0)
+        avg_v   = (total_v / funded) if funded else 0.0
+        mix_pct = {k: (100.0 * counts[k] / funded) if funded else 0.0 for k in tier_keys}
+        reco, rationale = reco_fn(funded, mix_pct, avg_v)
+        geo = seg_camp_geo.get(camp) or classify_geo(camp)
+        pic = pic_for(camp, geo)
+        cpa = (spend / funded) if funded > 0 and spend else None
+        spend_per_v = (spend / total_v) if total_v > 0 else None
+        campaigns.append({
+            'campaign':   camp,
+            'geo':        geo,
+            'platform':   seg_camp_platform.get(camp) or detect_platform(camp),
+            'pic':        pic,
+            'signups':    signups,
+            'funded':     funded,
+            'spend':      round(spend, 2),
+            'cpa':        round(cpa, 1) if cpa is not None else None,
+            'total_value':         round(total_v, 2),
+            'avg_value_per_fund':  round(avg_v, 2),
+            'spend_per_value':     round(spend_per_v, 3) if spend_per_v is not None else None,
+            'counts':     {k: counts[k] for k in tier_keys},
+            'values':     {k: round(vals[k], 2) for k in tier_keys},
+            'mix_pct':    {k: round(mix_pct[k], 1) for k in mix_pct},
+            'reco':       reco,
+            'rationale':  rationale,
+        })
+
+    # Group aggregator
+    def _aggregate_by(key_fn):
+        g_counts  = defaultdict(_empty_counts)
+        g_values  = defaultdict(_empty_sums)
+        g_signups = Counter()
+        g_funded  = Counter()
+        g_spend   = defaultdict(float)
+        g_total   = defaultdict(float)
+        for c in campaigns:
+            k = key_fn(c) or 'Other'
+            for tk in tier_keys:
+                g_counts[k][tk] += c['counts'][tk]
+                g_values[k][tk] += c['values'][tk]
+            g_signups[k] += c['signups']
+            g_funded[k]  += c['funded']
+            g_spend[k]   += c['spend']
+            g_total[k]   += c['total_value']
+        rows = []
+        for k in sorted(g_signups.keys()):
+            funded  = g_funded[k]
+            total_v = g_total[k]
+            avg     = (total_v / funded) if funded else 0.0
+            mix_pct = {tk: (100.0 * g_counts[k][tk] / funded) if funded else 0.0 for tk in tier_keys}
+            reco, rationale = reco_fn(funded, mix_pct, avg)
+            rows.append({
+                'label':   k,
+                'signups': g_signups[k],
+                'funded':  funded,
+                'spend':   round(g_spend[k], 2),
+                'cpa':     round(g_spend[k]/funded, 1) if funded else None,
+                'total_value':        round(total_v, 2),
+                'avg_value_per_fund': round(avg, 2),
+                'counts':   {tk: g_counts[k][tk] for tk in tier_keys},
+                'values':   {tk: round(g_values[k][tk], 2) for tk in tier_keys},
+                'mix_pct':  {tk: round(mix_pct[tk], 1) for tk in mix_pct},
+                'reco':     reco,
+                'rationale':rationale,
+            })
+        rows.sort(key=lambda r: -r['funded'])
+        return rows
+
+    by_geo      = _aggregate_by(lambda c: c['geo'])
+    by_platform = _aggregate_by(lambda c: c['platform'])
+    by_pic      = _aggregate_by(lambda c: c['pic'])
+
+    # Overall totals
+    o_counts = _empty_counts()
+    o_values = _empty_sums()
+    o_funded = 0
+    o_total  = 0.0
+    for c in campaigns:
+        o_funded += c['funded']
+        o_total  += c['total_value']
+        for tk in tier_keys:
+            o_counts[tk] += c['counts'][tk]
+            o_values[tk] += c['values'][tk]
+    o_mix_pct     = {tk: round(100.0*o_counts[tk]/o_funded, 1) if o_funded else 0.0 for tk in tier_keys}
+    # Value share — for negative tiers we still report share of |total|, and
+    # also expose signed share so the panel can show "loss tier costs us X%".
+    abs_total = sum(abs(o_values[tk]) for tk in tier_keys) or 1.0
+    o_value_share_abs = {tk: round(100.0*abs(o_values[tk])/abs_total, 1) for tk in tier_keys}
+    o_value_share = {tk: round(100.0*o_values[tk]/o_total, 1) if o_total else 0.0 for tk in tier_keys}
+
+    # Monthly trend
+    monthly = []
+    for mk in sorted(month_counts.keys()):
+        cnt = month_counts[mk]
+        val = month_values[mk]
+        f   = sum(cnt.values())
+        tv  = sum(val.values())
+        monthly.append({
+            'month':   mk,
+            'label':   month_label(mk),
+            'funded':  f,
+            'counts':  {tk: cnt[tk] for tk in tier_keys},
+            'values':  {tk: round(val[tk], 2) for tk in tier_keys},
+            'mix_pct': {tk: round(100.0*cnt[tk]/f, 1) if f else 0.0 for tk in tier_keys},
+            'total_value':        round(tv, 2),
+            'avg_value_per_fund': round(tv/f, 2) if f else 0.0,
+        })
+
+    # Reco summary
+    reco_spend  = {r: 0.0 for r in SEGMENT_RECOS}
+    reco_funded = {r: 0   for r in SEGMENT_RECOS}
+    reco_value  = {r: 0.0 for r in SEGMENT_RECOS}
+    for c in campaigns:
+        reco_spend[c['reco']]  += c['spend']
+        reco_funded[c['reco']] += c['funded']
+        reco_value[c['reco']]  += c['total_value']
+
+    print(f"  [{metric_key}] campaigns={len(campaigns):,} funded={o_funded:,} avg_{metric_key}=${(o_total/o_funded if o_funded else 0):,.0f} total_{metric_key}=${o_total:,.0f}")
+    for tk in tier_keys:
+        print(f"     {tk:>5}: {o_counts[tk]:>5,} ({o_mix_pct[tk]:>5.1f}%), ${o_values[tk]:>14,.0f} ({o_value_share[tk]:>5.1f}% of net)")
+    for r in SEGMENT_RECOS:
+        print(f"     {r:>7}: {reco_funded[r]:>4,} funded, ${reco_spend[r]:>10,.0f} spend, ${reco_value[r]:>11,.0f} {value_label}")
+
+    return {
+        'metric':         metric_key,
+        'metric_label':   value_label,
+        'tiers':          tiers,
+        'tier_keys':      tier_keys,
+        'overall': {
+            'funded':              o_funded,
+            'total_value':         round(o_total, 2),
+            'avg_value_per_fund':  round(o_total/o_funded, 2) if o_funded else 0.0,
+            'counts':              o_counts,
+            'values':              {k: round(v, 2) for k, v in o_values.items()},
+            'mix_pct':             o_mix_pct,
+            'value_share':         o_value_share,
+            'value_share_abs':     o_value_share_abs,
+        },
+        'campaigns':      campaigns,
+        'by_geo':         by_geo,
+        'by_platform':    by_platform,
+        'by_pic':         by_pic,
+        'monthly':        monthly,
+        'reco_summary': {
+            'spend':  {r: round(reco_spend[r],  2) for r in SEGMENT_RECOS},
+            'funded': reco_funded,
+            'value':  {r: round(reco_value[r],  2) for r in SEGMENT_RECOS},
+        },
+    }
+
+deposit_dataset = build_segmentation('deposit', DEPOSIT_TIERS,
+    value_fn=lambda u: u.get('deposit') or 0, reco_fn=_reco_deposit, value_label='deposit')
+pnl_dataset     = build_segmentation('pnl', PNL_TIERS,
+    value_fn=lambda u: u.get('pnl') or 0,     reco_fn=_reco_pnl,     value_label='PnL')
+
+CUSTOMER_SEGMENT_DATA = {
+    'recos':         list(SEGMENT_RECOS),
+    'snapshot_date': SNAPSHOT.isoformat(),
+    'window':        {'start': WINDOW_START.isoformat(), 'end': WINDOW_END.isoformat()},
+    'metrics': {
+        'deposit': deposit_dataset,
+        'pnl':     pnl_dataset,
+    },
+    # Backward-compat shims — old callers that read top-level
+    # tiers/overall/campaigns/etc. keep working with the deposit view.
+    'tiers':         deposit_dataset['tiers'],
+    'overall':       deposit_dataset['overall'],
+    'campaigns':     deposit_dataset['campaigns'],
+    'by_geo':        deposit_dataset['by_geo'],
+    'by_platform':   deposit_dataset['by_platform'],
+    'by_pic':        deposit_dataset['by_pic'],
+    'monthly':       deposit_dataset['monthly'],
+    'reco_summary':  deposit_dataset['reco_summary'],
+}
 
 
 # ── 5b. Build Overall Funnel structures from NC CSV ─────────────────
@@ -1487,6 +1841,8 @@ html = replace_var(html, 'COHORT_DATA',  COHORT_DATA)
 html = replace_var(html, 'COHORT_ROAS',  COHORT_ROAS)
 html = replace_var(html, 'SCALING_DATA', SCALING_DATA,
                    sentinels=('/* SCALING_DATA START */', '/* SCALING_DATA END */'))
+html = replace_var(html, 'CUSTOMER_SEGMENT_DATA', CUSTOMER_SEGMENT_DATA,
+                   sentinels=('/* CUSTOMER_SEGMENT_DATA START */', '/* CUSTOMER_SEGMENT_DATA END */'))
 
 
 ## Patch DATA.cohort_monthly_funded so the Overall Funnel "Cohort Funded"
