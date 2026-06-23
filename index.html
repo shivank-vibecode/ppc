@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deriv ASO — Finance Category Ranking Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f8f9fb;--card:#fff;--header:#0f172a;
+    --text:#1e293b;--muted:#64748b;--subtle:#94a3b8;--border:#e2e8f0;
+    --green:#16a34a;--red:#dc2626;--amber:#d97706;--blue:#2563eb;
+    --green-bg:#dcfce7;--red-bg:#fee2e2;--amber-bg:#fef9e8;--gray-bg:#f1f5f9;
+    --radius:12px;
+  }
+  body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+  .header{background:var(--header);color:#fff;padding:28px 40px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .header h1{font-size:1.35rem;font-weight:700;letter-spacing:-.02em}
+  .header .pill{background:rgba(255,255,255,.1);color:#cbd5e1;font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase}
+
+  .container{max-width:1360px;margin:0 auto;padding:32px 28px 48px}
+  .section{margin-bottom:40px}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:20px}
+  .section-title{font-size:1rem;font-weight:700;color:var(--header)}
+  .section-sub{font-size:.8rem;color:var(--muted)}
+
+  /* KPI Row */
+  .kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+  .kpi{background:var(--card);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border)}
+  .kpi-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .kpi-label .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .kpi-val{font-size:1.75rem;font-weight:800;line-height:1;margin:10px 0 6px}
+  .kpi-secondary{font-size:.75rem;color:var(--muted)}
+  .kpi-secondary strong{color:var(--text)}
+  .kpi-badge{display:inline-flex;align-items:center;gap:3px;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:8px}
+  .badge-up{background:var(--green-bg);color:var(--green)}
+  .badge-down{background:var(--red-bg);color:var(--red)}
+  .badge-flat{background:var(--gray-bg);color:var(--muted)}
+  .kpi-bar-track{height:4px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+  .kpi-bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+
+  /* Chart */
+  .chart-card{background:var(--card);border-radius:var(--radius);padding:28px;border:1px solid var(--border)}
+  .chart-box{position:relative;width:100%;height:420px}
+
+  /* Event markers row */
+  .ev-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .ev-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;border:2px solid var(--border);background:var(--card);cursor:pointer;transition:all .2s;font-size:.82rem}
+  .ev-chip:hover{border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,.12)}
+  .ev-chip.active{border-color:var(--blue);background:#eff6ff;box-shadow:0 2px 12px rgba(37,99,235,.15)}
+  .ev-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0}
+  .ev-chip-text{display:flex;flex-direction:column;line-height:1.3}
+  .ev-chip-name{font-weight:700;font-size:.8rem;color:var(--header)}
+  .ev-chip-meta{font-size:.68rem;color:var(--muted)}
+  .ev-impact-pill{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap;margin-left:auto;flex-shrink:0}
+
+  /* Expanded detail panel */
+  .ev-detail{overflow:hidden;max-height:0;transition:max-height .35s ease, margin .35s ease, opacity .3s ease;opacity:0;margin-top:0}
+  .ev-detail.open{max-height:500px;margin-top:16px;opacity:1}
+  .ev-detail-inner{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .ev-detail-left{display:flex;flex-direction:column;gap:14px}
+  .ev-detail-right{border-left:1px solid var(--border);padding-left:20px;display:flex;flex-direction:column;gap:10px}
+  .ev-d-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+  .ev-d-value{font-size:.85rem;color:var(--text);line-height:1.55}
+  .ev-d-impact{display:flex;align-items:center;gap:12px}
+  .ev-d-impact-num{font-size:1.5rem;font-weight:800}
+  .ev-d-impact-label{font-size:.82rem;color:var(--muted)}
+  .ev-reco{border-top:1px solid var(--border);padding-top:14px}
+  .ev-reco-title{display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;color:var(--blue);margin-bottom:6px}
+  .ev-reco-title svg{width:16px;height:16px;flex-shrink:0}
+  .ev-reco-text{font-size:.84rem;color:var(--text);line-height:1.6}
+
+  @media(max-width:800px){
+    .ev-detail-inner{grid-template-columns:1fr}
+    .ev-detail-right{border-left:none;border-top:1px solid var(--border);padding-left:0;padding-top:16px}
+  }
+
+  .footer{text-align:center;padding:0 28px 40px;color:var(--subtle);font-size:.72rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Deriv — Finance Category Ranking</h1>
+  <span class="pill">Google Play</span>
+  <span class="pill">ASO Impact Tracker</span>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="section-head">
+      <h2 class="section-title">Current Rankings</h2>
+      <span class="section-sub">Latest data point per market &middot; Finance category</span>
+    </div>
+    <div class="kpi-row" id="kpiRow"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2 class="section-title">Ranking Timeline</h2>
+      <span class="section-sub">Click a numbered marker below the chart to see initiative details</span>
+    </div>
+    <div class="chart-card">
+      <div class="chart-box"><canvas id="mainChart"></canvas></div>
+      <div class="ev-row" id="evRow"></div>
+      <div class="ev-detail" id="evDetail"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Sources: category-ranking-history.csv &middot; ASO Change Log &middot; Last updated 22 Jun 2026
+</div>
+
+<script>
+'use strict';
+
+/* ===================================================================
+ *  DATA
+ * =================================================================== */
+
+const RANKING_DATA = [
+  { date:'2026-06-07', Nigeria:154, Kenya:53,  SouthAfrica:81,  Brazil:null, Zimbabwe:13, India:null, Mexico:null, Ghana:155, Argentina:null, Uganda:96  },
+  { date:'2026-06-08', Nigeria:147, Kenya:54,  SouthAfrica:78,  Brazil:null, Zimbabwe:14, India:null, Mexico:null, Ghana:141, Argentina:null, Uganda:97  },
+  { date:'2026-06-09', Nigeria:144, Kenya:55,  SouthAfrica:77,  Brazil:null, Zimbabwe:15, India:null, Mexico:null, Ghana:135, Argentina:null, Uganda:95  },
+  { date:'2026-06-10', Nigeria:152, Kenya:59,  SouthAfrica:82,  Brazil:null, Zimbabwe:14, India:null, Mexico:null, Ghana:143, Argentina:null, Uganda:93  },
+  { date:'2026-06-11', Nigeria:158, Kenya:59,  SouthAfrica:79,  Brazil:null, Zimbabwe:13, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:87 },
+  { date:'2026-06-12', Nigeria:166, Kenya:59,  SouthAfrica:81,  Brazil:null, Zimbabwe:13, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:94 },
+  { date:'2026-06-13', Nigeria:179, Kenya:59,  SouthAfrica:85,  Brazil:null, Zimbabwe:14, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:109},
+  { date:'2026-06-14', Nigeria:174, Kenya:60,  SouthAfrica:86,  Brazil:null, Zimbabwe:14, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:107},
+  { date:'2026-06-15', Nigeria:173, Kenya:58,  SouthAfrica:79,  Brazil:null, Zimbabwe:15, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:104},
+  { date:'2026-06-16', Nigeria:171, Kenya:62,  SouthAfrica:83,  Brazil:null, Zimbabwe:16, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:100},
+  { date:'2026-06-17', Nigeria:172, Kenya:64,  SouthAfrica:83,  Brazil:null, Zimbabwe:19, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:100},
+  { date:'2026-06-18', Nigeria:176, Kenya:62,  SouthAfrica:85,  Brazil:null, Zimbabwe:18, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:98 },
+  { date:'2026-06-19', Nigeria:159, Kenya:64,  SouthAfrica:88,  Brazil:null, Zimbabwe:15, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:96 },
+  { date:'2026-06-20', Nigeria:159, Kenya:64,  SouthAfrica:88,  Brazil:null, Zimbabwe:15, India:null, Mexico:null, Ghana:null, Argentina:null, Uganda:96 },
+];
+
+const COUNTRIES = ['Nigeria','Kenya','SouthAfrica','Brazil','Zimbabwe','India','Mexico','Ghana','Argentina','Uganda'];
+const COUNTRY_LABELS = {
+  Nigeria:'Nigeria', Kenya:'Kenya', SouthAfrica:'South Africa', Brazil:'Brazil',
+  Zimbabwe:'Zimbabwe', India:'India', Mexico:'Mexico', Ghana:'Ghana',
+  Argentina:'Argentina', Uganda:'Uganda'
+};
+const COUNTRY_COLORS = {
+  Nigeria:'#2563eb', Kenya:'#dc2626', SouthAfrica:'#16a34a', Brazil:'#d97706',
+  Zimbabwe:'#7c3aed', India:'#0891b2', Mexico:'#db2777', Ghana:'#ea580c',
+  Argentina:'#4f46e5', Uganda:'#0d9488'
+};
+
+const EVENT_COLORS = ['#2563eb','#7c3aed','#0891b2','#db2777','#ea580c'];
+
+const CHANGE_LOG = [
+  {
+    date:'2026-06-18',
+    shortName:'A/B Test: Translated Copy',
+    initiative:'Kenya A/B Test — English vs Translated Copy',
+    market:'Kenya',
+    countryKey:'Kenya',
+    status:'In progress',
+    description:'A/B test comparing the existing English Kenya listing against a translated variant to measure impact on store listing conversion rate.',
+    progress:'Experiment is live in Play Console. Collecting impressions, store listing visitors and install data across both variants.',
+    nextSteps:'Allow the test to run until statistical significance is reached. Review CVR, install volume and rating impact.',
+    recommendation:'Kenya ranking has been flat-to-declining since the A/B test launched (no movement from #62\u2013#64). This is expected during data collection. Do not interrupt the test early. Once statistical significance is reached, if the translated variant wins, roll it out and replicate the localisation playbook for Uganda and Zimbabwe \u2014 both are nearby in ranking and share similar Swahili-speaking audiences. If the English variant wins, focus optimisation efforts on keyword and screenshot localisation instead.'
+  },
+  {
+    date:'2026-06-19',
+    shortName:'Metadata Localisation',
+    initiative:'Nigeria Metadata Localisation',
+    market:'Nigeria',
+    countryKey:'Nigeria',
+    status:'In progress',
+    description:'Building a country-specific Play Store listing for Nigeria with localised keywords, payment methods and revenue-calculation compliant tone.',
+    progress:'Competitive analysis and keyword set in progress. Payment methods being confirmed with Han / payops.',
+    nextSteps:'Finalise metadata package, run compliance review with Aline and Jong, then publish via Play Console.',
+    recommendation:'Nigeria jumped 17 positions (#176 \u2192 #159) immediately after metadata localisation began \u2014 the strongest single-event improvement across all markets. This confirms localised metadata has outsized impact in high-population African markets. Prioritise publishing the finalised listing as soon as compliance review clears. Simultaneously, prepare the same localisation template for Ghana (currently #155, no active initiative) to capitalise on the same pattern. Track CVR lift over 14 days post-publish to quantify the ROI before scaling to other markets.'
+  },
+  {
+    date:'2026-06-22',
+    shortName:'PT-BR Localisation + A/B Test',
+    initiative:'Brazil PT-BR Localisation + A/B Test',
+    market:'Brazil',
+    countryKey:'Brazil',
+    status:'In progress',
+    description:'Localised Portuguese (PT-BR) metadata for the Brazil Play Store listing. A/B test on localised metadata variants launched 19 June 2026.',
+    progress:'Localised metadata drafted and queued in Play Console. A/B experiment starts today.',
+    nextSteps:'Allow the experiment to run to statistical significance. Review CVR, install volume and rating impact by variant.',
+    recommendation:'Brazil has no ranking data in the current tracking window, which means Deriv is either unlisted or ranked beyond the tracked range. The PT-BR localisation is a critical first step \u2014 expect initial ranking to appear within 7\u201310 days as indexing kicks in. Monitor daily for the first data point. If rank appears above #200, supplement with localised screenshots and a Brazil-specific promotional text highlighting PIX/Boleto payment methods. Brazil is the largest fintech market in LATAM; even reaching top 100 would represent significant growth.'
+  }
+];
+
+
+/* ===================================================================
+ *  HELPERS
+ * =================================================================== */
+
+function vals(key) { return RANKING_DATA.map(r => r[key]).filter(v => v != null); }
+function hasData(key) { return vals(key).length > 0; }
+
+function latest(key) {
+  for (let i = RANKING_DATA.length - 1; i >= 0; i--)
+    if (RANKING_DATA[i][key] != null) return { rank: RANKING_DATA[i][key], date: RANKING_DATA[i].date };
+  return null;
+}
+function first(key) {
+  for (const r of RANKING_DATA) if (r[key] != null) return r[key];
+  return null;
+}
+function best(key) { const v = vals(key); return v.length ? Math.min(...v) : null; }
+function delta(key) {
+  const l = latest(key), f = first(key);
+  return (l && f != null) ? f - l.rank : null;
+}
+
+function impactOf(evt) {
+  const idx = RANKING_DATA.findIndex(r => r.date === evt.date);
+  if (idx < 0) return { before:null, after:null, delta:null, text:'Awaiting data', type:'wait' };
+  const k = evt.countryKey;
+  const before = (idx > 0 && RANKING_DATA[idx-1][k] != null) ? RANKING_DATA[idx-1][k] : null;
+  let after = null;
+  for (let i = RANKING_DATA.length - 1; i >= idx; i--)
+    if (RANKING_DATA[i][k] != null) { after = RANKING_DATA[i][k]; break; }
+  if (before == null || after == null) return { before, after, delta:null, text:'Awaiting data', type:'wait' };
+  const d = before - after;
+  if (d > 0) return { before, after, delta:d, text:`+${d} positions`, type:'pos' };
+  if (d < 0) return { before, after, delta:d, text:`${d} positions`, type:'neg' };
+  return { before, after, delta:0, text:'No change', type:'flat' };
+}
+
+function fmtDate(s) {
+  return new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+}
+
+
+/* ===================================================================
+ *  KPI ROW
+ * =================================================================== */
+
+function renderKPIs() {
+  const el = document.getElementById('kpiRow');
+  const active = COUNTRIES.filter(hasData);
+  const maxGap = Math.max(...active.map(k => { const l = latest(k); return l ? l.rank - 1 : 0; }), 1);
+
+  el.innerHTML = active.map(key => {
+    const l = latest(key), b = best(key), d = delta(key);
+    const gap = l ? l.rank - 1 : 0;
+    const barPct = (gap / maxGap) * 100;
+    let bClass='badge-flat', bIcon='\u2014', bText='No change';
+    if (d > 0) { bClass='badge-up'; bIcon='\u25B2'; bText=`${d} up`; }
+    else if (d < 0) { bClass='badge-down'; bIcon='\u25BC'; bText=`${Math.abs(d)} down`; }
+    const barColor = gap < 20 ? 'var(--green)' : gap < 80 ? 'var(--amber)' : 'var(--red)';
+    return `<div class="kpi">
+      <div class="kpi-label"><span class="dot" style="background:${COUNTRY_COLORS[key]}"></span>${COUNTRY_LABELS[key]}</div>
+      <div class="kpi-val">#${l ? l.rank : '\u2014'}</div>
+      <div class="kpi-secondary">Best: <strong>#${b ?? '\u2014'}</strong></div>
+      <div class="kpi-badge ${bClass}">${bIcon} ${bText}</div>
+      <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+      <div class="kpi-secondary" style="margin-top:6px">${gap} positions to #1</div>
+    </div>`;
+  }).join('');
+}
+
+
+/* ===================================================================
+ *  CHART + INTERACTIVE EVENT MARKERS
+ * =================================================================== */
+
+let chartInstance = null;
+let activeEvent = -1;
+
+function renderChart() {
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  const labels = RANKING_DATA.map(r => r.date);
+  const active = COUNTRIES.filter(hasData);
+
+  const datasets = active.map(key => ({
+    label: COUNTRY_LABELS[key],
+    data: RANKING_DATA.map(r => r[key] ?? null),
+    borderColor: COUNTRY_COLORS[key],
+    backgroundColor: COUNTRY_COLORS[key] + '15',
+    borderWidth: 2.5,
+    pointRadius: 3,
+    pointHoverRadius: 6,
+    tension: 0.3,
+    spanGaps: false
+  }));
+
+  const annotations = buildAnnotations(-1);
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      scales: {
+        y: {
+          reverse: true,
+          title: { display:true, text:'Category Rank (lower = better)', font:{ size:12, weight:'600' }},
+          grid: { color:'#f1f5f9' },
+          ticks: { callback: v => '#'+v, font:{ size:11 }}
+        },
+        x: {
+          grid: { display:false },
+          ticks: { callback: function(v){ return fmtDate(this.getLabelForValue(v)); }, font:{ size:11 }}
+        }
+      },
+      plugins: {
+        legend: { position:'top', labels:{ usePointStyle:true, padding:20, font:{ size:12 }}},
+        tooltip: {
+          backgroundColor:'#0f172a', titleFont:{ size:12 }, bodyFont:{ size:12 }, padding:12,
+          callbacks: {
+            title(items){
+              const d = items[0].label;
+              const ev = CHANGE_LOG.filter(e => e.date === d);
+              let t = fmtDate(d);
+              if(ev.length) t += '\n' + ev.map(e => '\u25CF ' + e.shortName).join('\n');
+              return t;
+            },
+            label(c){ return ' ' + c.dataset.label + ':  #' + c.parsed.y; }
+          }
+        },
+        annotation: { annotations }
+      }
+    }
+  });
+}
+
+function buildAnnotations(selectedIdx) {
+  const labels = RANKING_DATA.map(r => r.date);
+  const lastDate = labels[labels.length - 1];
+  const ann = {};
+
+  CHANGE_LOG.forEach((evt, i) => {
+    const evColor = EVENT_COLORS[i % EVENT_COLORS.length];
+    const isSelected = i === selectedIdx;
+    const imp = impactOf(evt);
+
+    ann['line'+i] = {
+      type:'line',
+      xMin: evt.date, xMax: evt.date,
+      borderColor: isSelected ? evColor : (evColor + '90'),
+      borderWidth: isSelected ? 3 : 2,
+      borderDash: isSelected ? [] : [6,4],
+      label: {
+        display: true,
+        content: '\u2776\u2777\u2778\u2779\u277A'[i] || (i+1)+'',
+        position: 'start',
+        backgroundColor: isSelected ? evColor : '#fff',
+        color: isSelected ? '#fff' : evColor,
+        font: { size: 13, weight:'800' },
+        padding: { top:4, bottom:4, left:8, right:8 },
+        borderRadius: 20,
+        borderColor: evColor,
+        borderWidth: 2
+      }
+    };
+
+    if (isSelected) {
+      const bandColor = imp.type === 'pos'
+        ? 'rgba(22,163,74,0.08)'
+        : imp.type === 'neg'
+          ? 'rgba(220,38,38,0.08)'
+          : 'rgba(217,119,6,0.06)';
+      ann['band'+i] = {
+        type:'box',
+        xMin: evt.date, xMax: lastDate,
+        backgroundColor: bandColor,
+        borderWidth: 0
+      };
+    }
+  });
+
+  return ann;
+}
+
+function selectEvent(idx) {
+  const panel = document.getElementById('evDetail');
+
+  if (activeEvent === idx) {
+    activeEvent = -1;
+    panel.classList.remove('open');
+    document.querySelectorAll('.ev-chip').forEach(c => c.classList.remove('active'));
+    updateChartAnnotations(-1);
+    return;
+  }
+
+  activeEvent = idx;
+  document.querySelectorAll('.ev-chip').forEach((c,i) => c.classList.toggle('active', i===idx));
+  updateChartAnnotations(idx);
+
+  const evt = CHANGE_LOG[idx];
+  const imp = impactOf(evt);
+  const evColor = EVENT_COLORS[idx % EVENT_COLORS.length];
+
+  let impColor = 'var(--amber)';
+  let impBg = 'var(--amber-bg)';
+  let impIcon = '\u23F3';
+  if (imp.type === 'pos') { impColor='var(--green)'; impBg='var(--green-bg)'; impIcon='\u25B2'; }
+  else if (imp.type === 'neg') { impColor='var(--red)'; impBg='var(--red-bg)'; impIcon='\u25BC'; }
+
+  const impNumDisplay = imp.delta != null
+    ? `<span class="ev-d-impact-num" style="color:${impColor}">${impIcon} ${imp.text}</span>`
+    : `<span class="ev-d-impact-num" style="color:${impColor}">${impIcon} Pending</span>`;
+
+  const beforeAfter = (imp.before != null && imp.after != null)
+    ? `<div class="ev-d-impact-label">#${imp.before} \u2192 #${imp.after}</div>`
+    : `<div class="ev-d-impact-label">Data collecting...</div>`;
+
+  panel.innerHTML = `<div class="ev-detail-inner">
+    <div class="ev-detail-left">
+      <div>
+        <div class="ev-d-label">Initiative</div>
+        <div class="ev-d-value" style="font-weight:600">${evt.initiative}</div>
+      </div>
+      <div>
+        <div class="ev-d-label">What Changed</div>
+        <div class="ev-d-value">${evt.description}</div>
+      </div>
+      <div>
+        <div class="ev-d-label">Current Progress</div>
+        <div class="ev-d-value">${evt.progress}</div>
+      </div>
+      <div>
+        <div class="ev-d-label">Next Steps</div>
+        <div class="ev-d-value">${evt.nextSteps}</div>
+      </div>
+    </div>
+    <div class="ev-detail-right">
+      <div>
+        <div class="ev-d-label">Ranking Impact</div>
+        <div class="ev-d-impact">
+          ${impNumDisplay}
+        </div>
+        ${beforeAfter}
+      </div>
+      <div class="ev-reco">
+        <div class="ev-reco-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="${evColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+          AI Recommendation
+        </div>
+        <div class="ev-reco-text">${evt.recommendation}</div>
+      </div>
+    </div>
+  </div>`;
+  panel.classList.add('open');
+}
+
+function updateChartAnnotations(selectedIdx) {
+  if (!chartInstance) return;
+  chartInstance.options.plugins.annotation.annotations = buildAnnotations(selectedIdx);
+  chartInstance.update();
+}
+
+
+/* ===================================================================
+ *  EVENT CHIPS (below chart)
+ * =================================================================== */
+
+function renderEventChips() {
+  const row = document.getElementById('evRow');
+  row.innerHTML = CHANGE_LOG.map((evt, i) => {
+    const imp = impactOf(evt);
+    const evColor = EVENT_COLORS[i % EVENT_COLORS.length];
+    let pillBg, pillColor, pillText;
+    if (imp.type === 'pos') { pillBg='var(--green-bg)'; pillColor='var(--green)'; pillText='\u25B2 '+imp.text; }
+    else if (imp.type === 'neg') { pillBg='var(--red-bg)'; pillColor='var(--red)'; pillText='\u25BC '+imp.text; }
+    else { pillBg='var(--amber-bg)'; pillColor='var(--amber)'; pillText='\u23F3 '+imp.text; }
+
+    return `<div class="ev-chip" onclick="selectEvent(${i})">
+      <span class="ev-num" style="background:${evColor}">${i+1}</span>
+      <span class="ev-chip-text">
+        <span class="ev-chip-name">${evt.shortName}</span>
+        <span class="ev-chip-meta">${evt.market} &middot; ${fmtDate(evt.date)}</span>
+      </span>
+      <span class="ev-impact-pill" style="background:${pillBg};color:${pillColor}">${pillText}</span>
+    </div>`;
+  }).join('');
+}
+
+
+/* ===================================================================
+ *  INIT
+ * =================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderKPIs();
+  renderChart();
+  renderEventChips();
+});
+</script>
+</body>
+</html>
