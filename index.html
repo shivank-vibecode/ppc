@@ -21,7 +21,15 @@
   .header h1{font-size:1.35rem;font-weight:700;letter-spacing:-.02em}
   .header .pill{background:rgba(255,255,255,.1);color:#cbd5e1;font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase}
 
-  .container{max-width:1360px;margin:0 auto;padding:32px 28px 48px}
+  .container{max-width:1360px;margin:0 auto;padding:0 28px 48px}
+
+  /* View Tabs */
+  .view-tabs{display:flex;gap:4px;padding:24px 0 20px;border-bottom:2px solid var(--border);margin-bottom:28px;position:sticky;top:0;z-index:50;background:var(--bg)}
+  .view-tab{padding:10px 24px;border-radius:8px 8px 0 0;font-size:.85rem;font-weight:700;color:var(--muted);background:transparent;border:none;cursor:pointer;transition:all .15s;border-bottom:3px solid transparent;letter-spacing:-.01em}
+  .view-tab:hover{color:var(--text);background:var(--card)}
+  .view-tab.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--card)}
+  .view-panel{display:none}
+  .view-panel.active{display:block}
   .section{margin-bottom:40px}
   .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:20px}
   .section-title{font-size:1rem;font-weight:700;color:var(--header)}
@@ -78,6 +86,141 @@
     .ev-detail-right{border-left:none;border-top:1px solid var(--border);padding-left:0;padding-top:16px}
   }
 
+  /* Funnel Viz Bar */
+  .funnel-viz{display:flex;align-items:stretch;gap:2px;padding:24px 28px;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:16px}
+  .funnel-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+  .funnel-step-bar{width:100%;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;transition:height .4s ease}
+  .funnel-step-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:center;line-height:1.3}
+  .funnel-step-rate{font-size:.72rem;font-weight:700;margin-top:2px}
+  .funnel-arrow{display:flex;align-items:center;justify-content:center;color:var(--subtle);font-size:.75rem;padding:0 2px;align-self:center;margin-top:-18px}
+
+  /* Trend KPIs */
+  .trend-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+  .trend-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+  .trend-left{display:flex;flex-direction:column;gap:2px}
+  .trend-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .trend-val{font-size:1.4rem;font-weight:800;color:var(--header)}
+  .trend-sub{font-size:.7rem;color:var(--muted)}
+  .trend-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .trend-delta{font-size:.82rem;font-weight:700;padding:2px 8px;border-radius:6px}
+  .trend-period{font-size:.62rem;color:var(--subtle);font-weight:500}
+
+  /* Funnel Overview */
+  .overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+  @media(max-width:700px){.overview-grid{grid-template-columns:1fr}}
+  .overview-day{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:22px 24px 18px;position:relative}
+  .overview-day.is-latest{border-color:var(--blue);box-shadow:0 2px 12px rgba(37,99,235,.08)}
+  .overview-date{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+  .overview-date .latest-pill{font-size:.6rem;color:var(--blue);background:#eff6ff;padding:2px 8px;border-radius:4px;font-weight:700}
+  .funnel-shape{display:flex;flex-direction:column;align-items:center;gap:3px}
+  .fn-step{display:flex;align-items:center;width:100%;min-height:38px}
+  .fn-label{width:52px;flex-shrink:0;font-size:.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;text-align:right;padding-right:10px}
+  .fn-bar-area{flex:1;display:flex;justify-content:center;position:relative}
+  .fn-bar{height:34px;border-radius:6px;position:relative;display:flex;align-items:center;transition:width .4s ease}
+  .fn-bar-text{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:8px;pointer-events:none}
+  .fn-count{font-size:.92rem;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .fn-rate{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.8)}
+  .fn-count-out{font-size:.88rem;font-weight:800;color:var(--header)}
+  .fn-rate-out{font-size:.65rem;font-weight:600;color:var(--muted)}
+  .fn-right{width:70px;flex-shrink:0;padding-left:10px;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+  .fn-right-val{font-size:.82rem;font-weight:800;color:var(--header)}
+  .fn-right-rate{font-size:.62rem;font-weight:600;color:var(--muted)}
+  .fn-right-dod{font-size:.58rem;font-weight:600}
+  .fn-drop{display:flex;justify-content:center;padding:0 52px 0 0}
+  .fn-drop-line{font-size:.56rem;color:var(--subtle);font-weight:600;letter-spacing:.02em}
+  .overview-e2e{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:2px solid var(--border)}
+  .overview-e2e-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .overview-e2e-val{font-size:1.15rem;font-weight:800}
+  .overview-why{margin-top:10px;padding:8px 10px;background:#f8fafc;border-radius:6px;border:1px solid var(--border)}
+  .overview-why-title{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+  .overview-why-item{font-size:.68rem;color:var(--text);line-height:1.45;margin-bottom:3px;display:flex;align-items:baseline;gap:4px}
+  .overview-why-item .why-tag{font-size:.58rem;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap}
+  .why-up{background:#dcfce7;color:#16a34a}
+  .why-down{background:#fef2f2;color:#dc2626}
+  .why-neutral{background:#f1f5f9;color:#64748b}
+
+  /* Funnel Table */
+  .funnel-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+  .funnel-table{width:100%;border-collapse:collapse;font-size:.8rem}
+  .funnel-table thead{background:var(--header);color:#fff}
+  .funnel-table th{padding:10px 12px;text-align:right;font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+  .funnel-table th:first-child{text-align:left}
+  .funnel-table th .th-sub{display:block;font-weight:400;font-size:.6rem;opacity:.7;text-transform:none;letter-spacing:0;margin-top:1px}
+  .funnel-table td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;position:relative}
+  .funnel-table td:first-child{text-align:left;font-weight:600;color:var(--header);background:none !important}
+  .funnel-table tbody tr:last-child td{border-bottom:none}
+  .funnel-table .latest-row td{border-top:2px solid var(--blue)}
+  .funnel-table .latest-row td:first-child{color:var(--blue)}
+  .funnel-table .weekend-row td{opacity:.7}
+  .funnel-table .weekend-row td:first-child::after{content:'  \u25CB';font-size:.55rem;color:var(--subtle)}
+  .funnel-table .dod{display:block;font-size:.62rem;font-weight:600;margin-top:1px}
+  .funnel-table .dod-up{color:var(--green)}
+  .funnel-table .dod-down{color:var(--red)}
+  .funnel-table .dod-flat{color:var(--subtle)}
+  .funnel-table .rate-cell{font-weight:700}
+  .funnel-table .sep-col{border-left:2px solid var(--border)}
+
+  /* Funnel View Toggle */
+  .funnel-view-toggle{display:flex;background:var(--gray-bg);border-radius:8px;padding:3px;gap:2px;flex-shrink:0}
+  .fvt-btn{border:none;background:none;padding:6px 14px;border-radius:6px;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+  .fvt-btn:hover{color:var(--header)}
+  .fvt-btn.active{background:var(--card);color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+  /* Campaign sub-rows */
+  .funnel-table .campaign-date-row td{background:var(--gray-bg) !important;font-weight:700;border-top:2px solid var(--border)}
+  .funnel-table .campaign-src-row td{font-size:.75rem;padding:6px 12px}
+  .funnel-table .campaign-src-row td:first-child{font-weight:600;padding-left:24px}
+  .funnel-table .campaign-src-row.has-drill td:first-child{cursor:pointer}
+  .funnel-table .campaign-src-row.has-drill:hover td{background:rgba(37,99,235,.03)}
+  .campaign-src-dot{width:8px;height:8px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:middle}
+  .drill-arrow{font-size:.55rem;margin-left:4px;color:var(--subtle);transition:transform .2s;display:inline-block}
+  .drill-arrow.open{transform:rotate(90deg);color:var(--blue)}
+  .funnel-table .drill-row td{font-size:.7rem;padding:5px 12px;background:rgba(37,99,235,.02) !important;border-bottom:1px solid rgba(0,0,0,.04)}
+  .funnel-table .drill-row td:first-child{padding-left:40px;font-weight:500;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .funnel-table .drill-row:last-child td{border-bottom:1px solid var(--border)}
+
+  /* Source Breakdown */
+  .src-share-bar{display:flex;height:40px;border-radius:8px;overflow:hidden;margin-bottom:8px}
+  .src-share-seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:700;transition:flex .4s ease;cursor:pointer;min-width:24px}
+  .src-share-seg:hover{filter:brightness(1.15)}
+  .src-share-legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px}
+  .src-share-legend-item{display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--text);cursor:pointer}
+  .src-share-legend-item .dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+  .src-share-legend-item .legend-pct{font-weight:700}
+
+  .src-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:16px}
+  .src-card{background:var(--card);border-radius:var(--radius);border:2px solid var(--border);cursor:pointer;transition:all .2s;overflow:hidden}
+  .src-card:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(37,99,235,.08)}
+  .src-card.expanded{border-color:var(--blue);box-shadow:0 4px 20px rgba(37,99,235,.12)}
+  .src-card-head{padding:18px 20px;display:flex;align-items:center;gap:14px}
+  .src-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0}
+  .src-info{flex:1}
+  .src-name{font-size:.85rem;font-weight:700;color:var(--header)}
+  .src-meta{font-size:.7rem;color:var(--muted)}
+  .src-num{text-align:right}
+  .src-num-val{font-size:1.3rem;font-weight:800;color:var(--header)}
+  .src-num-share{font-size:.72rem;font-weight:600}
+  .src-expand-icon{font-size:.7rem;color:var(--subtle);margin-left:4px;transition:transform .2s}
+  .src-card.expanded .src-expand-icon{transform:rotate(180deg)}
+
+  .src-mini-funnel{display:flex;gap:2px;padding:0 20px 14px;align-items:flex-end}
+  .src-mini-step{flex:1;text-align:center}
+  .src-mini-bar{border-radius:3px 3px 0 0;margin:0 auto;width:80%;min-height:3px;transition:height .3s ease}
+  .src-mini-label{font-size:.58rem;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+  .src-mini-rate{font-size:.68rem;font-weight:700;margin-top:1px}
+
+  .src-detail{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .src-card.expanded .src-detail{max-height:600px}
+  .src-detail-inner{border-top:1px solid var(--border);padding:16px 20px}
+  .src-detail-table{width:100%;border-collapse:collapse;font-size:.76rem}
+  .src-detail-table thead{background:var(--gray-bg)}
+  .src-detail-table th{padding:8px 10px;text-align:right;font-weight:600;font-size:.65rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .src-detail-table th:first-child{text-align:left}
+  .src-detail-table td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+  .src-detail-table td:first-child{text-align:left;font-weight:600;color:var(--header)}
+  .src-detail-table tbody tr:last-child td{border-bottom:none}
+  .src-detail-table .rate{font-size:.62rem;color:var(--muted)}
+
   .footer{text-align:center;padding:0 28px 40px;color:var(--subtle);font-size:.72rem}
 </style>
 </head>
@@ -91,30 +234,349 @@
 
 <div class="container">
 
-  <div class="section">
-    <div class="section-head">
-      <h2 class="section-title">Current Rankings</h2>
-      <span class="section-sub">Latest data point per market &middot; Finance category</span>
-    </div>
-    <div class="kpi-row" id="kpiRow"></div>
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="switchView('rankings')">Rankings &amp; Timeline</button>
+    <button class="view-tab" onclick="switchView('funnel')">Install Sources &amp; Funnel</button>
+    <button class="view-tab" onclick="switchView('rootcause')" style="position:relative">Root Cause Analysis <span style="background:#fee2e2;color:#dc2626;font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;letter-spacing:.03em">CRITICAL</span></button>
   </div>
 
-  <div class="section">
-    <div class="section-head">
-      <h2 class="section-title">Ranking Timeline</h2>
-      <span class="section-sub">Click a numbered marker below the chart to see initiative details</span>
+  <div class="view-panel active" id="view-rankings">
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Current Rankings</h2>
+        <span class="section-sub">Latest data point per market &middot; Finance category &middot; Change since initiative</span>
+      </div>
+      <div class="kpi-row" id="kpiRow"></div>
     </div>
-    <div class="chart-card">
-      <div class="chart-box"><canvas id="mainChart"></canvas></div>
-      <div class="ev-row" id="evRow"></div>
-      <div class="ev-detail" id="evDetail"></div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Ranking Timeline</h2>
+        <span class="section-sub">Click a numbered marker below the chart to see initiative details</span>
+      </div>
+      <div class="chart-card">
+        <div class="chart-box"><canvas id="mainChart"></canvas></div>
+        <div class="ev-row" id="evRow"></div>
+        <div class="ev-detail" id="evDetail"></div>
+      </div>
     </div>
+  </div>
+
+  <div class="view-panel" id="view-funnel">
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Funnel Overview</h2>
+        <span class="section-sub">Last 3 days &middot; Install &rarr; First Trade &middot; AppsFlyer</span>
+      </div>
+      <div class="overview-grid" id="overviewGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div>
+          <h2 class="section-title">Trend Lines</h2>
+          <span class="section-sub">Daily metrics over time &middot; Toggle sources and funnel steps</span>
+        </div>
+        <div class="funnel-view-toggle" id="trendToggle">
+          <button class="fvt-btn active" onclick="setTrendMode('installs')">Installs</button>
+          <button class="fvt-btn" onclick="setTrendMode('funnel')">Funnel Rates</button>
+          <button class="fvt-btn" onclick="setTrendMode('sources')">By Source</button>
+        </div>
+      </div>
+      <div class="card" style="padding:16px">
+        <canvas id="trendChart" height="280"></canvas>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Install Sources</h2>
+        <span class="section-sub">Attribution by channel &middot; Click a card to drill down into daily data</span>
+      </div>
+      <div id="srcShareBar"></div>
+      <div class="src-share-legend" id="srcLegend"></div>
+      <div class="src-cards" id="srcCards"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div>
+          <h2 class="section-title" id="funnelTitle">Daily Funnel</h2>
+          <span class="section-sub" id="funnelSub">Install &rarr; Signup &rarr; Wallet &rarr; First Deposit &rarr; First Trade &middot; AppsFlyer &middot; Heatmap by column</span>
+        </div>
+        <div class="funnel-view-toggle" id="funnelViewToggle">
+          <button class="fvt-btn active" onclick="setFunnelView('overall')">Overall</button>
+          <button class="fvt-btn" onclick="setFunnelView('campaign')">By Campaign</button>
+        </div>
+      </div>
+      <div class="funnel-card">
+        <div style="overflow-x:auto"><table class="funnel-table" id="funnelTable"></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOT CAUSE ANALYSIS PANEL -->
+  <div class="view-panel" id="view-rootcause">
+
+    <!-- ===== PART 1: OVERVIEW ===== -->
+    <div style="margin-bottom:36px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--header);margin:0">Root Cause Overview</h2>
+        <span style="font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--gray-bg);padding:3px 10px;border-radius:6px">29 Jun 2026</span>
+      </div>
+
+      <!-- What happened -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:10px">What Happened</div>
+        <div style="font-size:.92rem;line-height:1.7;color:var(--text)">
+          <p style="margin:0 0 12px">June 29 set two records: highest installs (14,360) and lowest FTT rate (0.25%). Only 36 users made a first trade.</p>
+          <p style="margin:0 0 12px">Root cause: Facebook Ads now controls 98.5% of paid install volume, up from 60% on June 23. Facebook&rsquo;s FTT rate is 0.03% &mdash; 3 traders per 10,000 installs. Google Ads runs at 2.7&ndash;6.2% FTT but accounts for just 1.5% of volume.</p>
+          <p style="margin:0">This is not a single-day event. Blended FTT has declined every day for six days straight. It has not exceeded 0.9% since Facebook scaled.</p>
+        </div>
+      </div>
+
+      <!-- So what -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:10px">So What &mdash; DAU Impact</div>
+        <div style="font-size:.92rem;line-height:1.7;color:var(--text)">
+          <p style="margin:0 0 12px">Paid spend is generating installs that do not convert into traders.</p>
+          <p style="margin:0 0 12px">June 29: 14,360 installs produced ~5 traders (2 from Facebook, 3 from Google). June 23, before Facebook scaled: 4,282 installs produced 80 traders. The install count tripled. Trader acquisition dropped 94%.</p>
+          <p style="margin:0 0 12px">App stability is compounding the damage. Crash-free rates are 83&ndash;89% against a 99.5% standard. Roughly 5,700 users crash daily &mdash; across all sources, not just paid. High-intent users from Google may be dropping out at signup or real-account creation due to crashes.</p>
+          <p style="margin:0">Engagement data confirms the shift. Average session time dropped 33% (485s to 326s). Sessions per user halved (1.73 to 0.83). The user base is growing in size and declining in quality simultaneously.</p>
+        </div>
+      </div>
+
+      <!-- Blindspots -->
+      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400e;margin-bottom:10px">Blindspots &mdash; What the Data Cannot Answer Yet</div>
+        <div style="font-size:.85rem;line-height:1.7;color:#78350f">
+          <p style="margin:0 0 10px"><strong>Spend is unknown.</strong> Facebook quality is clear &mdash; 0.03% FTT. But without campaign-level spend, we cannot calculate cost-per-trader. If Facebook CPI is extremely low, the cost math may differ from the quality math. <em>Required: daily campaign spend from Facebook Ads Manager and Google Ads.</em></p>
+          <p style="margin:0 0 10px"><strong>Retention is unmeasured.</strong> FTT captures first trade only. It does not tell us which users return. A source with high FTT but zero Day-7 retention contributes nothing to DAU. <em>Required: Day 1/7/30 retention by source from AppsFlyer Cohort Report.</em></p>
+          <p style="margin:0 0 10px"><strong>One dataset is compromised.</strong> Google&rsquo;s FTDs campaign reports 363 FTTs from 178 installs &mdash; a 204% rate. Attribution scoping is incorrect. Google&rsquo;s aggregate FTT (18.6%) is unreliable. Individual campaign rates (3&ndash;8%) are sound. <em>Required: AppsFlyer attribution window confirmation.</em></p>
+          <p style="margin:0"><strong>Organic impact is invisible.</strong> We cannot determine whether Facebook is adding installs or replacing organic ones. If total Play Store installs held flat while paid surged, paid is cannibalizing free users. <em>Required: Google Play Console daily install data.</em></p>
+        </div>
+      </div>
+
+      <!-- Confidence summary -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:12px">Confidence Summary</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;font-size:.85rem;color:var(--text)">
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Facebook&rsquo;s 0.03&ndash;0.08% FTT rate is the primary driver of the blended quality collapse.</span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Audience Network: 3,814 installs, zero first trades. No scenario justifies continuing.</span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>83&ndash;89% crash-free rates are suppressing conversion across every source.</span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>Pausing all Facebook campaigns &mdash; supported by quality data, but spend data could alter the cost-efficiency conclusion.</span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>Scaling Google campaigns &mdash; quality is demonstrated, but budget headroom and CPA at higher volume are unconfirmed.</span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--red-bg);color:var(--red);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">LOW</span><span>Google&rsquo;s aggregate 18.6% FTT rate &mdash; distorted by attribution error. Per-campaign rates of 3&ndash;8% are reliable.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PART 2: DETAILED ANALYSIS ===== -->
+    <div style="border-top:2px solid var(--border);padding-top:28px;margin-top:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+        <h2 style="font-size:1.1rem;font-weight:800;color:var(--header);margin:0">Detailed Analysis</h2>
+        <span style="font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--gray-bg);padding:3px 10px;border-radius:6px">Charts &amp; Data</span>
+      </div>
+    </div>
+
+    <!-- Source Quality KPIs -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Source Quality Comparison</h2>
+        <span class="section-sub">Google Ads vs Facebook Ads &middot; Jun 23&ndash;29, 2026</span>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:var(--green)"></span>Google Ads FTT Rate</div>
+          <div class="kpi-val" style="color:var(--green)">18.59%</div>
+          <div class="kpi-secondary">444 traders from 2,389 installs</div>
+          <span class="kpi-badge badge-up">&#10003; Profitable &mdash; Scale</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:var(--red)"></span>Facebook Ads FTT Rate</div>
+          <div class="kpi-val" style="color:var(--red)">0.07%</div>
+          <div class="kpi-secondary">19 traders from 26,055 installs</div>
+          <span class="kpi-badge badge-down">&#10007; Kill immediately</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:var(--amber)"></span>Organic FTT Rate</div>
+          <div class="kpi-val" style="color:var(--amber)">2.80%</div>
+          <div class="kpi-secondary">2,716 traders from 96,788 installs</div>
+          <span class="kpi-badge badge-flat">Baseline</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:#7c3aed"></span>Quality Gap (Google vs FB)</div>
+          <div class="kpi-val" style="color:#7c3aed">265&times;</div>
+          <div class="kpi-secondary">Google converts 265&times; better per install</div>
+          <span class="kpi-badge badge-down">Catastrophic gap</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FTT Decay Chart -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Facebook Ads FTT Rate Decay</h2>
+        <span class="section-sub">Daily FTT rate &middot; Algorithm deterioration since Jun 23</span>
+      </div>
+      <div class="chart-card">
+        <div class="chart-box" style="height:320px"><canvas id="rcaDecayChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- DAU vs Engagement Chart -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">DAU Growth vs Engagement Collapse</h2>
+        <span class="section-sub">Firebase Analytics &middot; Jun 2&ndash;29 &middot; DAU inflated while quality plummets</span>
+      </div>
+      <div class="chart-card">
+        <div class="chart-box" style="height:320px"><canvas id="rcaDauChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Engagement Impact KPIs -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Engagement Impact</h2>
+        <span class="section-sub">Before FB Ads (Jun 2&ndash;22) vs After FB Ads (Jun 23&ndash;29)</span>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Avg Engagement Time / User</div>
+          <div class="kpi-val">326s</div>
+          <div class="kpi-secondary">Was <strong>485s</strong> before FB Ads</div>
+          <span class="kpi-badge badge-down">&darr; &minus;33%</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Sessions Per User</div>
+          <div class="kpi-val">0.83</div>
+          <div class="kpi-secondary">Was <strong>1.73</strong> before FB Ads</div>
+          <span class="kpi-badge badge-down">&darr; &minus;52%</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Weekly New Users (Jun 21&ndash;27)</div>
+          <div class="kpi-val">77K</div>
+          <div class="kpi-secondary">Was <strong>45&ndash;48K</strong> in prior weeks</div>
+          <span class="kpi-badge badge-flat">&uarr; +62% (low quality)</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Daily First-Time Trades</div>
+          <div class="kpi-val">36</div>
+          <div class="kpi-secondary">Was <strong>130/day</strong> pre-FB Ads</div>
+          <span class="kpi-badge badge-down">&darr; &minus;72%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Stability -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">App Stability Crisis (Contributing Factor)</h2>
+        <span class="section-sub">Firebase Crashlytics &middot; Both platforms critically below 99.5% standard</span>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:var(--red)"></span>Android Crash-Free</div>
+          <div class="kpi-val" style="color:var(--red)">88.7%</div>
+          <div class="kpi-secondary">Standard: 99.5%+ &middot; ~5,700 users crash daily</div>
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:88.7%;background:var(--red)"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:var(--red)"></span>iOS Crash-Free</div>
+          <div class="kpi-val" style="color:var(--red)">83.5%</div>
+          <div class="kpi-secondary">Standard: 99.5%+ &middot; 16.5% sessions crash</div>
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:83.5%;background:var(--red)"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:var(--amber)"></span>App Exceptions (28d)</div>
+          <div class="kpi-val" style="color:var(--amber)">454K</div>
+          <div class="kpi-secondary">~16,200 per day</div>
+          <span class="kpi-badge badge-down">Extremely high</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><span class="dot" style="background:var(--amber)"></span>Versions Flagged</div>
+          <div class="kpi-val" style="color:var(--amber)">2</div>
+          <div class="kpi-secondary">v1.9.0 &amp; v1.10.2 need investigation</div>
+          <span class="kpi-badge badge-flat">&#9888; Action needed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Funnel Comparison Chart -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Funnel Comparison by Source</h2>
+        <span class="section-sub">AppsFlyer &middot; Conversion rates at each funnel step</span>
+      </div>
+      <div class="chart-card">
+        <div class="chart-box" style="height:320px"><canvas id="rcaFunnelChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Retention Cohorts Table -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Weekly Retention Cohorts</h2>
+        <span class="section-sub">Jun 21&ndash;27 cohort (77K users) = FB Ads traffic &mdash; retention data pending</span>
+      </div>
+      <div class="funnel-card">
+        <div style="overflow-x:auto"><table class="funnel-table" id="rcaRetentionTable"></table></div>
+      </div>
+    </div>
+
+    <!-- Campaign Efficiency Table -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Campaign Efficiency</h2>
+        <span class="section-sub">Top 5 (best) and Bottom 5 (worst) by FTT rate &middot; &ge;20 installs</span>
+      </div>
+      <div class="funnel-card">
+        <div style="overflow-x:auto"><table class="funnel-table" id="rcaCampaignTable"></table></div>
+      </div>
+    </div>
+
+    <!-- Action Plan -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">Recommended Actions</h2>
+        <span class="section-sub">Priority-ordered &middot; Next 24&ndash;48 hours</span>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div class="kpi" style="border-left:4px solid var(--red)">
+          <div style="font-size:.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em">Priority 1 &mdash; Immediate</div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Kill both Facebook campaigns</div>
+          <div class="kpi-secondary">26K installs &rarr; 19 traders in 7 days. Zero business justification. Estimated $30&ndash;40K wasted.</div>
+        </div>
+        <div class="kpi" style="border-left:4px solid var(--red)">
+          <div style="font-size:.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em">Priority 2 &mdash; Critical</div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Investigate crash rates on v1.9.0 and v1.10.2</div>
+          <div class="kpi-secondary">83&ndash;89% crash-free means 5,700+ users crash daily. May suppress FTT for ALL sources.</div>
+        </div>
+        <div class="kpi" style="border-left:4px solid var(--amber)">
+          <div style="font-size:.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.04em">Priority 3 &mdash; High</div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Double Google brand keyword &amp; login campaign budgets</div>
+          <div class="kpi-secondary">Proven 5&ndash;7% FTT rates. 300 installs/day at 5% = 15 new daily traders vs FB&rsquo;s 2&ndash;3.</div>
+        </div>
+        <div class="kpi" style="border-left:4px solid var(--blue)">
+          <div style="font-size:.72rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.04em">Priority 4 &mdash; Medium</div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Scale Nigeria &amp; Africa Tier 1 Google campaigns</div>
+          <div class="kpi-secondary">Kenya (68K), Nigeria (51K) are proven markets. Demand exists &mdash; fill with quality traffic.</div>
+        </div>
+        <div class="kpi" style="border-left:4px solid var(--muted)">
+          <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Priority 5 &mdash; Monitor</div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Track Jun 21&ndash;27 cohort Week 1 retention</div>
+          <div class="kpi-secondary">76K users entered vs 45K baseline. When W1 data arrives, it will quantify retention damage from FB.</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>
 
 <div class="footer">
-  Sources: category-ranking-history.csv &middot; ASO Change Log &middot; Last updated 22 Jun 2026
+  Sources: category-ranking-history.csv &middot; ASO Change Log &middot; AppsFlyer &middot; Firebase Analytics &middot; Datadog &middot; Last updated 30 Jun 2026 (data through 29 Jun)
 </div>
 
 <script>
@@ -212,9 +674,15 @@ function first(key) {
   return null;
 }
 function best(key) { const v = vals(key); return v.length ? Math.min(...v) : null; }
-function delta(key) {
+function marketImpact(key) {
+  const evt = CHANGE_LOG.find(e => e.countryKey === key);
+  if (evt) return impactOf(evt);
   const l = latest(key), f = first(key);
-  return (l && f != null) ? f - l.rank : null;
+  if (!l || f == null) return { before:null, after:null, delta:null, text:'No data', type:'wait' };
+  const d = f - l.rank;
+  if (d > 0) return { before:f, after:l.rank, delta:d, text:`+${d} positions`, type:'pos' };
+  if (d < 0) return { before:f, after:l.rank, delta:d, text:`${d} positions`, type:'neg' };
+  return { before:f, after:l.rank, delta:0, text:'No change', type:'flat' };
 }
 
 function impactOf(evt) {
@@ -247,18 +715,23 @@ function renderKPIs() {
   const maxGap = Math.max(...active.map(k => { const l = latest(k); return l ? l.rank - 1 : 0; }), 1);
 
   el.innerHTML = active.map(key => {
-    const l = latest(key), b = best(key), d = delta(key);
+    const l = latest(key), b = best(key);
+    const imp = marketImpact(key);
     const gap = l ? l.rank - 1 : 0;
     const barPct = (gap / maxGap) * 100;
     let bClass='badge-flat', bIcon='\u2014', bText='No change';
-    if (d > 0) { bClass='badge-up'; bIcon='\u25B2'; bText=`${d} up`; }
-    else if (d < 0) { bClass='badge-down'; bIcon='\u25BC'; bText=`${Math.abs(d)} down`; }
+    if (imp.type === 'pos') { bClass='badge-up'; bIcon='\u25B2'; bText=imp.text; }
+    else if (imp.type === 'neg') { bClass='badge-down'; bIcon='\u25BC'; bText=imp.text.replace('-',''); }
+    else if (imp.type === 'wait') { bClass='badge-flat'; bIcon='\u23F3'; bText='Awaiting data'; }
+    const beforeAfter = (imp.before != null && imp.after != null)
+      ? `#${imp.before} \u2192 #${imp.after}` : '';
     const barColor = gap < 20 ? 'var(--green)' : gap < 80 ? 'var(--amber)' : 'var(--red)';
     return `<div class="kpi">
       <div class="kpi-label"><span class="dot" style="background:${COUNTRY_COLORS[key]}"></span>${COUNTRY_LABELS[key]}</div>
       <div class="kpi-val">#${l ? l.rank : '\u2014'}</div>
       <div class="kpi-secondary">Best: <strong>#${b ?? '\u2014'}</strong></div>
       <div class="kpi-badge ${bClass}">${bIcon} ${bText}</div>
+      ${beforeAfter ? `<div class="kpi-secondary" style="margin-top:6px;font-weight:600;color:var(--text)">${beforeAfter}</div>` : ''}
       <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
       <div class="kpi-secondary" style="margin-top:6px">${gap} positions to #1</div>
     </div>`;
@@ -340,7 +813,7 @@ function buildAnnotations(selectedIdx) {
   CHANGE_LOG.forEach((evt, i) => {
     const evColor = EVENT_COLORS[i % EVENT_COLORS.length];
     const isSelected = i === selectedIdx;
-    const imp = impactOf(evt);
+    const imp = marketImpact(evt.countryKey);
 
     ann['line'+i] = {
       type:'line',
@@ -396,22 +869,30 @@ function selectEvent(idx) {
   updateChartAnnotations(idx);
 
   const evt = CHANGE_LOG[idx];
-  const imp = impactOf(evt);
+  const imp = marketImpact(evt.countryKey);
   const evColor = EVENT_COLORS[idx % EVENT_COLORS.length];
+  const k = evt.countryKey;
+  const cColor = COUNTRY_COLORS[k];
+  const cLabel = COUNTRY_LABELS[k];
 
-  let impColor = 'var(--amber)';
-  let impBg = 'var(--amber-bg)';
-  let impIcon = '\u23F3';
-  if (imp.type === 'pos') { impColor='var(--green)'; impBg='var(--green-bg)'; impIcon='\u25B2'; }
-  else if (imp.type === 'neg') { impColor='var(--red)'; impBg='var(--red-bg)'; impIcon='\u25BC'; }
+  const latestRank = latest(k);
+  const bestRank = best(k);
+  const currentRank = latestRank ? latestRank.rank : null;
+  const gap = currentRank ? currentRank - 1 : 0;
 
-  const impNumDisplay = imp.delta != null
-    ? `<span class="ev-d-impact-num" style="color:${impColor}">${impIcon} ${imp.text}</span>`
-    : `<span class="ev-d-impact-num" style="color:${impColor}">${impIcon} Pending</span>`;
+  const allGaps = COUNTRIES.filter(hasData).map(c => { const l = latest(c); return l ? l.rank - 1 : 0; });
+  const maxGap = Math.max(...allGaps, 1);
+  const barPct = (gap / maxGap) * 100;
+  const barColor = gap < 20 ? 'var(--green)' : gap < 80 ? 'var(--amber)' : 'var(--red)';
 
-  const beforeAfter = (imp.before != null && imp.after != null)
-    ? `<div class="ev-d-impact-label">#${imp.before} \u2192 #${imp.after}</div>`
-    : `<div class="ev-d-impact-label">Data collecting...</div>`;
+  let bClass='badge-flat', bIcon='\u2014', bText='No change';
+  if (imp.type === 'pos') { bClass='badge-up'; bIcon='\u25B2'; bText=imp.text; }
+  else if (imp.type === 'neg') { bClass='badge-down'; bIcon='\u25BC'; bText=imp.text.replace('-',''); }
+  else if (imp.type === 'wait') { bClass='badge-flat'; bIcon='\u23F3'; bText='Awaiting data'; }
+
+  const beforeAfterText = (imp.before != null && imp.after != null)
+    ? `#${imp.before} \u2192 #${imp.after}`
+    : 'Data collecting...';
 
   panel.innerHTML = `<div class="ev-detail-inner">
     <div class="ev-detail-left">
@@ -435,10 +916,15 @@ function selectEvent(idx) {
     <div class="ev-detail-right">
       <div>
         <div class="ev-d-label">Ranking Impact</div>
-        <div class="ev-d-impact">
-          ${impNumDisplay}
+        <div class="kpi" style="margin-top:8px">
+          <div class="kpi-label"><span class="dot" style="background:${cColor}"></span>${cLabel}</div>
+          <div class="kpi-val">#${currentRank ?? '\u2014'}</div>
+          <div class="kpi-secondary">Best: <strong>#${bestRank ?? '\u2014'}</strong></div>
+          <div class="kpi-badge ${bClass}">${bIcon} ${bText}</div>
+          <div class="kpi-secondary" style="margin-top:6px;color:var(--text);font-weight:600">${beforeAfterText}</div>
+          <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+          <div class="kpi-secondary" style="margin-top:6px">${gap} positions to #1</div>
         </div>
-        ${beforeAfter}
       </div>
       <div class="ev-reco">
         <div class="ev-reco-title">
@@ -466,7 +952,7 @@ function updateChartAnnotations(selectedIdx) {
 function renderEventChips() {
   const row = document.getElementById('evRow');
   row.innerHTML = CHANGE_LOG.map((evt, i) => {
-    const imp = impactOf(evt);
+    const imp = marketImpact(evt.countryKey);
     const evColor = EVENT_COLORS[i % EVENT_COLORS.length];
     let pillBg, pillColor, pillText;
     if (imp.type === 'pos') { pillBg='var(--green-bg)'; pillColor='var(--green)'; pillText='\u25B2 '+imp.text; }
@@ -484,6 +970,1278 @@ function renderEventChips() {
   }).join('');
 }
 
+
+/* ===================================================================
+ *  FUNNEL TABLE
+ * =================================================================== */
+
+const FUNNEL_DATA = [
+  {date:'2026-05-30',installs:4157,signups:932,wallets:556,ftd:154,ftt:147},
+  {date:'2026-05-31',installs:4215,signups:920,wallets:517,ftd:102,ftt:89},
+  {date:'2026-06-01',installs:4468,signups:938,wallets:548,ftd:130,ftt:121},
+  {date:'2026-06-02',installs:4395,signups:954,wallets:538,ftd:142,ftt:124},
+  {date:'2026-06-03',installs:4755,signups:909,wallets:490,ftd:151,ftt:143},
+  {date:'2026-06-04',installs:4867,signups:953,wallets:511,ftd:129,ftt:114},
+  {date:'2026-06-05',installs:5237,signups:939,wallets:553,ftd:154,ftt:139},
+  {date:'2026-06-06',installs:4907,signups:926,wallets:534,ftd:135,ftt:122},
+  {date:'2026-06-07',installs:4533,signups:937,wallets:532,ftd:133,ftt:119},
+  {date:'2026-06-08',installs:4910,signups:994,wallets:585,ftd:153,ftt:144},
+  {date:'2026-06-09',installs:5086,signups:975,wallets:560,ftd:166,ftt:152},
+  {date:'2026-06-10',installs:4759,signups:963,wallets:550,ftd:132,ftt:113},
+  {date:'2026-06-11',installs:4486,signups:964,wallets:564,ftd:158,ftt:146},
+  {date:'2026-06-12',installs:4384,signups:962,wallets:545,ftd:133,ftt:121},
+  {date:'2026-06-13',installs:4440,signups:1016,wallets:584,ftd:140,ftt:121},
+  {date:'2026-06-14',installs:4094,signups:922,wallets:563,ftd:149,ftt:134},
+  {date:'2026-06-15',installs:4490,signups:1044,wallets:562,ftd:167,ftt:155},
+  {date:'2026-06-16',installs:4389,signups:1024,wallets:587,ftd:177,ftt:159},
+  {date:'2026-06-17',installs:4341,signups:1070,wallets:573,ftd:139,ftt:123},
+  {date:'2026-06-18',installs:4364,signups:1075,wallets:546,ftd:101,ftt:96},
+  {date:'2026-06-19',installs:4099,signups:1072,wallets:559,ftd:117,ftt:110},
+  {date:'2026-06-20',installs:4108,signups:1047,wallets:530,ftd:117,ftt:107},
+  {date:'2026-06-21',installs:3874,signups:1025,wallets:528,ftd:86,ftt:70},
+  {date:'2026-06-22',installs:4104,signups:1072,wallets:544,ftd:82,ftt:63},
+  {date:'2026-06-23',installs:4282,signups:1093,wallets:546,ftd:97,ftt:80},
+  {date:'2026-06-24',installs:12486,signups:2280,wallets:843,ftd:97,ftt:84},
+  {date:'2026-06-25',installs:12089,signups:2445,wallets:968,ftd:115,ftt:91},
+  {date:'2026-06-26',installs:9705,signups:2027,wallets:808,ftd:94,ftt:72},
+  {date:'2026-06-27',installs:9776,signups:2038,wallets:782,ftd:92,ftt:61},
+  {date:'2026-06-28',installs:10795,signups:2296,wallets:746,ftd:61,ftt:39},
+  {date:'2026-06-29',installs:14360,signups:2825,wallets:745,ftd:55,ftt:36},
+];
+
+function pct(a, b) { return b ? ((a / b) * 100).toFixed(1) + '%' : '\u2014'; }
+function pctRaw(a, b) { return b ? (a / b) * 100 : 0; }
+function num(v) { return v.toLocaleString('en'); }
+function isWeekend(ds) { const d = new Date(ds + 'T00:00:00').getDay(); return d === 0 || d === 6; }
+
+function heatBg(val, min, max, hue) {
+  if (max === min) return 'transparent';
+  const t = (val - min) / (max - min);
+  return `hsla(${hue}, 75%, 50%, ${(t * 0.18).toFixed(3)})`;
+}
+
+function dodHtml(curr, prev, invert) {
+  if (prev == null) return '';
+  const d = curr - prev;
+  if (d === 0) return '<span class="dod dod-flat">\u2014</span>';
+  const up = invert ? d < 0 : d > 0;
+  const cls = up ? 'dod-up' : 'dod-down';
+  const arrow = up ? '\u25B2' : '\u25BC';
+  return `<span class="dod ${cls}">${arrow}${Math.abs(d).toLocaleString('en')}</span>`;
+}
+
+function sliceAvg(data, key, start, end) {
+  const s = data.slice(start, end);
+  return s.length ? s.reduce((a, r) => a + r[key], 0) / s.length : 0;
+}
+
+const SOURCE_DATA = {
+  organic: {
+    name:'Organic', color:'#16a34a', data: [
+      {date:'2026-05-30',installs:3070,signups:871,wallets:519,ftd:142,ftt:136},
+      {date:'2026-05-31',installs:3106,signups:857,wallets:474,ftd:94,ftt:82},
+      {date:'2026-06-01',installs:3265,signups:866,wallets:500,ftd:119,ftt:111},
+      {date:'2026-06-02',installs:3282,signups:880,wallets:485,ftd:123,ftt:109},
+      {date:'2026-06-03',installs:3389,signups:834,wallets:442,ftd:130,ftt:122},
+      {date:'2026-06-04',installs:3306,signups:874,wallets:460,ftd:110,ftt:98},
+      {date:'2026-06-05',installs:3631,signups:862,wallets:494,ftd:130,ftt:116},
+      {date:'2026-06-06',installs:3467,signups:844,wallets:478,ftd:117,ftt:106},
+      {date:'2026-06-07',installs:3233,signups:846,wallets:465,ftd:112,ftt:99},
+      {date:'2026-06-08',installs:3413,signups:925,wallets:519,ftd:125,ftt:115},
+      {date:'2026-06-09',installs:3474,signups:883,wallets:497,ftd:130,ftt:117},
+      {date:'2026-06-10',installs:3373,signups:877,wallets:482,ftd:102,ftt:85},
+      {date:'2026-06-11',installs:3171,signups:872,wallets:479,ftd:116,ftt:107},
+      {date:'2026-06-12',installs:3191,signups:865,wallets:468,ftd:103,ftt:93},
+      {date:'2026-06-13',installs:3199,signups:919,wallets:507,ftd:107,ftt:93},
+      {date:'2026-06-14',installs:3029,signups:858,wallets:507,ftd:119,ftt:106},
+      {date:'2026-06-15',installs:3246,signups:933,wallets:465,ftd:99,ftt:87},
+      {date:'2026-06-16',installs:3196,signups:930,wallets:491,ftd:118,ftt:101},
+      {date:'2026-06-17',installs:3187,signups:980,wallets:507,ftd:110,ftt:97},
+      {date:'2026-06-18',installs:3221,signups:980,wallets:498,ftd:91,ftt:85},
+      {date:'2026-06-19',installs:3031,signups:986,wallets:520,ftd:109,ftt:102},
+      {date:'2026-06-20',installs:3064,signups:964,wallets:475,ftd:98,ftt:89},
+      {date:'2026-06-21',installs:2941,signups:948,wallets:488,ftd:83,ftt:66},
+      {date:'2026-06-22',installs:3057,signups:992,wallets:496,ftd:74,ftt:58},
+      {date:'2026-06-23',installs:3090,signups:975,wallets:500,ftd:89,ftt:73},
+      {date:'2026-06-24',installs:3071,signups:963,wallets:490,ftd:71,ftt:63},
+      {date:'2026-06-25',installs:3154,signups:995,wallets:484,ftd:78,ftt:60},
+      {date:'2026-06-26',installs:3117,signups:979,wallets:459,ftd:68,ftt:55},
+      {date:'2026-06-27',installs:3201,signups:959,wallets:452,ftd:65,ftt:44},
+      {date:'2026-06-28',installs:3224,signups:1006,wallets:438,ftd:45,ftt:28},
+      {date:'2026-06-29',installs:3459,signups:1032,wallets:431,ftd:41,ftt:24},
+    ]
+  },
+  google: {
+    name:'Google Ads (Paid)', color:'#2563eb', data: [
+      {date:'2026-05-30',installs:38,signups:6,wallets:3,ftd:1,ftt:1},
+      {date:'2026-05-31',installs:26,signups:6,wallets:4,ftd:0,ftt:0},
+      {date:'2026-06-01',installs:37,signups:9,wallets:10,ftd:1,ftt:2},
+      {date:'2026-06-02',installs:49,signups:12,wallets:14,ftd:7,ftt:5},
+      {date:'2026-06-03',installs:54,signups:21,wallets:20,ftd:13,ftt:14},
+      {date:'2026-06-04',installs:42,signups:17,wallets:13,ftd:7,ftt:7},
+      {date:'2026-06-05',installs:69,signups:27,wallets:29,ftd:18,ftt:17},
+      {date:'2026-06-06',installs:65,signups:28,wallets:29,ftd:10,ftt:10},
+      {date:'2026-06-07',installs:66,signups:35,wallets:37,ftd:14,ftt:13},
+      {date:'2026-06-08',installs:67,signups:29,wallets:39,ftd:21,ftt:23},
+      {date:'2026-06-09',installs:59,signups:37,wallets:29,ftd:26,ftt:26},
+      {date:'2026-06-10',installs:52,signups:32,wallets:37,ftd:23,ftt:21},
+      {date:'2026-06-11',installs:73,signups:50,wallets:56,ftd:34,ftt:32},
+      {date:'2026-06-12',installs:68,signups:42,wallets:43,ftd:22,ftt:23},
+      {date:'2026-06-13',installs:59,signups:47,wallets:53,ftd:28,ftt:25},
+      {date:'2026-06-14',installs:62,signups:27,wallets:34,ftd:24,ftt:25},
+      {date:'2026-06-15',installs:79,signups:67,wallets:71,ftd:57,ftt:59},
+      {date:'2026-06-16',installs:85,signups:45,wallets:65,ftd:53,ftt:53},
+      {date:'2026-06-17',installs:85,signups:34,wallets:35,ftd:26,ftt:23},
+      {date:'2026-06-18',installs:94,signups:23,wallets:11,ftd:2,ftt:4},
+      {date:'2026-06-19',installs:83,signups:26,wallets:14,ftd:3,ftt:3},
+      {date:'2026-06-20',installs:84,signups:23,wallets:14,ftd:6,ftt:6},
+      {date:'2026-06-21',installs:83,signups:24,wallets:12,ftd:2,ftt:3},
+      {date:'2026-06-22',installs:118,signups:30,wallets:18,ftd:3,ftt:3},
+      {date:'2026-06-23',installs:84,signups:24,wallets:17,ftd:4,ftt:4},
+      {date:'2026-06-24',installs:127,signups:29,wallets:17,ftd:6,ftt:5},
+      {date:'2026-06-25',installs:126,signups:61,wallets:35,ftd:8,ftt:6},
+      {date:'2026-06-26',installs:240,signups:114,wallets:52,ftd:8,ftt:6},
+      {date:'2026-06-27',installs:275,signups:140,wallets:61,ftd:4,ftt:4},
+      {date:'2026-06-28',installs:253,signups:123,wallets:50,ftd:8,ftt:5},
+      {date:'2026-06-29',installs:233,signups:103,wallets:45,ftd:4,ftt:4},
+    ]
+  },
+  meta: {
+    name:'Facebook Ads', color:'#7c3aed', data: [
+      {date:'2026-06-23',installs:127,signups:39,wallets:8,ftd:0,ftt:0},
+      {date:'2026-06-24',installs:5148,signups:935,wallets:187,ftd:6,ftt:5},
+      {date:'2026-06-25',installs:4370,signups:873,wallets:231,ftd:6,ftt:5},
+      {date:'2026-06-26',installs:2586,signups:528,wallets:124,ftd:1,ftt:0},
+      {date:'2026-06-27',installs:2892,signups:576,wallets:130,ftd:6,ftt:3},
+      {date:'2026-06-28',installs:3913,signups:743,wallets:101,ftd:1,ftt:0},
+      {date:'2026-06-29',installs:7019,signups:1253,wallets:140,ftd:2,ftt:2},
+    ]
+  },
+  qr: {
+    name:'QR Code', color:'#db2777', data: [
+      {date:'2026-05-30',installs:1049,signups:55,wallets:34,ftd:11,ftt:10},
+      {date:'2026-05-31',installs:1083,signups:57,wallets:39,ftd:8,ftt:7},
+      {date:'2026-06-01',installs:1166,signups:63,wallets:38,ftd:10,ftt:8},
+      {date:'2026-06-02',installs:1064,signups:62,wallets:39,ftd:12,ftt:10},
+      {date:'2026-06-03',installs:1312,signups:54,wallets:28,ftd:8,ftt:7},
+      {date:'2026-06-04',installs:1519,signups:62,wallets:38,ftd:12,ftt:9},
+      {date:'2026-06-05',installs:1537,signups:50,wallets:30,ftd:6,ftt:6},
+      {date:'2026-06-06',installs:1375,signups:54,wallets:27,ftd:8,ftt:6},
+      {date:'2026-06-07',installs:1234,signups:56,wallets:30,ftd:7,ftt:7},
+      {date:'2026-06-08',installs:1430,signups:40,wallets:27,ftd:7,ftt:6},
+      {date:'2026-06-09',installs:1553,signups:55,wallets:34,ftd:10,ftt:9},
+      {date:'2026-06-10',installs:1333,signups:54,wallets:31,ftd:7,ftt:7},
+      {date:'2026-06-11',installs:1233,signups:39,wallets:28,ftd:8,ftt:7},
+      {date:'2026-06-12',installs:1115,signups:51,wallets:32,ftd:8,ftt:5},
+      {date:'2026-06-13',installs:1179,signups:50,wallets:24,ftd:5,ftt:3},
+      {date:'2026-06-14',installs:1003,signups:37,wallets:22,ftd:6,ftt:3},
+      {date:'2026-06-15',installs:1165,signups:44,wallets:26,ftd:11,ftt:9},
+      {date:'2026-06-16',installs:1103,signups:47,wallets:30,ftd:6,ftt:5},
+      {date:'2026-06-17',installs:1050,signups:55,wallets:30,ftd:3,ftt:3},
+      {date:'2026-06-18',installs:1030,signups:66,wallets:36,ftd:8,ftt:7},
+      {date:'2026-06-19',installs:953,signups:55,wallets:24,ftd:5,ftt:5},
+      {date:'2026-06-20',installs:921,signups:55,wallets:40,ftd:13,ftt:12},
+      {date:'2026-06-21',installs:811,signups:46,wallets:23,ftd:1,ftt:1},
+      {date:'2026-06-22',installs:894,signups:45,wallets:29,ftd:5,ftt:2},
+      {date:'2026-06-23',installs:948,signups:47,wallets:18,ftd:4,ftt:3},
+      {date:'2026-06-24',installs:4099,signups:345,wallets:147,ftd:14,ftt:11},
+      {date:'2026-06-25',installs:4381,signups:501,wallets:213,ftd:23,ftt:20},
+      {date:'2026-06-26',installs:3705,signups:380,wallets:163,ftd:15,ftt:10},
+      {date:'2026-06-27',installs:3360,signups:343,wallets:128,ftd:15,ftt:10},
+      {date:'2026-06-28',installs:3333,signups:406,wallets:150,ftd:7,ftt:6},
+      {date:'2026-06-29',installs:3533,signups:402,wallets:116,ftd:8,ftt:6},
+    ]
+  },
+  apple: {
+    name:'Apple Search Ads', color:'#0f172a', data: [
+      {date:'2026-06-10',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-11',installs:9,signups:3,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-12',installs:10,signups:4,wallets:2,ftd:0,ftt:0},
+      {date:'2026-06-13',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-16',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-17',installs:1,signups:1,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-18',installs:13,signups:5,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-19',installs:29,signups:4,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-20',installs:35,signups:5,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-21',installs:38,signups:7,wallets:5,ftd:0,ftt:0},
+      {date:'2026-06-22',installs:33,signups:4,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-23',installs:33,signups:8,wallets:3,ftd:0,ftt:0},
+      {date:'2026-06-24',installs:37,signups:8,wallets:2,ftd:0,ftt:0},
+      {date:'2026-06-25',installs:34,signups:7,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-26',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-27',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-28',installs:26,signups:4,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-29',installs:52,signups:11,wallets:4,ftd:0,ftt:0},
+    ]
+  },
+  affiliates: {
+    name:'Affiliates', color:'#f59e0b', data: [
+      {date:'2026-06-25',installs:23,signups:8,wallets:4,ftd:0,ftt:0},
+      {date:'2026-06-26',installs:52,signups:25,wallets:10,ftd:2,ftt:1},
+      {date:'2026-06-27',installs:43,signups:19,wallets:11,ftd:2,ftt:0},
+      {date:'2026-06-28',installs:41,signups:13,wallets:5,ftd:0,ftt:0},
+      {date:'2026-06-29',installs:58,signups:24,wallets:9,ftd:0,ftt:0},
+    ]
+  },
+  social: {
+    name:'Social Channels', color:'#06b6d4', data: [
+      {date:'2026-06-16',installs:4,signups:2,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-17',installs:18,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-18',installs:6,signups:1,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-19',installs:3,signups:1,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-20',installs:4,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-21',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-22',installs:2,signups:1,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-24',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-25',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-26',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-27',installs:2,signups:1,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-28',installs:3,signups:1,wallets:1,ftd:0,ftt:0},
+      {date:'2026-06-29',installs:0,signups:0,wallets:0,ftd:0,ftt:0},
+    ]
+  },
+  tiktok: {
+    name:'TikTok Ads', color:'#ec4899', data: [
+      {date:'2026-06-28',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    ]
+  },
+  other: {
+    name:'Other', color:'#94a3b8', data: [
+      {date:'2026-06-24',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-28',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+      {date:'2026-06-29',installs:6,signups:0,wallets:0,ftd:0,ftt:0},
+    ]
+  },
+};
+
+const CAMPAIGN_DATA = [
+  { group:'aso', name:'Organic', color:'#16a34a', data:[
+    {date:'2026-05-30',installs:3070,signups:871,wallets:519,ftd:142,ftt:136},
+    {date:'2026-05-31',installs:3106,signups:857,wallets:474,ftd:94,ftt:82},
+    {date:'2026-06-01',installs:3265,signups:866,wallets:500,ftd:119,ftt:111},
+    {date:'2026-06-02',installs:3282,signups:880,wallets:485,ftd:123,ftt:109},
+    {date:'2026-06-03',installs:3389,signups:834,wallets:442,ftd:130,ftt:122},
+    {date:'2026-06-04',installs:3306,signups:874,wallets:460,ftd:110,ftt:98},
+    {date:'2026-06-05',installs:3631,signups:862,wallets:494,ftd:130,ftt:116},
+    {date:'2026-06-06',installs:3467,signups:844,wallets:478,ftd:117,ftt:106},
+    {date:'2026-06-07',installs:3233,signups:846,wallets:465,ftd:112,ftt:99},
+    {date:'2026-06-08',installs:3413,signups:925,wallets:519,ftd:125,ftt:115},
+    {date:'2026-06-09',installs:3474,signups:883,wallets:497,ftd:130,ftt:117},
+    {date:'2026-06-10',installs:3373,signups:877,wallets:482,ftd:102,ftt:85},
+    {date:'2026-06-11',installs:3171,signups:872,wallets:479,ftd:116,ftt:107},
+    {date:'2026-06-12',installs:3191,signups:865,wallets:468,ftd:103,ftt:93},
+    {date:'2026-06-13',installs:3199,signups:919,wallets:507,ftd:107,ftt:93},
+    {date:'2026-06-14',installs:3029,signups:858,wallets:507,ftd:119,ftt:106},
+    {date:'2026-06-15',installs:3246,signups:933,wallets:465,ftd:99,ftt:87},
+    {date:'2026-06-16',installs:3196,signups:930,wallets:491,ftd:118,ftt:101},
+    {date:'2026-06-17',installs:3187,signups:980,wallets:507,ftd:110,ftt:97},
+    {date:'2026-06-18',installs:3221,signups:980,wallets:498,ftd:91,ftt:85},
+    {date:'2026-06-19',installs:3031,signups:986,wallets:520,ftd:109,ftt:102},
+    {date:'2026-06-20',installs:3064,signups:964,wallets:475,ftd:98,ftt:89},
+    {date:'2026-06-21',installs:2941,signups:948,wallets:488,ftd:83,ftt:66},
+    {date:'2026-06-22',installs:3057,signups:992,wallets:496,ftd:74,ftt:58},
+    {date:'2026-06-23',installs:3090,signups:975,wallets:500,ftd:89,ftt:73},
+    {date:'2026-06-24',installs:3071,signups:963,wallets:490,ftd:71,ftt:63},
+    {date:'2026-06-25',installs:3154,signups:995,wallets:484,ftd:78,ftt:60},
+    {date:'2026-06-26',installs:3117,signups:979,wallets:459,ftd:68,ftt:55},
+    {date:'2026-06-27',installs:3201,signups:959,wallets:452,ftd:65,ftt:44},
+    {date:'2026-06-28',installs:3224,signups:1006,wallets:438,ftd:45,ftt:28},
+    {date:'2026-06-29',installs:3459,signups:1032,wallets:431,ftd:41,ftt:24},
+  ]},
+  { group:'google', name:'Google Ads (Paid)', color:'#2563eb', data:[
+    {date:'2026-05-30',installs:38,signups:6,wallets:3,ftd:1,ftt:1},
+    {date:'2026-05-31',installs:26,signups:6,wallets:4,ftd:0,ftt:0},
+    {date:'2026-06-01',installs:37,signups:9,wallets:10,ftd:1,ftt:2},
+    {date:'2026-06-02',installs:49,signups:12,wallets:14,ftd:7,ftt:5},
+    {date:'2026-06-03',installs:54,signups:21,wallets:20,ftd:13,ftt:14},
+    {date:'2026-06-04',installs:42,signups:17,wallets:13,ftd:7,ftt:7},
+    {date:'2026-06-05',installs:69,signups:27,wallets:29,ftd:18,ftt:17},
+    {date:'2026-06-06',installs:65,signups:28,wallets:29,ftd:10,ftt:10},
+    {date:'2026-06-07',installs:66,signups:35,wallets:37,ftd:14,ftt:13},
+    {date:'2026-06-08',installs:67,signups:29,wallets:39,ftd:21,ftt:23},
+    {date:'2026-06-09',installs:59,signups:37,wallets:29,ftd:26,ftt:26},
+    {date:'2026-06-10',installs:52,signups:32,wallets:37,ftd:23,ftt:21},
+    {date:'2026-06-11',installs:73,signups:50,wallets:56,ftd:34,ftt:32},
+    {date:'2026-06-12',installs:68,signups:42,wallets:43,ftd:22,ftt:23},
+    {date:'2026-06-13',installs:59,signups:47,wallets:53,ftd:28,ftt:25},
+    {date:'2026-06-14',installs:62,signups:27,wallets:34,ftd:24,ftt:25},
+    {date:'2026-06-15',installs:79,signups:67,wallets:71,ftd:57,ftt:59},
+    {date:'2026-06-16',installs:85,signups:45,wallets:65,ftd:53,ftt:53},
+    {date:'2026-06-17',installs:85,signups:34,wallets:35,ftd:26,ftt:23},
+    {date:'2026-06-18',installs:94,signups:23,wallets:11,ftd:2,ftt:4},
+    {date:'2026-06-19',installs:83,signups:26,wallets:14,ftd:3,ftt:3},
+    {date:'2026-06-20',installs:84,signups:23,wallets:14,ftd:6,ftt:6},
+    {date:'2026-06-21',installs:83,signups:24,wallets:12,ftd:2,ftt:3},
+    {date:'2026-06-22',installs:118,signups:30,wallets:18,ftd:3,ftt:3},
+    {date:'2026-06-23',installs:84,signups:24,wallets:17,ftd:4,ftt:4},
+    {date:'2026-06-24',installs:127,signups:29,wallets:17,ftd:6,ftt:5},
+    {date:'2026-06-25',installs:126,signups:61,wallets:35,ftd:8,ftt:6},
+    {date:'2026-06-26',installs:240,signups:114,wallets:52,ftd:8,ftt:6},
+    {date:'2026-06-27',installs:275,signups:140,wallets:61,ftd:4,ftt:4},
+    {date:'2026-06-28',installs:253,signups:123,wallets:50,ftd:8,ftt:5},
+    {date:'2026-06-29',installs:233,signups:103,wallets:45,ftd:4,ftt:4},
+  ]},
+  { group:'meta', name:'Facebook Ads', color:'#7c3aed', data:[
+    {date:'2026-06-23',installs:127,signups:39,wallets:8,ftd:0,ftt:0},
+    {date:'2026-06-24',installs:5148,signups:935,wallets:187,ftd:6,ftt:5},
+    {date:'2026-06-25',installs:4370,signups:873,wallets:231,ftd:6,ftt:5},
+    {date:'2026-06-26',installs:2586,signups:528,wallets:124,ftd:1,ftt:0},
+    {date:'2026-06-27',installs:2892,signups:576,wallets:130,ftd:6,ftt:3},
+    {date:'2026-06-28',installs:3913,signups:743,wallets:101,ftd:1,ftt:0},
+    {date:'2026-06-29',installs:7019,signups:1253,wallets:140,ftd:2,ftt:2},
+  ]},
+  { group:'qr', name:'QR Code', color:'#db2777', data:[
+    {date:'2026-05-30',installs:1049,signups:55,wallets:34,ftd:11,ftt:10},
+    {date:'2026-05-31',installs:1083,signups:57,wallets:39,ftd:8,ftt:7},
+    {date:'2026-06-01',installs:1166,signups:63,wallets:38,ftd:10,ftt:8},
+    {date:'2026-06-02',installs:1064,signups:62,wallets:39,ftd:12,ftt:10},
+    {date:'2026-06-03',installs:1312,signups:54,wallets:28,ftd:8,ftt:7},
+    {date:'2026-06-04',installs:1519,signups:62,wallets:38,ftd:12,ftt:9},
+    {date:'2026-06-05',installs:1537,signups:50,wallets:30,ftd:6,ftt:6},
+    {date:'2026-06-06',installs:1375,signups:54,wallets:27,ftd:8,ftt:6},
+    {date:'2026-06-07',installs:1234,signups:56,wallets:30,ftd:7,ftt:7},
+    {date:'2026-06-08',installs:1430,signups:40,wallets:27,ftd:7,ftt:6},
+    {date:'2026-06-09',installs:1553,signups:55,wallets:34,ftd:10,ftt:9},
+    {date:'2026-06-10',installs:1333,signups:54,wallets:31,ftd:7,ftt:7},
+    {date:'2026-06-11',installs:1233,signups:39,wallets:28,ftd:8,ftt:7},
+    {date:'2026-06-12',installs:1115,signups:51,wallets:32,ftd:8,ftt:5},
+    {date:'2026-06-13',installs:1179,signups:50,wallets:24,ftd:5,ftt:3},
+    {date:'2026-06-14',installs:1003,signups:37,wallets:22,ftd:6,ftt:3},
+    {date:'2026-06-15',installs:1165,signups:44,wallets:26,ftd:11,ftt:9},
+    {date:'2026-06-16',installs:1103,signups:47,wallets:30,ftd:6,ftt:5},
+    {date:'2026-06-17',installs:1050,signups:55,wallets:30,ftd:3,ftt:3},
+    {date:'2026-06-18',installs:1030,signups:66,wallets:36,ftd:8,ftt:7},
+    {date:'2026-06-19',installs:953,signups:55,wallets:24,ftd:5,ftt:5},
+    {date:'2026-06-20',installs:921,signups:55,wallets:40,ftd:13,ftt:12},
+    {date:'2026-06-21',installs:811,signups:46,wallets:23,ftd:1,ftt:1},
+    {date:'2026-06-22',installs:894,signups:45,wallets:29,ftd:5,ftt:2},
+    {date:'2026-06-23',installs:948,signups:47,wallets:18,ftd:4,ftt:3},
+    {date:'2026-06-24',installs:4099,signups:345,wallets:147,ftd:14,ftt:11},
+    {date:'2026-06-25',installs:4381,signups:501,wallets:213,ftd:23,ftt:20},
+    {date:'2026-06-26',installs:3705,signups:380,wallets:163,ftd:15,ftt:10},
+    {date:'2026-06-27',installs:3360,signups:343,wallets:128,ftd:15,ftt:10},
+    {date:'2026-06-28',installs:3333,signups:406,wallets:150,ftd:7,ftt:6},
+    {date:'2026-06-29',installs:3533,signups:402,wallets:116,ftd:8,ftt:6},
+  ]},
+  { group:'apple', name:'Apple Search Ads', color:'#0f172a', data:[
+    {date:'2026-06-10',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-11',installs:9,signups:3,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-12',installs:10,signups:4,wallets:2,ftd:0,ftt:0},
+    {date:'2026-06-13',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-16',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-17',installs:1,signups:1,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-18',installs:13,signups:5,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-19',installs:29,signups:4,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-20',installs:35,signups:5,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-21',installs:38,signups:7,wallets:5,ftd:0,ftt:0},
+    {date:'2026-06-22',installs:33,signups:4,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-23',installs:33,signups:8,wallets:3,ftd:0,ftt:0},
+    {date:'2026-06-24',installs:37,signups:8,wallets:2,ftd:0,ftt:0},
+    {date:'2026-06-25',installs:34,signups:7,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-26',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-27',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-28',installs:26,signups:4,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-29',installs:52,signups:11,wallets:4,ftd:0,ftt:0},
+  ]},
+  { group:'affiliates', name:'Affiliates', color:'#f59e0b', data:[
+    {date:'2026-06-25',installs:23,signups:8,wallets:4,ftd:0,ftt:0},
+    {date:'2026-06-26',installs:52,signups:25,wallets:10,ftd:2,ftt:1},
+    {date:'2026-06-27',installs:43,signups:19,wallets:11,ftd:2,ftt:0},
+    {date:'2026-06-28',installs:41,signups:13,wallets:5,ftd:0,ftt:0},
+    {date:'2026-06-29',installs:58,signups:24,wallets:9,ftd:0,ftt:0},
+  ]},
+  { group:'social', name:'Social Channels', color:'#06b6d4', data:[
+    {date:'2026-06-16',installs:4,signups:2,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-17',installs:18,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-18',installs:6,signups:1,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-19',installs:3,signups:1,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-20',installs:4,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-21',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-22',installs:2,signups:1,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-24',installs:3,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-25',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-26',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-27',installs:2,signups:1,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-28',installs:3,signups:1,wallets:1,ftd:0,ftt:0},
+    {date:'2026-06-29',installs:0,signups:0,wallets:0,ftd:0,ftt:0},
+  ]},
+  { group:'tiktok', name:'TikTok Ads', color:'#ec4899', data:[
+    {date:'2026-06-28',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+  ]},
+  { group:'other', name:'Other', color:'#94a3b8', data:[
+    {date:'2026-06-24',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-28',installs:1,signups:0,wallets:0,ftd:0,ftt:0},
+    {date:'2026-06-29',installs:6,signups:0,wallets:0,ftd:0,ftt:0},
+  ]},
+];
+
+const CAMPAIGN_DRILL = {
+  google: [
+    {name:'row-prosp-cpa-all-derivtradingview-0426-en-google',total:367,data:[{d:'2026-05-30',i:4,s:0,w:0,f:0,t:0},{d:'2026-05-31',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-01',i:9,s:1,w:1,f:0,t:0},{d:'2026-06-02',i:9,s:2,w:0,f:0,t:0},{d:'2026-06-03',i:8,s:1,w:0,f:0,t:0},{d:'2026-06-04',i:10,s:2,w:1,f:0,t:0},{d:'2026-06-05',i:22,s:4,w:1,f:0,t:0},{d:'2026-06-06',i:15,s:4,w:2,f:0,t:0},{d:'2026-06-07',i:17,s:0,w:0,f:0,t:0},{d:'2026-06-08',i:10,s:0,w:0,f:1,t:1},{d:'2026-06-09',i:12,s:2,w:1,f:0,t:0},{d:'2026-06-10',i:8,s:1,w:1,f:0,t:0},{d:'2026-06-11',i:16,s:1,w:2,f:1,t:1},{d:'2026-06-12',i:13,s:1,w:0,f:0,t:0},{d:'2026-06-13',i:7,s:0,w:0,f:3,t:4},{d:'2026-06-14',i:10,s:1,w:2,f:1,t:2},{d:'2026-06-15',i:12,s:2,w:2,f:1,t:1},{d:'2026-06-16',i:10,s:2,w:1,f:0,t:0},{d:'2026-06-17',i:12,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:9,s:3,w:1,f:0,t:0},{d:'2026-06-19',i:17,s:1,w:1,f:1,t:1},{d:'2026-06-20',i:16,s:2,w:4,f:1,t:0},{d:'2026-06-21',i:11,s:3,w:2,f:0,t:0},{d:'2026-06-22',i:13,s:4,w:2,f:0,t:0},{d:'2026-06-23',i:6,s:2,w:1,f:0,t:0},{d:'2026-06-24',i:19,s:1,w:0,f:1,t:1},{d:'2026-06-25',i:14,s:2,w:2,f:0,t:0},{d:'2026-06-26',i:12,s:2,w:1,f:1,t:1},{d:'2026-06-27',i:18,s:2,w:1,f:1,t:1},{d:'2026-06-28',i:15,s:5,w:1,f:1,t:0},{d:'2026-06-29',i:11,s:4,w:1,f:1,t:1}]},
+    {name:'africa_tier1-prosp-cpa-all-currency_trading-0525-en-google',total:297,data:[{d:'2026-05-31',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-01',i:5,s:3,w:4,f:0,t:1},{d:'2026-06-02',i:7,s:1,w:1,f:0,t:0},{d:'2026-06-03',i:12,s:1,w:1,f:0,t:0},{d:'2026-06-04',i:5,s:3,w:2,f:1,t:0},{d:'2026-06-05',i:6,s:0,w:0,f:0,t:0},{d:'2026-06-06',i:7,s:1,w:1,f:1,t:1},{d:'2026-06-07',i:9,s:2,w:1,f:0,t:0},{d:'2026-06-08',i:15,s:2,w:2,f:0,t:0},{d:'2026-06-09',i:7,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:3,s:1,w:1,f:0,t:1},{d:'2026-06-11',i:13,s:5,w:3,f:0,t:0},{d:'2026-06-12',i:9,s:3,w:0,f:1,t:1},{d:'2026-06-13',i:7,s:4,w:1,f:0,t:0},{d:'2026-06-14',i:9,s:1,w:1,f:0,t:0},{d:'2026-06-15',i:8,s:2,w:2,f:0,t:0},{d:'2026-06-16',i:12,s:2,w:2,f:0,t:0},{d:'2026-06-17',i:15,s:2,w:1,f:0,t:0},{d:'2026-06-18',i:9,s:2,w:2,f:0,t:0},{d:'2026-06-19',i:12,s:2,w:1,f:1,t:1},{d:'2026-06-20',i:11,s:6,w:4,f:0,t:0},{d:'2026-06-21',i:6,s:2,w:1,f:0,t:1},{d:'2026-06-22',i:17,s:3,w:4,f:1,t:1},{d:'2026-06-23',i:9,s:2,w:1,f:0,t:0},{d:'2026-06-24',i:12,s:2,w:0,f:0,t:0},{d:'2026-06-25',i:13,s:4,w:3,f:1,t:0},{d:'2026-06-26',i:14,s:7,w:3,f:0,t:0},{d:'2026-06-27',i:14,s:4,w:1,f:0,t:0},{d:'2026-06-28',i:18,s:8,w:6,f:2,t:2},{d:'2026-06-29',i:10,s:4,w:3,f:0,t:0}]},
+    {name:'row-prosp-cpc-all-login-0426-en-google',total:223,data:[{d:'2026-05-30',i:3,s:0,w:0,f:0,t:0},{d:'2026-05-31',i:6,s:1,w:0,f:0,t:0},{d:'2026-06-01',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-02',i:5,s:0,w:0,f:0,t:0},{d:'2026-06-03',i:7,s:1,w:0,f:0,t:0},{d:'2026-06-04',i:4,s:1,w:0,f:0,t:0},{d:'2026-06-05',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-06',i:5,s:1,w:0,f:0,t:0},{d:'2026-06-07',i:5,s:1,w:1,f:0,t:0},{d:'2026-06-08',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-09',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:6,s:1,w:0,f:0,t:0},{d:'2026-06-11',i:4,s:1,w:2,f:2,t:1},{d:'2026-06-12',i:4,s:1,w:2,f:0,t:0},{d:'2026-06-14',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:13,s:1,w:0,f:0,t:0},{d:'2026-06-17',i:13,s:2,w:2,f:2,t:2},{d:'2026-06-18',i:12,s:1,w:1,f:0,t:0},{d:'2026-06-19',i:5,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:5,s:1,w:0,f:0,t:0},{d:'2026-06-21',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:9,s:0,w:1,f:1,t:1},{d:'2026-06-23',i:6,s:0,w:1,f:1,t:1},{d:'2026-06-24',i:6,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:9,s:3,w:3,f:2,t:2},{d:'2026-06-26',i:19,s:1,w:1,f:1,t:1},{d:'2026-06-27',i:19,s:2,w:2,f:1,t:1},{d:'2026-06-28',i:19,s:4,w:6,f:3,t:1},{d:'2026-06-29',i:16,s:3,w:3,f:0,t:0}]},
+    {name:'row-prosp-cpc-all-brand_keyword-0426-en-google',total:229,data:[{d:'2026-05-30',i:6,s:3,w:1,f:1,t:1},{d:'2026-05-31',i:6,s:2,w:2,f:0,t:0},{d:'2026-06-01',i:4,s:1,w:2,f:1,t:1},{d:'2026-06-02',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-03',i:5,s:1,w:0,f:0,t:0},{d:'2026-06-04',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:4,s:1,w:0,f:0,t:0},{d:'2026-06-06',i:8,s:5,w:3,f:0,t:0},{d:'2026-06-07',i:5,s:0,w:0,f:0,t:0},{d:'2026-06-08',i:8,s:1,w:0,f:1,t:1},{d:'2026-06-09',i:4,s:1,w:0,f:0,t:0},{d:'2026-06-10',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:9,s:3,w:1,f:0,t:0},{d:'2026-06-12',i:7,s:1,w:0,f:0,t:0},{d:'2026-06-13',i:7,s:3,w:2,f:1,t:1},{d:'2026-06-14',i:5,s:1,w:0,f:0,t:0},{d:'2026-06-15',i:7,s:2,w:0,f:1,t:1},{d:'2026-06-16',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:4,s:1,w:2,f:2,t:1},{d:'2026-06-18',i:5,s:2,w:0,f:0,t:0},{d:'2026-06-19',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-20',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-21',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-22',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-23',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:7,s:1,w:0,f:1,t:1},{d:'2026-06-25',i:9,s:5,w:2,f:1,t:1},{d:'2026-06-26',i:19,s:11,w:5,f:3,t:2},{d:'2026-06-27',i:19,s:9,w:4,f:0,t:0},{d:'2026-06-28',i:25,s:8,w:1,f:0,t:0},{d:'2026-06-29',i:28,s:12,w:6,f:1,t:1}]},
+    {name:'row-prosp-cpa-all-app-0526-en-android_FTDs',total:178,data:[{d:'2026-06-02',i:2,s:3,w:9,f:6,t:5},{d:'2026-06-03',i:5,s:14,w:18,f:13,t:14},{d:'2026-06-04',i:5,s:7,w:8,f:6,t:7},{d:'2026-06-05',i:6,s:14,w:24,f:18,t:17},{d:'2026-06-06',i:11,s:12,w:19,f:9,t:9},{d:'2026-06-07',i:6,s:28,w:31,f:12,t:11},{d:'2026-06-08',i:10,s:22,w:34,f:17,t:19},{d:'2026-06-09',i:13,s:28,w:26,f:26,t:26},{d:'2026-06-10',i:11,s:25,w:33,f:23,t:20},{d:'2026-06-11',i:7,s:37,w:44,f:31,t:30},{d:'2026-06-12',i:16,s:30,w:37,f:20,t:21},{d:'2026-06-13',i:11,s:29,w:41,f:24,t:20},{d:'2026-06-14',i:5,s:19,w:27,f:23,t:23},{d:'2026-06-15',i:21,s:52,w:60,f:53,t:55},{d:'2026-06-16',i:19,s:33,w:60,f:53,t:53},{d:'2026-06-17',i:4,s:23,w:27,f:21,t:19},{d:'2026-06-18',i:5,s:3,w:2,f:1,t:2},{d:'2026-06-19',i:2,s:2,w:0,f:0,t:0},{d:'2026-06-20',i:4,s:2,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:2,w:0,f:0,t:0},{d:'2026-06-22',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:3,s:4,w:2,f:0,t:0},{d:'2026-06-24',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:0,s:1,w:1,f:0,t:0},{d:'2026-06-26',i:0,s:2,w:1,f:0,t:0},{d:'2026-06-27',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:0,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:2,s:0,w:0,f:0,t:0}]},
+    {name:'row-prosp-cpa-mob-app_installs-0626-en-dgen-web_to_app',total:192,data:[{d:'2026-06-25',i:18,s:16,w:7,f:1,t:1},{d:'2026-06-26',i:38,s:20,w:10,f:0,t:0},{d:'2026-06-27',i:50,s:35,w:12,f:0,t:0},{d:'2026-06-28',i:46,s:33,w:9,f:0,t:0},{d:'2026-06-29',i:40,s:17,w:4,f:0,t:0}]},
+    {name:'row-prosp-cpa-all-multi_asset-0626-en-google',total:131,data:[{d:'2026-06-17',i:3,s:2,w:0,f:0,t:0},{d:'2026-06-18',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:5,s:4,w:2,f:0,t:0},{d:'2026-06-20',i:5,s:1,w:1,f:0,t:0},{d:'2026-06-21',i:7,s:2,w:1,f:0,t:0},{d:'2026-06-22',i:13,s:4,w:1,f:0,t:0},{d:'2026-06-23',i:9,s:3,w:3,f:0,t:0},{d:'2026-06-24',i:13,s:5,w:2,f:0,t:0},{d:'2026-06-25',i:14,s:9,w:4,f:0,t:0},{d:'2026-06-26',i:20,s:9,w:2,f:0,t:0},{d:'2026-06-27',i:11,s:7,w:3,f:0,t:0},{d:'2026-06-28',i:18,s:7,w:3,f:0,t:0},{d:'2026-06-29',i:10,s:6,w:3,f:0,t:0}]},
+    {name:'jm-prosp-all-multi_asset-0724-en-google',total:143,data:[{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:36,s:25,w:7,f:0,t:0},{d:'2026-06-27',i:43,s:35,w:18,f:0,t:0},{d:'2026-06-28',i:32,s:22,w:7,f:0,t:0},{d:'2026-06-29',i:31,s:20,w:9,f:0,t:0}]},
+    {name:'row-prosp-cpa-all-chart-patterns-0626-en-google',total:117,data:[{d:'2026-06-17',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:6,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:3,s:0,w:0,f:2,t:2},{d:'2026-06-21',i:7,s:2,w:1,f:0,t:0},{d:'2026-06-22',i:15,s:4,w:0,f:0,t:0},{d:'2026-06-23',i:4,s:2,w:1,f:0,t:0},{d:'2026-06-24',i:13,s:1,w:2,f:0,t:0},{d:'2026-06-25',i:11,s:6,w:3,f:0,t:0},{d:'2026-06-26',i:16,s:5,w:2,f:1,t:1},{d:'2026-06-27',i:14,s:8,w:2,f:0,t:0},{d:'2026-06-28',i:16,s:6,w:2,f:0,t:0},{d:'2026-06-29',i:7,s:2,w:2,f:1,t:1}]},
+    {name:'ng-prosp-cpa-all-brand_keyword-1023-en-google',total:73,data:[{d:'2026-05-30',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-01',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-02',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-03',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-04',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-06',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-07',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-08',i:3,s:1,w:0,f:1,t:1},{d:'2026-06-09',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:6,s:1,w:0,f:0,t:0},{d:'2026-06-11',i:6,s:1,w:1,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:1,f:1,t:1},{d:'2026-06-13',i:2,s:2,w:2,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:5,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:4,s:1,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:4,s:1,w:1,f:1,t:2},{d:'2026-06-21',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:0,w:1,f:0,t:0},{d:'2026-06-23',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-24',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-26',i:4,s:2,w:2,f:0,t:0},{d:'2026-06-27',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:1,t:1},{d:'2026-06-29',i:2,s:0,w:0,f:0,t:0}]},
+    {name:'ng-prosp-cpa-all-tradingview-0623-en-google',total:71,data:[{d:'2026-05-30',i:3,s:0,w:0,f:0,t:0},{d:'2026-05-31',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-03',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-04',i:2,s:2,w:1,f:0,t:0},{d:'2026-06-05',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-06',i:3,s:2,w:1,f:0,t:0},{d:'2026-06-07',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-08',i:2,s:0,w:1,f:0,t:0},{d:'2026-06-09',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-10',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-11',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-13',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-14',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:4,s:1,w:0,f:0,t:0},{d:'2026-06-23',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-24',i:5,s:1,w:1,f:0,t:0},{d:'2026-06-25',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-26',i:4,s:3,w:1,f:0,t:0},{d:'2026-06-27',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-28',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:3,s:0,w:0,f:0,t:0}]},
+    {name:'ng-prosp-cpc-all-synthetic-1223-en-google',total:69,data:[{d:'2026-06-02',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-03',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:3,s:0,w:1,f:0,t:0},{d:'2026-06-06',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-07',i:6,s:1,w:0,f:0,t:0},{d:'2026-06-08',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-09',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-14',i:2,s:2,w:1,f:0,t:0},{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:1,t:1},{d:'2026-06-18',i:1,s:1,w:1,f:1,t:0},{d:'2026-06-19',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-20',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:3,s:2,w:1,f:0,t:0},{d:'2026-06-22',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-23',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-24',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-25',i:3,s:3,w:2,f:1,t:1},{d:'2026-06-26',i:3,s:2,w:2,f:1,t:0},{d:'2026-06-27',i:6,s:3,w:1,f:0,t:0},{d:'2026-06-28',i:3,s:3,w:2,f:0,t:0},{d:'2026-06-29',i:5,s:5,w:0,f:0,t:0}]},
+    {name:'ng-prosp-cpa-all-dbot-0626-en-google',total:56,data:[{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:2,s:1,w:1,f:1,t:1},{d:'2026-06-21',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:1,f:0,t:0},{d:'2026-06-23',i:7,s:1,w:0,f:0,t:0},{d:'2026-06-24',i:8,s:4,w:5,f:1,t:1},{d:'2026-06-25',i:5,s:3,w:2,f:1,t:1},{d:'2026-06-26',i:7,s:3,w:1,f:0,t:0},{d:'2026-06-27',i:13,s:9,w:3,f:1,t:1},{d:'2026-06-28',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:4,s:1,w:1,f:0,t:0}]},
+    {name:'africa_tier1-zw-prosp-all-trading-0724-en-google',total:57,data:[{d:'2026-06-02',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:3,s:2,w:2,f:0,t:0},{d:'2026-06-18',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-24',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-25',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:10,s:7,w:2,f:0,t:0},{d:'2026-06-27',i:8,s:5,w:3,f:1,t:1},{d:'2026-06-28',i:5,s:3,w:0,f:0,t:0},{d:'2026-06-29',i:5,s:5,w:2,f:0,t:0}]},
+    {name:'africa_tier3-ci-prosp-cpa-all-brand_keyword-1023-fr-google',total:54,data:[{d:'2026-06-01',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-06',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-07',i:1,s:0,w:1,f:1,t:1},{d:'2026-06-10',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-16',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-20',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-23',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:4,s:1,w:0,f:0,t:0},{d:'2026-06-26',i:4,s:4,w:2,f:1,t:1},{d:'2026-06-27',i:8,s:2,w:1,f:0,t:0},{d:'2026-06-28',i:6,s:4,w:2,f:0,t:0},{d:'2026-06-29',i:7,s:4,w:2,f:0,t:0}]},
+    {name:'africa_tier3-prosp-cpc-trading-0626-fr-google',total:51,data:[{d:'2026-06-18',i:4,s:1,w:0,f:0,t:0},{d:'2026-06-19',i:3,s:2,w:1,f:0,t:0},{d:'2026-06-20',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:4,s:1,w:1,f:1,t:1},{d:'2026-06-23',i:4,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:7,s:3,w:1,f:0,t:0},{d:'2026-06-25',i:8,s:3,w:2,f:0,t:0},{d:'2026-06-26',i:4,s:0,w:1,f:0,t:0},{d:'2026-06-27',i:2,s:0,w:1,f:0,t:0},{d:'2026-06-28',i:6,s:2,w:2,f:0,t:0},{d:'2026-06-29',i:7,s:2,w:2,f:1,t:1}]},
+    {name:'africa_west-prosp-affiliate_ebook-1125-en-google',total:40,data:[{d:'2026-05-30',i:1,s:0,w:0,f:0,t:0},{d:'2026-05-31',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-01',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-06',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-07',i:2,s:2,w:2,f:1,t:1},{d:'2026-06-08',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-13',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:6,s:2,w:2,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:1,f:0,t:0},{d:'2026-06-18',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:3,s:2,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier3-cd-prosp-all-trading-1024-fr-google',total:34,data:[{d:'2026-06-02',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-03',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-08',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-14',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-19',i:3,s:2,w:1,f:0,t:0},{d:'2026-06-20',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-21',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:1,f:0,t:0},{d:'2026-06-24',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-25',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-26',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-27',i:5,s:4,w:2,f:0,t:0},{d:'2026-06-28',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'latam-co-prosp-cpa-all-brand_keyword-0623-es-google',total:33,data:[{d:'2026-05-31',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-01',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:3,s:2,w:1,f:0,t:0},{d:'2026-06-06',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-10',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-13',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-27',i:5,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:1,t:1},{d:'2026-06-29',i:2,s:0,w:0,f:0,t:0}]},
+    {name:'africa_west-prosp-brand_keyword-0925-en-google',total:28,data:[{d:'2026-06-02',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-03',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-05',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-06',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-14',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-17',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-23',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'africa_south-prosp-brand_keyword-0925-en-google',total:26,data:[{d:'2026-05-30',i:1,s:1,w:0,f:0,t:0},{d:'2026-05-31',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-06',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-08',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-09',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-10',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-19',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:4,s:2,w:2,f:0,t:0},{d:'2026-06-27',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-brand_keyword-0623-en-google',total:22,data:[{d:'2026-06-03',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-06',i:0,s:1,w:1,f:0,t:0},{d:'2026-06-07',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-08',i:3,s:1,w:0,f:0,t:0},{d:'2026-06-09',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:1,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-18',i:1,s:0,w:0,f:0,t:1},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:1,w:1,f:1,t:1},{d:'2026-06-26',i:2,s:2,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier3-bf-prosp-cpa-all-brand_keyword-1023-fr-google',total:25,data:[{d:'2026-05-30',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-14',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:3,s:2,w:1,f:0,t:0},{d:'2026-06-20',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-27',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:4,s:2,w:1,f:0,t:0},{d:'2026-06-29',i:3,s:4,w:2,f:0,t:0}]},
+    {name:'africa_tier5-ao-prosp-cpa-all-brand_keyword-0324-pt-google',total:17,data:[{d:'2026-06-13',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:4,s:1,w:1,f:0,t:0},{d:'2026-06-23',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:1,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier1-bw-prosp-cpa-all-brand_keyword-0623-en-google',total:17,data:[{d:'2026-06-05',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:1,w:0,f:0,t:0}]},
+    {name:'africa_east-prosp-brand_keyword-0925-en-google',total:18,data:[{d:'2026-06-03',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-17',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:2,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-27',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:1,w:1,f:0,t:0}]},
+    {name:'africa_tier1-gh-prosp-cpa-all-brand_keyword-1023-en-google',total:29,data:[{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-27',i:4,s:3,w:2,f:0,t:0},{d:'2026-06-28',i:5,s:3,w:1,f:0,t:0},{d:'2026-06-29',i:13,s:7,w:2,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-trading-0525-en-google-permax-experiment',total:20,data:[{d:'2026-05-30',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-16',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:4,s:0,w:0,f:0,t:0}]},
+    {name:'row-prosp-cpa-all-synthetic-0626-en-google',total:15,data:[{d:'2026-06-18',i:7,s:3,w:2,f:0,t:0},{d:'2026-06-19',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-21',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:1,w:0,f:0,t:0}]},
+    {name:'africa_french-prosp-brand_keyword-0925-fr-google',total:14,data:[{d:'2026-05-31',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-04',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-09',i:4,s:2,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-13',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-24',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'africa_east-prosp-brand_keyword-1225-en-google-Survey',total:14,data:[{d:'2026-06-08',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-15',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-16',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'africa_french-prosp-affiliate_ebook-1125-fr-google',total:14,data:[{d:'2026-06-05',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-06',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-07',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-09',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-multi_asset-1125-en-google-permax-experiment',total:13,data:[{d:'2026-06-13',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-16',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'africa_east-prosp-affiliate_ebook-1125-en-google',total:12,data:[{d:'2026-06-02',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-03',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:1,s:1,w:0,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-trading-0425-en-google-long-tail',total:11,data:[{d:'2026-06-01',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-07',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-10',i:1,s:0,w:1,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:0,s:1,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:1,f:0,t:0},{d:'2026-06-27',i:0,s:1,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:2,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier2-ug-prosp-cpa-all-brand_keyword-1023-en-google',total:14,data:[{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:3,s:1,w:1,f:0,t:0}]},
+    {name:'africa_tier2-ss-prosp-all-brand_keyword-0424-en-google',total:12,data:[{d:'2026-05-30',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:0,s:1,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-21',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-24',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-28',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'middle_east-sa-prosp-cpa-all-brand_keyword-0723-en-google',total:10,data:[{d:'2026-06-05',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:1,f:1,t:0},{d:'2026-06-27',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:1,w:0,f:0,t:0}]},
+    {name:'asia_tier1-lk-prosp-cpa-all-brand_keyword-0623-en-google',total:9,data:[{d:'2026-06-02',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-09',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'latam-cl-prosp-cpa-all-brand_keyword-0723-es-google',total:10,data:[{d:'2026-05-31',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-08',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-09',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:0,s:1,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier1-zw-prosp-cpa-all-brand_keyword-1023-en-google',total:8,data:[{d:'2026-06-01',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-14',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier3-cm-prosp-all-tradingview-0424-en-google',total:8,data:[{d:'2026-06-08',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-17',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-18',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'latam-cr-prosp-cpa-all-brand_keyword-0723-es-google',total:9,data:[{d:'2026-06-05',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-06',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'row-prosp-cpa-all-fx_ebook-0626-en-google',total:7,data:[{d:'2026-06-18',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier1-prosp-cpa-all-forex-0525-en-google',total:7,data:[{d:'2026-05-30',i:1,s:0,w:0,f:0,t:0},{d:'2026-05-31',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-01',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-02',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-08',i:2,s:1,w:1,f:0,t:0}]},
+    {name:'latam_south-prosp-brand_keyword-0925-es-google',total:7,data:[{d:'2026-06-05',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-10',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-synthetics_ebook-1125-en-google-permax-experiment',total:6,data:[{d:'2026-06-04',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-12',i:0,s:1,w:0,f:0,t:0},{d:'2026-06-16',i:0,s:1,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-dbot-1223-en-google',total:7,data:[{d:'2026-06-15',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:2,s:1,w:1,f:0,t:0},{d:'2026-06-23',i:2,s:1,w:2,f:2,t:2},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier3-bj-prosp-cpa-all-brand_keyword-1023-fr-google',total:7,data:[{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-05',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-08',i:1,s:0,w:0,f:1,t:1},{d:'2026-06-23',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:0,s:1,w:1,f:1,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'latam-co-prosp-cpa-all-tradingview-1023-es-google',total:6,data:[{d:'2026-06-25',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-27',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'middle_east-qa-prosp-cpa-all-brand_keyword-0723-en-google',total:6,data:[{d:'2026-05-30',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-23',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:2,s:0,w:0,f:0,t:0}]},
+    {name:'latam-ar-prosp-cpa-all-brand_keyword-0723-es-google',total:4,data:[{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'latam-ec-prosp-cpa-all-tradingview-1123-es-google',total:4,data:[{d:'2026-06-08',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'latam-prosp-cpa-all-login-0426-es-google',total:3,data:[{d:'2026-06-07',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'cis-uz-prosp-all-brand_keyword-1025-en-google',total:3,data:[{d:'2026-06-12',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-fx_ebook-0124-en-google-global-markets',total:4,data:[{d:'2026-06-02',i:1,s:1,w:1,f:1,t:0},{d:'2026-06-23',i:1,s:1,w:1,f:1,t:1},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'africa_tier1-zw-rtg-all-allproducts-0326-en-google-dgen',total:3,data:[{d:'2026-05-30',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-02',i:2,s:1,w:0,f:0,t:0}]},
+    {name:'africa_east-prosp-brand_keyword-0925-en-google -aimax',total:4,data:[{d:'2026-06-24',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'africa_south-prosp-affiliate_ebook-1125-en-google',total:3,data:[{d:'2026-06-20',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'asia_isc-prosp-affiliate_ebook-1125-en-google',total:3,data:[{d:'2026-06-03',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-13',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'jm-prosp-cpa-all-brand_keyword-1125-en-google-tagline-permax',total:3,data:[{d:'2026-05-31',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-04',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-09',i:1,s:1,w:0,f:0,t:0}]},
+  ],
+  meta: [
+    {name:'row-prosp-cpa-mob-app_installs-0626-en-fb-android',total:21735,data:[{d:'2026-06-23',i:127,s:39,w:8,f:0,t:0},{d:'2026-06-24',i:2450,s:629,w:157,f:4,t:4},{d:'2026-06-25',i:3256,s:754,w:213,f:6,t:5},{d:'2026-06-26',i:2460,s:503,w:113,f:1,t:0},{d:'2026-06-27',i:2750,s:547,w:121,f:6,t:3},{d:'2026-06-28',i:3809,s:724,w:95,f:1,t:0},{d:'2026-06-29',i:6883,s:1223,w:133,f:1,t:1}]},
+    {name:'row-prosp-cpa-mob-app_installs-0626-en-fb-android_audience_network',total:3814,data:[{d:'2026-06-24',i:2612,s:287,w:20,f:1,t:0},{d:'2026-06-25',i:1053,s:101,w:10,f:0,t:0},{d:'2026-06-26',i:47,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:43,s:3,w:1,f:0,t:0},{d:'2026-06-28',i:26,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:33,s:2,w:0,f:0,t:0}]},
+    {name:'Deriv-App-Promo-June-Android',total:506,data:[{d:'2026-06-24',i:86,s:19,w:10,f:1,t:1},{d:'2026-06-25',i:61,s:18,w:8,f:0,t:0},{d:'2026-06-26',i:79,s:25,w:11,f:0,t:0},{d:'2026-06-27',i:99,s:26,w:8,f:0,t:0},{d:'2026-06-28',i:78,s:19,w:6,f:0,t:0},{d:'2026-06-29',i:103,s:28,w:7,f:1,t:1}]},
+  ],
+  qr: [
+    {name:'deriv-home-mobile-app-qr-install',total:49467,data:[{d:'2026-05-30',i:1049,s:55,w:34,f:11,t:10},{d:'2026-05-31',i:1083,s:57,w:39,f:8,t:7},{d:'2026-06-01',i:1166,s:63,w:38,f:10,t:8},{d:'2026-06-02',i:1064,s:62,w:39,f:12,t:10},{d:'2026-06-03',i:1312,s:54,w:28,f:8,t:7},{d:'2026-06-04',i:1519,s:62,w:38,f:12,t:9},{d:'2026-06-05',i:1537,s:50,w:30,f:6,t:6},{d:'2026-06-06',i:1375,s:54,w:27,f:8,t:6},{d:'2026-06-07',i:1234,s:56,w:30,f:7,t:7},{d:'2026-06-08',i:1430,s:40,w:27,f:7,t:6},{d:'2026-06-09',i:1553,s:55,w:34,f:10,t:9},{d:'2026-06-10',i:1333,s:54,w:31,f:7,t:7},{d:'2026-06-11',i:1128,s:39,w:28,f:8,t:7},{d:'2026-06-12',i:997,s:47,w:31,f:8,t:5},{d:'2026-06-13',i:1070,s:49,w:23,f:5,t:3},{d:'2026-06-14',i:909,s:35,w:21,f:5,t:2},{d:'2026-06-15',i:1047,s:43,w:25,f:10,t:8},{d:'2026-06-16',i:980,s:45,w:29,f:5,t:4},{d:'2026-06-17',i:939,s:53,w:28,f:3,t:3},{d:'2026-06-18',i:909,s:59,w:32,f:7,t:7},{d:'2026-06-19',i:857,s:51,w:24,f:5,t:5},{d:'2026-06-20',i:834,s:53,w:39,f:13,t:12},{d:'2026-06-21',i:733,s:43,w:21,f:0,t:0},{d:'2026-06-22',i:782,s:43,w:27,f:5,t:2},{d:'2026-06-23',i:849,s:44,w:18,f:4,t:3},{d:'2026-06-24',i:3989,s:343,w:147,f:14,t:11},{d:'2026-06-25',i:4260,s:497,w:211,f:23,t:20},{d:'2026-06-26',i:3607,s:376,w:163,f:15,t:10},{d:'2026-06-27',i:3265,s:339,w:127,f:15,t:10},{d:'2026-06-28',i:3236,s:403,w:149,f:7,t:6},{d:'2026-06-29',i:3421,s:401,w:115,f:8,t:6}]},
+    {name:'deriv_home_dashboard_qr',total:1906,data:[{d:'2026-06-11',i:105,s:0,w:0,f:0,t:0},{d:'2026-06-12',i:118,s:4,w:1,f:0,t:0},{d:'2026-06-13',i:109,s:1,w:1,f:0,t:0},{d:'2026-06-14',i:94,s:2,w:1,f:1,t:1},{d:'2026-06-15',i:118,s:1,w:1,f:1,t:1},{d:'2026-06-16',i:123,s:2,w:1,f:1,t:1},{d:'2026-06-17',i:110,s:2,w:2,f:0,t:0},{d:'2026-06-18',i:121,s:7,w:4,f:1,t:0},{d:'2026-06-19',i:96,s:4,w:0,f:0,t:0},{d:'2026-06-20',i:86,s:1,w:1,f:0,t:0},{d:'2026-06-21',i:75,s:3,w:2,f:1,t:1},{d:'2026-06-22',i:109,s:1,w:1,f:0,t:0},{d:'2026-06-23',i:99,s:3,w:0,f:0,t:0},{d:'2026-06-24',i:92,s:1,w:0,f:0,t:0},{d:'2026-06-25',i:104,s:4,w:2,f:0,t:0},{d:'2026-06-26',i:78,s:3,w:0,f:0,t:0},{d:'2026-06-27',i:85,s:4,w:1,f:0,t:0},{d:'2026-06-28',i:79,s:2,w:1,f:0,t:0},{d:'2026-06-29',i:105,s:1,w:1,f:0,t:0}]},
+    {name:'deriv_TV_qr',total:83,data:[{d:'2026-06-24',i:17,s:1,w:0,f:0,t:0},{d:'2026-06-25',i:16,s:0,w:0,f:0,t:0},{d:'2026-06-26',i:20,s:1,w:0,f:0,t:0},{d:'2026-06-27',i:10,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:15,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:5,s:0,w:0,f:0,t:0}]},
+    {name:'deriv_academy_qr',total:6,data:[{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-21',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'deriv_experts_qr',total:5,data:[{d:'2026-06-22',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-24',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'deriv_blog_qr',total:4,data:[{d:'2026-06-20',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-21',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:2,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+  ],
+  apple: [
+    {name:'asia-prosp-cpa-all-app-0626-en-ios',total:361,data:[{d:'2026-06-10',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-11',i:9,s:3,w:1,f:0,t:0},{d:'2026-06-12',i:10,s:4,w:2,f:0,t:0},{d:'2026-06-13',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-16',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-17',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-18',i:13,s:5,w:1,f:0,t:0},{d:'2026-06-19',i:29,s:4,w:1,f:0,t:0},{d:'2026-06-20',i:35,s:5,w:1,f:0,t:0},{d:'2026-06-21',i:38,s:7,w:5,f:0,t:0},{d:'2026-06-22',i:33,s:4,w:0,f:0,t:0},{d:'2026-06-23',i:33,s:8,w:3,f:0,t:0},{d:'2026-06-24',i:37,s:8,w:2,f:0,t:0},{d:'2026-06-25',i:34,s:7,w:1,f:0,t:0},{d:'2026-06-26',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:26,s:4,w:1,f:0,t:0},{d:'2026-06-29',i:52,s:11,w:4,f:0,t:0}]},
+  ],
+  affiliates: [
+    {name:'MyAffiliates',total:214,data:[{d:'2026-06-25',i:23,s:8,w:4,f:0,t:0},{d:'2026-06-26',i:52,s:25,w:10,f:2,t:1},{d:'2026-06-27',i:43,s:19,w:11,f:2,t:0},{d:'2026-06-28',i:41,s:13,w:5,f:0,t:0},{d:'2026-06-29',i:55,s:23,w:9,f:0,t:0}]},
+  ],
+  social: [
+    {name:'June-carousel-post',total:27,data:[{d:'2026-06-17',i:12,s:0,w:0,f:0,t:0},{d:'2026-06-18',i:5,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:3,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-24',i:2,s:0,w:0,f:0,t:0},{d:'2026-06-25',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0}]},
+    {name:'june-carousel-post',total:7,data:[{d:'2026-06-16',i:3,s:1,w:1,f:0,t:0},{d:'2026-06-17',i:4,s:0,w:0,f:0,t:0}]},
+    {name:'Facebook - Bio',total:4,data:[{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-19',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-26',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'Instagram - Bio',total:4,data:[{d:'2026-06-17',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-20',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-22',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-27',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+    {name:'YouTube - Bio',total:4,data:[{d:'2026-06-16',i:1,s:1,w:0,f:0,t:0},{d:'2026-06-21',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-27',i:1,s:0,w:0,f:0,t:0},{d:'2026-06-28',i:1,s:1,w:1,f:0,t:0},{d:'2026-06-29',i:0,s:0,w:0,f:0,t:0}]},
+  ],
+};
+
+
+
+/* ===================================================================
+ *  FUNNEL OVERVIEW – last 3 days
+ * =================================================================== */
+function renderOverview() {
+  const D = FUNNEL_DATA;
+  const n = D.length;
+  const last3 = D.slice(Math.max(0, n - 3));
+
+  const steps = [
+    { key:'installs', label:'Installs', color:'#2563eb' },
+    { key:'signups', label:'Signups', color:'#7c3aed' },
+    { key:'wallets', label:'Wallets', color:'#0891b2' },
+    { key:'ftd',     label:'FTD', color:'#d97706' },
+    { key:'ftt',     label:'Trade', color:'#16a34a' },
+  ];
+
+  const html = last3.map((day, i) => {
+    const idx = n - last3.length + i;
+    const prev = idx > 0 ? D[idx - 1] : null;
+    const isLatest = i === last3.length - 1;
+    const maxVal = day.installs;
+
+    const barsHtml = steps.map((s, si) => {
+      const val = day[s.key];
+      const widthPct = Math.max(18, (val / maxVal) * 100);
+      const rate = si > 0 ? pctRaw(val, day.installs) : 0;
+      const rateStr = si > 0 ? rate.toFixed(1) + '%' : '';
+      const showInside = widthPct >= 35;
+
+      let dodHtml = '';
+      if (prev) {
+        const pv = prev[s.key];
+        const d = val - pv;
+        if (d > 0) dodHtml = `<span class="fn-right-dod dod-up">\u25B2 ${num(d)}</span>`;
+        else if (d < 0) dodHtml = `<span class="fn-right-dod dod-down">\u25BC ${num(Math.abs(d))}</span>`;
+        else dodHtml = `<span class="fn-right-dod dod-flat">\u2014</span>`;
+      }
+
+      const dropHtml = si < steps.length - 1 ? (() => {
+        const nextVal = day[steps[si + 1].key];
+        const dropPct = val > 0 ? ((val - nextVal) / val * 100).toFixed(0) : 0;
+        return `<div class="fn-drop"><span class="fn-drop-line">\u25BE ${dropPct}% drop</span></div>`;
+      })() : '';
+
+      const barContent = showInside
+        ? `<div class="fn-bar-text"><span class="fn-count">${num(val)}</span>${rateStr ? `<span class="fn-rate">${rateStr}</span>` : ''}</div>`
+        : '';
+      const outsideContent = !showInside
+        ? `<span class="fn-count-out">${num(val)}</span> ${rateStr ? `<span class="fn-rate-out">${rateStr}</span>` : ''}`
+        : '';
+
+      return `<div class="fn-step">
+        <div class="fn-label">${s.label}</div>
+        <div class="fn-bar-area">
+          <div class="fn-bar" style="width:${widthPct}%;background:${s.color}">
+            ${barContent}
+          </div>
+          ${outsideContent ? `<div style="position:absolute;right:0;display:flex;align-items:center;gap:4px;height:100%">${outsideContent}</div>` : ''}
+        </div>
+        <div class="fn-right">
+          ${!showInside ? dodHtml : `<div class="fn-right-val">${rateStr || ''}</div>${dodHtml}`}
+        </div>
+      </div>${dropHtml}`;
+    }).join('');
+
+    const e2e = pctRaw(day.ftt, day.installs);
+    const e2eColor = e2e >= 2.5 ? '#16a34a' : e2e >= 1.5 ? '#d97706' : '#dc2626';
+
+    let whyHtml = '';
+    if (prev) {
+      const installDelta = day.installs - prev.installs;
+      const srcChanges = [];
+      CAMPAIGN_DATA.forEach(camp => {
+        const cur = camp.data.find(r => r.date === day.date);
+        const prv = camp.data.find(r => r.date === prev.date);
+        const ci = cur ? cur.installs : 0;
+        const pi = prv ? prv.installs : 0;
+        const diff = ci - pi;
+        if (diff !== 0) srcChanges.push({ name: camp.name, diff, ci, pi, color: camp.color });
+      });
+      srcChanges.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+
+      const items = srcChanges.slice(0, 3).map(sc => {
+        const sign = sc.diff > 0 ? '+' : '';
+        const cls = sc.diff > 0 ? 'why-up' : 'why-down';
+        return `<div class="overview-why-item"><span class="why-tag ${cls}">${sign}${num(sc.diff)}</span> ${sc.name}</div>`;
+      });
+
+      const e2ePrev = pctRaw(prev.ftt, prev.installs);
+      const e2eDiff = e2e - e2ePrev;
+      if (Math.abs(e2eDiff) >= 0.01) {
+        const sign = e2eDiff > 0 ? '+' : '';
+        const cls = e2eDiff > 0 ? 'why-up' : 'why-down';
+        items.push(`<div class="overview-why-item"><span class="why-tag ${cls}">${sign}${e2eDiff.toFixed(2)}pp</span> conversion rate</div>`);
+      }
+
+      if (items.length > 0) {
+        whyHtml = `<div class="overview-why"><div class="overview-why-title">${installDelta >= 0 ? '\u25B2' : '\u25BC'} vs previous day</div>${items.join('')}</div>`;
+      }
+    }
+
+    return `<div class="overview-day${isLatest ? ' is-latest' : ''}">
+      <div class="overview-date">
+        ${fmtDate(day.date)}
+        ${isLatest ? '<span class="latest-pill">Latest</span>' : ''}
+      </div>
+      <div class="funnel-shape">${barsHtml}</div>
+      <div class="overview-e2e">
+        <span class="overview-e2e-label">Install \u2192 Trade</span>
+        <span class="overview-e2e-val" style="color:${e2eColor}">${e2e.toFixed(2)}%</span>
+      </div>
+      ${whyHtml}
+    </div>`;
+  }).join('');
+
+  document.getElementById('overviewGrid').innerHTML = html;
+}
+
+/* ===================================================================
+ *  TREND LINE CHART
+ * =================================================================== */
+
+let trendChart = null;
+let trendMode = 'installs';
+
+function setTrendMode(mode) {
+  trendMode = mode;
+  document.querySelectorAll('#trendToggle .fvt-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`#trendToggle .fvt-btn[onclick*="${mode}"]`).classList.add('active');
+  renderTrendChart();
+}
+
+function renderTrendChart() {
+  const ctx = document.getElementById('trendChart');
+  if (trendChart) trendChart.destroy();
+
+  const dates = FUNNEL_DATA.map(r => r.date);
+  const labels = dates.map(d => {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('en', { month:'short', day:'numeric' });
+  });
+
+  let datasets = [];
+
+  if (trendMode === 'installs') {
+    datasets = [
+      { label:'Installs', data: FUNNEL_DATA.map(r => r.installs), borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,.08)', fill:true, tension:0.3, borderWidth:2.5, pointRadius:1.5 },
+      { label:'Signups', data: FUNNEL_DATA.map(r => r.signups), borderColor:'#7c3aed', backgroundColor:'transparent', tension:0.3, borderWidth:2, pointRadius:1 },
+      { label:'Real Account', data: FUNNEL_DATA.map(r => r.wallets), borderColor:'#0891b2', backgroundColor:'transparent', tension:0.3, borderWidth:2, pointRadius:1 },
+      { label:'First Deposit', data: FUNNEL_DATA.map(r => r.ftd), borderColor:'#d97706', backgroundColor:'transparent', tension:0.3, borderWidth:1.5, pointRadius:1 },
+      { label:'First Trade', data: FUNNEL_DATA.map(r => r.ftt), borderColor:'#16a34a', backgroundColor:'transparent', tension:0.3, borderWidth:1.5, pointRadius:1 },
+    ];
+  } else if (trendMode === 'funnel') {
+    datasets = [
+      { label:'Signup Rate', data: FUNNEL_DATA.map(r => pctRaw(r.signups, r.installs)), borderColor:'#7c3aed', tension:0.3, borderWidth:2, pointRadius:1.5 },
+      { label:'Real Account Rate', data: FUNNEL_DATA.map(r => pctRaw(r.wallets, r.installs)), borderColor:'#0891b2', tension:0.3, borderWidth:2, pointRadius:1.5 },
+      { label:'FTD Rate', data: FUNNEL_DATA.map(r => pctRaw(r.ftd, r.installs)), borderColor:'#d97706', tension:0.3, borderWidth:2, pointRadius:1.5 },
+      { label:'FTT Rate', data: FUNNEL_DATA.map(r => pctRaw(r.ftt, r.installs)), borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,.06)', fill:true, tension:0.3, borderWidth:2.5, pointRadius:1.5 },
+    ];
+  } else {
+    const MIN_SHOW = 10;
+    const srcKeys = Object.keys(SOURCE_DATA).filter(k => {
+      const lt = srcLatest(SOURCE_DATA[k]);
+      return lt.installs >= MIN_SHOW;
+    });
+    srcKeys.forEach(k => {
+      const s = SOURCE_DATA[k];
+      const dateMap = {};
+      s.data.forEach(r => { dateMap[r.date] = r.installs; });
+      datasets.push({
+        label: s.name,
+        data: dates.map(d => dateMap[d] || 0),
+        borderColor: s.color,
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        borderWidth: 2,
+        pointRadius: 1,
+      });
+    });
+  }
+
+  const isRate = trendMode === 'funnel';
+
+  trendChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { position:'bottom', labels: { boxWidth:12, padding:14, font:{ size:11 } } },
+        tooltip: {
+          callbacks: {
+            label: item => {
+              const v = item.parsed.y;
+              return ` ${item.dataset.label}: ${isRate ? v.toFixed(1) + '%' : v.toLocaleString('en')}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid:{ display:false }, ticks:{ font:{ size:10 }, maxTicksLimit:10 } },
+        y: {
+          beginAtZero: true,
+          grid:{ color:'rgba(0,0,0,.04)' },
+          ticks: {
+            font:{ size:10 },
+            callback: v => isRate ? v.toFixed(1) + '%' : v >= 1000 ? (v/1000).toFixed(0) + 'k' : v
+          }
+        }
+      }
+    }
+  });
+}
+
+let funnelViewMode = 'overall';
+
+function setFunnelView(mode) {
+  funnelViewMode = mode;
+  document.querySelectorAll('.fvt-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.fvt-btn[onclick*="${mode}"]`).classList.add('active');
+  renderFunnel(expandedSrc);
+}
+
+function renderFunnel(srcKey) {
+  const isFiltered = srcKey && SOURCE_DATA[srcKey];
+  const isCampaign = funnelViewMode === 'campaign' && !isFiltered;
+  const D = isFiltered ? SOURCE_DATA[srcKey].data : FUNNEL_DATA;
+  const n = D.length;
+  const latestDate = D[n - 1].date;
+
+  const titleEl = document.getElementById('funnelTitle');
+  const subEl = document.getElementById('funnelSub');
+  const toggleEl = document.getElementById('funnelViewToggle');
+  toggleEl.style.display = isFiltered ? 'none' : 'flex';
+
+  if (isFiltered) {
+    const s = SOURCE_DATA[srcKey];
+    titleEl.innerHTML = `Daily Funnel <span style="color:${s.color};font-size:.85rem">\u2014 ${s.name}</span>`;
+    subEl.textContent = `Filtered to ${s.name} \u00B7 Click source card again to show all`;
+  } else if (isCampaign) {
+    titleEl.textContent = 'Daily Funnel \u2014 By Campaign';
+    subEl.textContent = 'Breakdown by source per day \u00B7 Install \u2192 Trade \u00B7 AppsFlyer';
+  } else {
+    titleEl.textContent = 'Daily Funnel';
+    subEl.textContent = 'Install \u2192 Signup \u2192 Wallet \u2192 First Deposit \u2192 First Trade \u00B7 AppsFlyer \u00B7 Heatmap by column';
+  }
+
+  if (isCampaign) {
+    renderFunnelCampaign();
+    return;
+  }
+
+  // --- Heatmap Table ---
+  const cols = ['installs','signups','wallets','ftd','ftt'];
+  const ranges = {};
+  cols.forEach(c => {
+    const vals = D.map(r => r[c]);
+    ranges[c] = { min: Math.min(...vals), max: Math.max(...vals) };
+  });
+
+  const rateKeys = [
+    { num:'signups', den:'installs' },
+    { num:'wallets', den:'installs' },
+    { num:'ftd', den:'installs' },
+    { num:'ftt', den:'installs' },
+  ];
+  const rateRanges = {};
+  rateKeys.forEach(rk => {
+    const vals = D.map(r => pctRaw(r[rk.num], r[rk.den]));
+    rateRanges[rk.num] = { min: Math.min(...vals), max: Math.max(...vals) };
+  });
+
+  const e2eRates = D.map(r => pctRaw(r.ftt, r.installs));
+  const e2eRange = { min: Math.min(...e2eRates), max: Math.max(...e2eRates) };
+
+  const headHtml = `<thead><tr>
+    <th>Date</th>
+    <th>Installs<span class="th-sub">count &middot; \u0394</span></th>
+    <th>Signups<span class="th-sub">count &middot; % of installs</span></th>
+    <th>Real Account<span class="th-sub">count &middot; % of installs</span></th>
+    <th>First Deposit<span class="th-sub">count &middot; % of installs</span></th>
+    <th>First Trade<span class="th-sub">count &middot; % of installs</span></th>
+    <th class="sep-col">Install \u2192 Trade<span class="th-sub">end-to-end</span></th>
+  </tr></thead>`;
+
+  const sorted = [...D].reverse();
+  const bodyHtml = sorted.map((r, si) => {
+    const origIdx = n - 1 - si;
+    const prev = origIdx > 0 ? D[origIdx - 1] : null;
+    const isLatest = r.date === latestDate;
+    const wkend = isWeekend(r.date);
+    const cls = isLatest ? 'latest-row' : (wkend ? 'weekend-row' : '');
+
+    const e2e = pctRaw(r.ftt, r.installs);
+    const e2eColor = e2e >= 2.5 ? 'var(--green)' : e2e >= 1.5 ? 'var(--amber)' : 'var(--red)';
+
+    return `<tr${cls ? ` class="${cls}"` : ''}>
+      <td>${fmtDate(r.date)}${isLatest ? ' <span style="font-size:.6rem;color:var(--blue);font-weight:700;background:#eff6ff;padding:1px 5px;border-radius:4px">LATEST</span>' : ''}</td>
+      <td style="background:${heatBg(r.installs, ranges.installs.min, ranges.installs.max, 220)}">
+        ${num(r.installs)}${dodHtml(r.installs, prev?.installs, false)}
+      </td>
+      <td style="background:${heatBg(pctRaw(r.signups,r.installs), rateRanges.signups.min, rateRanges.signups.max, 270)}">
+        ${num(r.signups)} <span style="font-size:.68rem;color:var(--muted)">${pct(r.signups, r.installs)}</span>${dodHtml(r.signups, prev?.signups, false)}
+      </td>
+      <td style="background:${heatBg(pctRaw(r.wallets,r.installs), rateRanges.wallets.min, rateRanges.wallets.max, 190)}">
+        ${num(r.wallets)} <span style="font-size:.68rem;color:var(--muted)">${pct(r.wallets, r.installs)}</span>${dodHtml(r.wallets, prev?.wallets, false)}
+      </td>
+      <td style="background:${heatBg(pctRaw(r.ftd,r.installs), rateRanges.ftd.min, rateRanges.ftd.max, 40)}">
+        ${num(r.ftd)} <span style="font-size:.68rem;color:var(--muted)">${pct(r.ftd, r.installs)}</span>${dodHtml(r.ftd, prev?.ftd, false)}
+      </td>
+      <td style="background:${heatBg(pctRaw(r.ftt,r.installs), rateRanges.ftt.min, rateRanges.ftt.max, 140)}">
+        ${num(r.ftt)} <span style="font-size:.68rem;color:var(--muted)">${pct(r.ftt, r.installs)}</span>${dodHtml(r.ftt, prev?.ftt, false)}
+      </td>
+      <td class="sep-col rate-cell" style="color:${e2eColor};background:${heatBg(e2e, e2eRange.min, e2eRange.max, 140)}">
+        ${pct(r.ftt, r.installs)}
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('funnelTable').innerHTML = headHtml + '<tbody>' + bodyHtml + '</tbody>';
+}
+
+function renderFunnelCampaign() {
+  const allDates = [...new Set(FUNNEL_DATA.map(r => r.date))].sort().reverse();
+  const latestDate = FUNNEL_DATA[FUNNEL_DATA.length - 1].date;
+
+  const headHtml = `<thead><tr>
+    <th>Date / Campaign</th>
+    <th>Installs<span class="th-sub">share</span></th>
+    <th>Signups<span class="th-sub">count &middot; % of installs</span></th>
+    <th>Real Account<span class="th-sub">count &middot; % of installs</span></th>
+    <th>First Deposit<span class="th-sub">count &middot; % of installs</span></th>
+    <th>First Trade<span class="th-sub">count &middot; % of installs</span></th>
+    <th class="sep-col">Install \u2192 Trade<span class="th-sub">end-to-end</span></th>
+  </tr></thead>`;
+
+  let bodyHtml = '';
+  allDates.forEach(date => {
+    const overall = FUNNEL_DATA.find(r => r.date === date);
+    if (!overall) return;
+    const isLatest = date === latestDate;
+    const wkend = isWeekend(date);
+    const e2e = pctRaw(overall.ftt, overall.installs);
+    const e2eColor = e2e >= 2.5 ? 'var(--green)' : e2e >= 1.5 ? 'var(--amber)' : 'var(--red)';
+
+    bodyHtml += `<tr class="campaign-date-row${isLatest ? ' latest-row' : ''}${wkend ? ' weekend-row' : ''}">
+      <td>${fmtDate(date)}${isLatest ? ' <span style="font-size:.6rem;color:var(--blue);font-weight:700;background:#eff6ff;padding:1px 5px;border-radius:4px">LATEST</span>' : ''}</td>
+      <td><strong>${num(overall.installs)}</strong></td>
+      <td><strong>${num(overall.signups)}</strong> <span style="font-size:.68rem;color:var(--muted)">${pct(overall.signups, overall.installs)}</span></td>
+      <td><strong>${num(overall.wallets)}</strong> <span style="font-size:.68rem;color:var(--muted)">${pct(overall.wallets, overall.installs)}</span></td>
+      <td><strong>${num(overall.ftd)}</strong> <span style="font-size:.68rem;color:var(--muted)">${pct(overall.ftd, overall.installs)}</span></td>
+      <td><strong>${num(overall.ftt)}</strong> <span style="font-size:.68rem;color:var(--muted)">${pct(overall.ftt, overall.installs)}</span></td>
+      <td class="sep-col rate-cell" style="color:${e2eColor}"><strong>${pct(overall.ftt, overall.installs)}</strong></td>
+    </tr>`;
+
+    let campTotal = {installs:0,signups:0,wallets:0,ftd:0,ftt:0};
+    CAMPAIGN_DATA.forEach(camp => {
+      const row = camp.data.find(r => r.date === date);
+      if (!row || row.installs === 0) return;
+      campTotal.installs += row.installs;
+      campTotal.signups += row.signups;
+      campTotal.wallets += row.wallets;
+      campTotal.ftd += row.ftd;
+      campTotal.ftt += row.ftt;
+
+      const share = pctRaw(row.installs, overall.installs);
+      const cE2e = pctRaw(row.ftt, row.installs);
+      const cE2eColor = cE2e >= 2.5 ? 'var(--green)' : cE2e >= 1.5 ? 'var(--amber)' : cE2e > 0 ? 'var(--red)' : 'var(--subtle)';
+      const hasDrill = CAMPAIGN_DRILL[camp.group];
+      const drillKey = camp.group + '|' + date;
+      const isOpen = drillOpen[drillKey];
+
+      bodyHtml += `<tr class="campaign-src-row${hasDrill ? ' has-drill' : ''}"${hasDrill ? ` onclick="toggleDrill('${camp.group}','${date}')"` : ''}>
+        <td><span class="campaign-src-dot" style="background:${camp.color}"></span>${camp.name}${hasDrill ? ` <span class="drill-arrow${isOpen ? ' open' : ''}">\u25B6</span>` : ''} <span style="font-size:.62rem;color:var(--muted);font-weight:400">${share.toFixed(1)}%</span></td>
+        <td>${num(row.installs)}</td>
+        <td>${num(row.signups)} <span style="font-size:.65rem;color:var(--muted)">${pct(row.signups, row.installs)}</span></td>
+        <td>${num(row.wallets)} <span style="font-size:.65rem;color:var(--muted)">${pct(row.wallets, row.installs)}</span></td>
+        <td>${num(row.ftd)} <span style="font-size:.65rem;color:var(--muted)">${pct(row.ftd, row.installs)}</span></td>
+        <td>${num(row.ftt)} <span style="font-size:.65rem;color:var(--muted)">${pct(row.ftt, row.installs)}</span></td>
+        <td class="sep-col rate-cell" style="color:${cE2eColor}">${pct(row.ftt, row.installs)}</td>
+      </tr>`;
+
+      if (hasDrill && isOpen) {
+        const drillCamps = CAMPAIGN_DRILL[camp.group];
+        drillCamps.forEach(dc => {
+          const dr = dc.data.find(r => r.d === date);
+          if (!dr || (dr.i === 0 && dr.s === 0)) return;
+          const dE2e = pctRaw(dr.t, dr.i);
+          const dColor = dE2e >= 2.5 ? 'var(--green)' : dE2e >= 1.5 ? 'var(--amber)' : dE2e > 0 ? 'var(--red)' : 'var(--subtle)';
+          bodyHtml += `<tr class="drill-row">
+            <td title="${dc.name}">${dc.name}</td>
+            <td>${num(dr.i)}</td>
+            <td>${num(dr.s)} <span style="font-size:.6rem;color:var(--muted)">${dr.i > 0 ? pct(dr.s, dr.i) : '\u2014'}</span></td>
+            <td>${num(dr.w)} <span style="font-size:.6rem;color:var(--muted)">${dr.i > 0 ? pct(dr.w, dr.i) : '\u2014'}</span></td>
+            <td>${num(dr.f)} <span style="font-size:.6rem;color:var(--muted)">${dr.i > 0 ? pct(dr.f, dr.i) : '\u2014'}</span></td>
+            <td>${num(dr.t)} <span style="font-size:.6rem;color:var(--muted)">${dr.i > 0 ? pct(dr.t, dr.i) : '\u2014'}</span></td>
+            <td class="sep-col rate-cell" style="color:${dColor}">${dr.i > 0 ? pct(dr.t, dr.i) : '\u2014'}</td>
+          </tr>`;
+        });
+      }
+    });
+
+    const unattr = overall.installs - campTotal.installs;
+    if (unattr > 0) {
+      const uShare = pctRaw(unattr, overall.installs);
+      bodyHtml += `<tr class="campaign-src-row" style="opacity:.55">
+        <td><span class="campaign-src-dot" style="background:var(--subtle)"></span>Unattributed <span style="font-size:.62rem;color:var(--muted);font-weight:400">${uShare.toFixed(1)}%</span></td>
+        <td>${num(unattr)}</td>
+        <td>${num(Math.max(0, overall.signups - campTotal.signups))}</td>
+        <td>${num(Math.max(0, overall.wallets - campTotal.wallets))}</td>
+        <td>${num(Math.max(0, overall.ftd - campTotal.ftd))}</td>
+        <td>${num(Math.max(0, overall.ftt - campTotal.ftt))}</td>
+        <td class="sep-col">\u2014</td>
+      </tr>`;
+    }
+  });
+
+  document.getElementById('funnelTable').innerHTML = headHtml + '<tbody>' + bodyHtml + '</tbody>';
+}
+
+
+let drillOpen = {};
+function toggleDrill(group, date) {
+  const key = group + '|' + date;
+  drillOpen[key] = !drillOpen[key];
+  renderFunnelCampaign();
+}
+
+let expandedSrc = null;
+
+function srcTotals(src) {
+  return src.data.reduce((a, r) => {
+    a.installs += r.installs; a.signups += r.signups;
+    a.wallets += r.wallets; a.ftd += r.ftd; a.ftt += r.ftt;
+    return a;
+  }, { installs:0, signups:0, wallets:0, ftd:0, ftt:0 });
+}
+
+function srcLatest(src) {
+  return src.data[src.data.length - 1];
+}
+
+function toggleSrc(key) {
+  expandedSrc = expandedSrc === key ? null : key;
+  renderSources();
+  renderFunnel(expandedSrc);
+}
+
+function renderSources() {
+  const allKeys = Object.keys(SOURCE_DATA);
+  const latests = {};
+  allKeys.forEach(k => { latests[k] = srcLatest(SOURCE_DATA[k]); });
+
+  const MIN_INSTALLS = 10;
+  const showKeys = allKeys.filter(k => latests[k].installs >= MIN_INSTALLS);
+  const smallKeys = allKeys.filter(k => latests[k].installs < MIN_INSTALLS);
+
+  let showLatestTotal = 0;
+  showKeys.forEach(k => { showLatestTotal += latests[k].installs; });
+
+  const latestFunnel = FUNNEL_DATA[FUNNEL_DATA.length - 1];
+  const grandTotal = latestFunnel.installs;
+  const otherLatestInstalls = grandTotal - showLatestTotal;
+
+  const otherTotals = { installs:0, signups:0, wallets:0, ftd:0, ftt:0, days:0 };
+  smallKeys.forEach(k => {
+    const t = srcTotals(SOURCE_DATA[k]);
+    otherTotals.installs += t.installs;
+    otherTotals.signups += t.signups;
+    otherTotals.wallets += t.wallets;
+    otherTotals.ftd += t.ftd;
+    otherTotals.ftt += t.ftt;
+    otherTotals.days = Math.max(otherTotals.days, SOURCE_DATA[k].data.length);
+  });
+
+  // --- Share Bar ---
+  let barHtml = '<div class="src-share-bar">';
+  showKeys.forEach(k => {
+    const s = SOURCE_DATA[k];
+    const share = (latests[k].installs / grandTotal * 100).toFixed(1);
+    barHtml += `<div class="src-share-seg" style="flex:${latests[k].installs};background:${s.color}" onclick="toggleSrc('${k}')" title="${s.name}: ${num(latests[k].installs)} (${share}%)">${share > 5 ? share + '%' : ''}</div>`;
+  });
+  if (otherLatestInstalls > 0) {
+    const otherShare = (otherLatestInstalls / grandTotal * 100).toFixed(1);
+    barHtml += `<div class="src-share-seg" style="flex:${otherLatestInstalls};background:var(--subtle)" title="Other: ${num(otherLatestInstalls)} (${otherShare}%)">${otherShare > 5 ? otherShare + '%' : ''}</div>`;
+  }
+  barHtml += '</div>';
+  document.getElementById('srcShareBar').innerHTML = barHtml;
+
+  // --- Legend ---
+  let legendHtml = '';
+  showKeys.forEach(k => {
+    const s = SOURCE_DATA[k];
+    const share = (latests[k].installs / grandTotal * 100).toFixed(1);
+    legendHtml += `<div class="src-share-legend-item" onclick="toggleSrc('${k}')"><span class="dot" style="background:${s.color}"></span>${s.name}: <strong>${num(latests[k].installs)}</strong> <span class="legend-pct">(${share}%)</span></div>`;
+  });
+  if (otherLatestInstalls > 0) {
+    const otherShare = (otherLatestInstalls / grandTotal * 100).toFixed(1);
+    legendHtml += `<div class="src-share-legend-item"><span class="dot" style="background:var(--subtle)"></span>Other: <strong>${num(otherLatestInstalls)}</strong> <span class="legend-pct">(${otherShare}%)</span></div>`;
+  }
+  document.getElementById('srcLegend').innerHTML = legendHtml;
+
+  // --- Source Cards ---
+  function buildCard(k) {
+    const s = SOURCE_DATA[k];
+    const t = srcTotals(s);
+    const lt = latests[k];
+    const share = (lt.installs / grandTotal * 100).toFixed(1);
+    const isExp = expandedSrc === k;
+
+    const funnelSteps = [
+      { label:'Signup', rate: pctRaw(t.signups, t.installs), color: s.color },
+      { label:'Wallet', rate: pctRaw(t.wallets, t.installs), color: s.color },
+      { label:'FTD', rate: pctRaw(t.ftd, t.installs), color: s.color },
+      { label:'Trade', rate: pctRaw(t.ftt, t.installs), color: s.color },
+    ];
+    const maxRate = Math.max(...funnelSteps.map(f => f.rate), 1);
+
+    const miniFunnel = funnelSteps.map(f => {
+      const h = Math.max(3, (f.rate / maxRate) * 36);
+      return `<div class="src-mini-step">
+        <div class="src-mini-bar" style="height:${h}px;background:${f.color}"></div>
+        <div class="src-mini-label">${f.label}</div>
+        <div class="src-mini-rate" style="color:${f.rate > 0 ? f.color : 'var(--subtle)'}">${f.rate > 0 ? f.rate.toFixed(1) + '%' : '\u2014'}</div>
+      </div>`;
+    }).join('');
+
+    return `<div class="src-card${isExp ? ' expanded' : ''}" onclick="toggleSrc('${k}')">
+      <div class="src-card-head">
+        <div class="src-icon" style="background:${s.color}"><img src="https://deriv.com/favicon.ico" style="width:20px;height:20px;border-radius:4px" onerror="this.style.display='none'"></div>
+        <div class="src-info">
+          <div class="src-name">${s.name}${isExp ? ' <span style="font-size:.65rem;color:var(--blue);font-weight:600;background:#eff6ff;padding:1px 6px;border-radius:4px;margin-left:6px">FILTERED</span>' : ''}</div>
+          <div class="src-meta">${s.data.length} days tracked &middot; Install \u2192 Trade: <strong>${pct(t.ftt, t.installs)}</strong></div>
+        </div>
+        <div class="src-num">
+          <div class="src-num-val">${num(lt.installs)}</div>
+          <div class="src-num-share" style="color:${s.color}">${share}% share</div>
+        </div>
+      </div>
+      <div class="src-mini-funnel">${miniFunnel}</div>
+    </div>`;
+  }
+
+  let cardsHtml = showKeys.map(k => buildCard(k)).join('');
+
+  if (smallKeys.length > 0) {
+    const ot = otherTotals;
+    const oShare = (otherLatestInstalls / grandTotal * 100).toFixed(1);
+    const oSteps = [
+      { label:'Signup', rate: pctRaw(ot.signups, ot.installs) },
+      { label:'Wallet', rate: pctRaw(ot.wallets, ot.installs) },
+      { label:'FTD', rate: pctRaw(ot.ftd, ot.installs) },
+      { label:'Trade', rate: pctRaw(ot.ftt, ot.installs) },
+    ];
+    const oMax = Math.max(...oSteps.map(f => f.rate), 1);
+    const oFunnel = oSteps.map(f => {
+      const h = Math.max(3, (f.rate / oMax) * 36);
+      return `<div class="src-mini-step">
+        <div class="src-mini-bar" style="height:${h}px;background:var(--subtle)"></div>
+        <div class="src-mini-label">${f.label}</div>
+        <div class="src-mini-rate" style="color:var(--muted)">${f.rate > 0 ? f.rate.toFixed(1) + '%' : '\u2014'}</div>
+      </div>`;
+    }).join('');
+    const names = smallKeys.map(k => SOURCE_DATA[k].name).join(', ');
+    cardsHtml += `<div class="src-card" style="opacity:.7">
+      <div class="src-card-head">
+        <div class="src-icon" style="background:var(--subtle)"></div>
+        <div class="src-info">
+          <div class="src-name">Other</div>
+          <div class="src-meta">${names} &middot; Install \u2192 Trade: <strong>${pct(ot.ftt, ot.installs)}</strong></div>
+        </div>
+        <div class="src-num">
+          <div class="src-num-val">${num(otherLatestInstalls)}</div>
+          <div class="src-num-share" style="color:var(--muted)">${oShare}% share</div>
+        </div>
+      </div>
+      <div class="src-mini-funnel">${oFunnel}</div>
+    </div>`;
+  }
+
+  document.getElementById('srcCards').innerHTML = cardsHtml;
+}
+
+
+/* ===================================================================
+ *  VIEW SWITCHING
+ * =================================================================== */
+
+let funnelRendered = false;
+
+let rcaRendered = false;
+
+function switchView(view) {
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.view-tab[onclick*="${view}"]`).classList.add('active');
+  document.getElementById('view-' + view).classList.add('active');
+
+  if (view === 'funnel' && !funnelRendered) {
+    renderOverview();
+    renderTrendChart();
+    renderFunnel();
+    renderSources();
+    funnelRendered = true;
+  }
+
+  if (view === 'rootcause' && !rcaRendered) {
+    renderRootCause();
+    rcaRendered = true;
+  }
+}
+
+
+/* ===================================================================
+ *  ROOT CAUSE ANALYSIS
+ * =================================================================== */
+
+const RCA_FTT_DECAY = [
+  { date:'Jun 23', totalFtt:1.99, fbFtt:0.10, googleFtt:12.0, fbInstalls:2568 },
+  { date:'Jun 24', totalFtt:0.74, fbFtt:0.14, googleFtt:15.0, fbInstalls:12200 },
+  { date:'Jun 25', totalFtt:0.89, fbFtt:0.04, googleFtt:18.0, fbInstalls:11850 },
+  { date:'Jun 26', totalFtt:0.82, fbFtt:0.14, googleFtt:20.0, fbInstalls:9300 },
+  { date:'Jun 27', totalFtt:0.76, fbFtt:0.03, googleFtt:19.0, fbInstalls:9300 },
+  { date:'Jun 28', totalFtt:0.59, fbFtt:0.03, googleFtt:18.0, fbInstalls:3913 },
+  { date:'Jun 29', totalFtt:0.25, fbFtt:0.03, googleFtt:17.5, fbInstalls:7019 },
+];
+
+const RCA_DAU_ENG = [
+  { date:'Jun 2',  dau:26104, eng:485, sess:1.73 },
+  { date:'Jun 5',  dau:28969, eng:480, sess:1.70 },
+  { date:'Jun 9',  dau:30851, eng:478, sess:1.71 },
+  { date:'Jun 12', dau:29939, eng:491, sess:1.68 },
+  { date:'Jun 16', dau:31672, eng:501, sess:1.71 },
+  { date:'Jun 19', dau:30359, eng:494, sess:1.75 },
+  { date:'Jun 22', dau:29682, eng:460, sess:1.68 },
+  { date:'Jun 23', dau:31228, eng:458, sess:1.70 },
+  { date:'Jun 24', dau:34686, eng:460, sess:1.69 },
+  { date:'Jun 25', dau:45574, eng:428, sess:1.60 },
+  { date:'Jun 26', dau:42376, eng:468, sess:1.67 },
+  { date:'Jun 27', dau:43097, eng:450, sess:1.65 },
+  { date:'Jun 28', dau:43895, eng:423, sess:1.56 },
+  { date:'Jun 29', dau:51918, eng:326, sess:0.83 },
+];
+
+const RCA_RETENTION = [
+  { cohort:'May 17\u201323', w0:45360, w1:16812, w2:11701, w3:9783, w4:8076, w5:7195 },
+  { cohort:'May 24\u201330', w0:45135, w1:16323, w2:11453, w3:9004, w4:7715, w5:null },
+  { cohort:'May 31\u2013Jun 6', w0:47245, w1:17400, w2:11529, w3:9313, w4:null, w5:null },
+  { cohort:'Jun 7\u201313', w0:48159, w1:17719, w2:12419, w3:null, w4:null, w5:null },
+  { cohort:'Jun 14\u201320', w0:44658, w1:16079, w2:null, w3:null, w4:null, w5:null },
+  { cohort:'Jun 21\u201327 (FB Ads)', w0:76992, w1:null, w2:null, w3:null, w4:null, w5:null },
+];
+
+const RCA_CAMPAIGNS = [
+  { name:'ng-dbot-0626-google', source:'Google', installs:52, ftt:7.69, quality:0.152 },
+  { name:'row-login-0426-google', source:'Google', installs:220, ftt:5.91, quality:0.078 },
+  { name:'row-brand_keyword-0426-google', source:'Google', installs:223, ftt:4.93, quality:0.103 },
+  { name:'row-derivtradingview-0426-google', source:'Google', installs:363, ftt:3.86, quality:0.062 },
+  { name:'africa_t1-currency_trading-0525-google', source:'Google', installs:297, ftt:3.37, quality:0.088 },
+  { name:'row-app_installs-0626-fb-android', source:'Facebook', installs:21735, ftt:0.08, quality:0.027 },
+  { name:'row-app_installs-0626-fb-audience_network', source:'Facebook', installs:3814, ftt:0.00, quality:0.008 },
+  { name:'asia-app-0626-ios', source:'Google', installs:361, ftt:0.00, quality:0.020 },
+  { name:'Deriv-App-Promo-June-Android', source:'Google', installs:506, ftt:0.40, quality:0.031 },
+  { name:'deriv-home-mobile-app-qr-install', source:'QR Code', installs:48418, ftt:0.46, quality:0.018 },
+];
+
+function renderRootCause() {
+  // FTT Decay chart
+  const decayCtx = document.getElementById('rcaDecayChart').getContext('2d');
+  new Chart(decayCtx, {
+    type: 'line',
+    data: {
+      labels: RCA_FTT_DECAY.map(d => d.date),
+      datasets: [
+        { label:'Overall FTT Rate %', data:RCA_FTT_DECAY.map(d=>d.totalFtt), borderColor:'#64748b', backgroundColor:'#64748b22', fill:true, tension:0.3, borderWidth:2, pointRadius:4 },
+        { label:'Facebook FTT Rate %', data:RCA_FTT_DECAY.map(d=>d.fbFtt), borderColor:'#dc2626', backgroundColor:'#dc262622', fill:true, tension:0.3, borderWidth:2.5, pointRadius:5 },
+        { label:'Google FTT Rate %', data:RCA_FTT_DECAY.map(d=>d.googleFtt), borderColor:'#16a34a', backgroundColor:'#16a34a22', fill:false, tension:0.3, borderWidth:2, pointRadius:4, yAxisID:'y1' },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend:{position:'top',labels:{usePointStyle:true,padding:14}},
+        annotation:{annotations:{launch:{type:'line',xMin:0,xMax:0,borderColor:'#dc262688',borderWidth:2,borderDash:[5,3],label:{display:true,content:'FB Ads launch',position:'start',backgroundColor:'#fee2e2',color:'#991b1b',font:{size:10,weight:'700'},padding:4,borderRadius:4}}}}
+      },
+      scales:{
+        y:{title:{display:true,text:'FTT Rate %'},ticks:{callback:v=>v+'%'},grid:{color:'#f1f5f9'},min:0,max:2.5},
+        y1:{title:{display:true,text:'Google FTT Rate %'},position:'right',ticks:{callback:v=>v+'%'},grid:{display:false},min:0,max:25}
+      }
+    }
+  });
+
+  // DAU vs Engagement chart
+  const dauCtx = document.getElementById('rcaDauChart').getContext('2d');
+  new Chart(dauCtx, {
+    type: 'line',
+    data: {
+      labels: RCA_DAU_ENG.map(d => d.date),
+      datasets: [
+        { label:'DAU', data:RCA_DAU_ENG.map(d=>d.dau), borderColor:'#2563eb', backgroundColor:'#2563eb22', fill:true, tension:0.3, borderWidth:2.5, pointRadius:4, yAxisID:'y' },
+        { label:'Engagement (sec/user)', data:RCA_DAU_ENG.map(d=>d.eng), borderColor:'#dc2626', backgroundColor:'#dc262622', fill:false, tension:0.3, borderWidth:2, pointRadius:4, borderDash:[5,3], yAxisID:'y1' },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend:{position:'top',labels:{usePointStyle:true,padding:14}},
+        annotation:{annotations:{fbStart:{type:'line',xMin:7,xMax:7,borderColor:'#dc262688',borderWidth:2,borderDash:[5,3],label:{display:true,content:'FB Ads start (Jun 23)',position:'start',backgroundColor:'#fee2e2',color:'#991b1b',font:{size:10,weight:'700'},padding:4,borderRadius:4}}}}
+      },
+      scales:{
+        y:{title:{display:true,text:'Daily Active Users'},grid:{color:'#f1f5f9'},ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}},
+        y1:{title:{display:true,text:'Engagement (sec/user)'},position:'right',grid:{display:false},min:200,max:550}
+      }
+    }
+  });
+
+  // Funnel comparison bar chart
+  const funnelCtx = document.getElementById('rcaFunnelChart').getContext('2d');
+  new Chart(funnelCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Signup Rate','Real Account Rate','FTD Rate','FTT Rate'],
+      datasets: [
+        { label:'Google Ads', data:[51.4,36.5,19.0,18.59], backgroundColor:'#16a34acc', borderRadius:4 },
+        { label:'Organic', data:[29.2,10.3,3.5,2.80], backgroundColor:'#2563ebaa', borderRadius:4 },
+        { label:'Facebook Ads', data:[15.7,3.6,0.1,0.07], backgroundColor:'#dc2626cc', borderRadius:4 },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:14}},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.parsed.y+'%'}}},
+      scales:{x:{grid:{display:false}},y:{title:{display:true,text:'% of Installs'},ticks:{callback:v=>v+'%'},grid:{color:'#f1f5f9'}}}
+    }
+  });
+
+  // Retention table
+  const fmtN = n => n >= 1000 ? (n/1000).toFixed(1)+'K' : (n||'');
+  let retHTML = '<thead><tr><th>Cohort</th><th>Week 0</th><th>Week 1</th><th>W1 Ret.</th><th>Week 2</th><th>W2 Ret.</th><th>Week 3</th><th>Week 4</th><th>Week 5</th></tr></thead><tbody>';
+  RCA_RETENTION.forEach(d => {
+    const isFB = d.cohort.includes('FB');
+    const w1r = d.w1 ? ((d.w1/d.w0)*100).toFixed(1)+'%' : '\u23F3 Pending';
+    const w2r = d.w2 ? ((d.w2/d.w0)*100).toFixed(1)+'%' : '\u2014';
+    retHTML += `<tr style="${isFB?'background:#fef2f2;font-weight:700':''}">
+      <td>${isFB?'<span style="color:#dc2626">'+d.cohort+'</span>':d.cohort}</td>
+      <td>${fmtN(d.w0)}</td><td>${d.w1!=null?fmtN(d.w1):'\u23F3'}</td><td>${w1r}</td>
+      <td>${d.w2!=null?fmtN(d.w2):'\u2014'}</td><td>${w2r}</td>
+      <td>${d.w3!=null?fmtN(d.w3):'\u2014'}</td><td>${d.w4!=null?fmtN(d.w4):'\u2014'}</td><td>${d.w5!=null?fmtN(d.w5):'\u2014'}</td>
+    </tr>`;
+  });
+  retHTML += '</tbody>';
+  document.getElementById('rcaRetentionTable').innerHTML = retHTML;
+
+  // Campaign table
+  let campHTML = '<thead><tr><th>Campaign</th><th>Source</th><th>Installs</th><th>FTT Rate</th><th>DAU Quality</th><th>Action</th></tr></thead><tbody>';
+  RCA_CAMPAIGNS.forEach(d => {
+    const srcColor = d.source==='Google'?'var(--green)':d.source==='Facebook'?'var(--red)':'var(--muted)';
+    const action = d.ftt >= 3 ? '<span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700">\u2713 Scale</span>' :
+                   d.ftt <= 0.1 ? '<span style="background:var(--red-bg);color:var(--red);padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700">\u2717 Kill</span>' :
+                   '<span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700">\u26A0 Review</span>';
+    campHTML += `<tr>
+      <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.name}">${d.name}</td>
+      <td><span style="color:${srcColor};font-weight:700">${d.source}</span></td>
+      <td>${fmtN(d.installs)}</td>
+      <td><strong style="color:${d.ftt>=3?'var(--green)':d.ftt>=0.5?'var(--amber)':'var(--red)'}">${d.ftt}%</strong></td>
+      <td>${d.quality.toFixed(3)}</td>
+      <td>${action}</td>
+    </tr>`;
+  });
+  campHTML += '</tbody>';
+  document.getElementById('rcaCampaignTable').innerHTML = campHTML;
+}
 
 /* ===================================================================
  *  INIT
