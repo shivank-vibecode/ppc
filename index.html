@@ -165,6 +165,9 @@
   .fvt-btn{border:none;background:none;padding:6px 14px;border-radius:6px;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
   .fvt-btn:hover{color:var(--header)}
   .fvt-btn.active{background:var(--card);color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .rca-btn{border:none;background:none;padding:5px 14px;border-radius:6px;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+  .rca-btn:hover{color:var(--header)}
+  .rca-btn.active{background:var(--card);color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 
   /* Campaign sub-rows */
   .funnel-table .campaign-date-row td{background:var(--gray-bg) !important;font-weight:700;border-top:2px solid var(--border)}
@@ -320,218 +323,148 @@
 
     <!-- ===== PART 1: OVERVIEW ===== -->
     <div style="margin-bottom:36px">
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px">
-        <h2 style="font-size:1.1rem;font-weight:800;color:var(--header);margin:0">Root Cause Overview</h2>
-        <span style="font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--gray-bg);padding:3px 10px;border-radius:6px">29 Jun 2026</span>
-        <div class="funnel-view-toggle" id="rcaViewToggle" style="margin-left:auto">
-          <button class="fvt-btn active" onclick="setRcaView('ceo')">CEO Summary</button>
-          <button class="fvt-btn" onclick="setRcaView('team')">Team Detail</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <h2 style="font-size:1.1rem;font-weight:800;color:var(--header);margin:0">Root Cause Overview</h2>
+          <span style="font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--gray-bg);padding:3px 10px;border-radius:6px">29 Jun 2026</span>
+        </div>
+        <div style="display:flex;background:var(--gray-bg);border-radius:8px;padding:2px;gap:2px" id="rcaViewToggle">
+          <button onclick="setRcaView('ceo')" class="rca-btn active" id="rcaBtnCeo" style="font-size:.72rem;padding:5px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all .15s">CEO View</button>
+          <button onclick="setRcaView('team')" class="rca-btn" id="rcaBtnTeam" style="font-size:.72rem;padding:5px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all .15s">Team View</button>
         </div>
       </div>
 
       <!-- ========== CEO VIEW ========== -->
-      <div id="rca-ceo">
+      <div id="rcaCeoView">
 
-        <!-- Headline -->
+        <!-- CEO: Bottom line -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
-          <div style="font-size:1.15rem;font-weight:800;line-height:1.5;color:var(--header);margin-bottom:16px">DAU is up 63%. Traders are down 94%.<br>Paid spend is not producing revenue.</div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:20px">
-            <div style="text-align:center;padding:16px 12px;background:var(--bg);border-radius:var(--radius)">
-              <div style="font-size:1.6rem;font-weight:800;color:var(--green)">46,621</div>
-              <div style="font-size:.7rem;font-weight:600;color:var(--muted);margin-top:2px">DAU &uarr;63%</div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:14px">Bottom Line</div>
+          <div style="font-size:1rem;line-height:1.8;color:var(--text)">
+            <p style="margin:0 0 16px;font-size:1.05rem"><span style="background:rgba(239,68,68,.1);padding:2px 6px;border-radius:3px;font-weight:700">DAU is up 63%. Trader acquisition is down 94%.</span> We are paying to fill the app with users who never trade.</p>
+            <p style="margin:0">Paid spend produced <strong style="color:var(--red)">5 traders</strong> on Jun 29. Organic and QR produced <strong style="color:var(--green)">32 traders</strong> at zero cost. The free channels are outperforming paid by 6&times;.</p>
+          </div>
+        </div>
+
+        <!-- CEO: Where DAU comes from -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:14px">Where DAU Comes From &mdash; Jun 29</div>
+          <table style="width:100%;border-collapse:collapse;font-size:.88rem;color:var(--text)">
+            <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+              <th style="padding:8px 12px;font-weight:700">Source</th>
+              <th style="padding:8px 12px;font-weight:700;text-align:right">DAU</th>
+              <th style="padding:8px 12px;font-weight:700;text-align:right">Share</th>
+              <th style="padding:8px 12px;font-weight:700;text-align:right">Traders</th>
+              <th style="padding:8px 12px;font-weight:700;text-align:right">Cost/Trader</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px">Organic</td><td style="padding:8px 12px;text-align:right;font-weight:600">19,555</td><td style="padding:8px 12px;text-align:right">42%</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">26</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">$0</td></tr>
+              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px">QR Code</td><td style="padding:8px 12px;text-align:right;font-weight:600">14,083</td><td style="padding:8px 12px;text-align:right">30%</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">6</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">$0</td></tr>
+              <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:8px 12px">Facebook Ads</td><td style="padding:8px 12px;text-align:right;font-weight:600">7,749</td><td style="padding:8px 12px;text-align:right">17%</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">2</td><td style="padding:8px 12px;text-align:right;color:var(--muted)">unknown</td></tr>
+              <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:8px 12px">Google Ads</td><td style="padding:8px 12px;text-align:right;font-weight:600">4,449</td><td style="padding:8px 12px;text-align:right">10%</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">3</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">$7,692</td></tr>
+              <tr><td style="padding:8px 12px;font-weight:700">Total</td><td style="padding:8px 12px;text-align:right;font-weight:700">46,621</td><td style="padding:8px 12px;text-align:right;font-weight:700">100%</td><td style="padding:8px 12px;text-align:right;font-weight:700">37</td><td style="padding:8px 12px;text-align:right"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- CEO: Three things to know -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--header);margin-bottom:16px">Three Things to Know</div>
+          <div style="display:flex;flex-direction:column;gap:16px;font-size:.92rem;line-height:1.7;color:var(--text)">
+            <div style="display:flex;gap:14px;align-items:start">
+              <span style="background:var(--red);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:5px;flex-shrink:0;margin-top:3px">1</span>
+              <div><strong>Facebook is targeting Bangladesh &mdash; a market with zero traders.</strong> 10,114 installs, zero first trades. 60% of Facebook&rsquo;s Jun 29 volume goes there. The algorithm is optimizing for cheap installs, not users who trade.</div>
             </div>
-            <div style="text-align:center;padding:16px 12px;background:var(--bg);border-radius:var(--radius)">
-              <div style="font-size:1.6rem;font-weight:800;color:var(--red)">37</div>
-              <div style="font-size:.7rem;font-weight:600;color:var(--muted);margin-top:2px">TRADERS &darr;94%</div>
+            <div style="display:flex;gap:14px;align-items:start">
+              <span style="background:var(--red);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:5px;flex-shrink:0;margin-top:3px">2</span>
+              <div><strong>Google spend increased 4&ndash;5&times; but cost per trader went from $83 to $7,692.</strong> Budget shifted from efficient Africa campaigns to expensive search campaigns with near-zero conversion. One campaign spent <strong>$41,087</strong> and produced zero traders.</div>
             </div>
-            <div style="text-align:center;padding:16px 12px;background:var(--bg);border-radius:var(--radius)">
-              <div style="font-size:1.6rem;font-weight:800;color:var(--red)">$23K</div>
-              <div style="font-size:.7rem;font-weight:600;color:var(--muted);margin-top:2px">GOOGLE DAILY SPEND</div>
-            </div>
-            <div style="text-align:center;padding:16px 12px;background:var(--bg);border-radius:var(--radius)">
-              <div style="font-size:1.6rem;font-weight:800;color:var(--red)">5</div>
-              <div style="font-size:.7rem;font-weight:600;color:var(--muted);margin-top:2px">PAID TRADERS JUN 29</div>
+            <div style="display:flex;gap:14px;align-items:start">
+              <span style="background:var(--amber);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:5px;flex-shrink:0;margin-top:3px">3</span>
+              <div><strong>Conversion is declining across all channels &mdash; including organic.</strong> Organic trader output dropped 70&ndash;79% despite stable installs. App crash rates (83&ndash;89% crash-free vs 99.5% standard) are the likely cause. This needs engineering investigation.</div>
             </div>
           </div>
         </div>
 
-        <!-- 3 key points -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:16px">
-          <!-- Facebook -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;border-left:4px solid var(--red)">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:8px">Facebook</div>
-            <div style="font-size:.88rem;line-height:1.6;color:var(--text)">
-              <strong>7,019</strong> installs &rarr; <strong style="color:var(--red)">2 traders</strong><br>
-              Targeting Bangladesh (0 FTTs ever).<br>
-              Added 7,749 DAU who don&rsquo;t trade.
+        <!-- CEO: Decisions needed -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:16px">Decisions Needed</div>
+          <div style="display:flex;flex-direction:column;gap:12px;font-size:.9rem;line-height:1.6;color:var(--text)">
+            <div style="display:flex;gap:10px;align-items:start">
+              <span style="color:var(--red);font-weight:700;flex-shrink:0">&bull;</span>
+              <div><strong>Pause Facebook Audience Network and exclude Bangladesh</strong> &mdash; zero traders, no plausible cost scenario justifies continuing.</div>
             </div>
-            <div style="margin-top:10px;font-size:.75rem;font-weight:700;color:var(--red)">&#9724; Pause &amp; exclude Bangladesh</div>
-          </div>
-          <!-- Google -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;border-left:4px solid var(--amber)">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:8px">Google</div>
-            <div style="font-size:.88rem;line-height:1.6;color:var(--text)">
-              <strong>$23K/day</strong> &rarr; <strong style="color:var(--red)">3&ndash;7 traders</strong><br>
-              Cost/trader jumped from $83 to $8,734.<br>
-              4 efficient geos exist at <strong style="color:var(--green)">$47&ndash;89</strong>/FTT.
+            <div style="display:flex;gap:10px;align-items:start">
+              <span style="color:var(--red);font-weight:700;flex-shrink:0">&bull;</span>
+              <div><strong>Pause Google&rsquo;s worst campaigns</strong> (multi_asset: $41K/0 FTTs, brand keywords: $32K/8 FTTs) and reallocate to Kenya ($47/FTT), Pakistan ($59), South Africa ($79).</div>
             </div>
-            <div style="margin-top:10px;font-size:.75rem;font-weight:700;color:var(--amber)">&#9724; Reallocate to Kenya, PK, SA, TZ</div>
-          </div>
-          <!-- Organic -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;border-left:4px solid var(--blue)">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:8px">Organic + QR</div>
-            <div style="font-size:.88rem;line-height:1.6;color:var(--text)">
-              <strong>72%</strong> of DAU at <strong style="color:var(--green)">$0 cost</strong>.<br>
-              QR DAU doubled to 14K in 2 weeks.<br>
-              But organic FTT dropped <strong style="color:var(--red)">70&ndash;79%</strong>.
+            <div style="display:flex;gap:10px;align-items:start">
+              <span style="color:var(--amber);font-weight:700;flex-shrink:0">&bull;</span>
+              <div><strong>Investigate app crash rates with engineering</strong> &mdash; organic conversion collapsed 70&ndash;79%, which suggests a product-level issue affecting all users.</div>
             </div>
-            <div style="margin-top:10px;font-size:.75rem;font-weight:700;color:var(--blue)">&#9724; Investigate app crash / product issue</div>
+            <div style="display:flex;gap:10px;align-items:start">
+              <span style="color:var(--green);font-weight:700;flex-shrink:0">&bull;</span>
+              <div><strong>Double down on QR code distribution</strong> &mdash; DAU doubled in 2 weeks at zero cost. This is the strongest growth lever available.</div>
+            </div>
           </div>
         </div>
 
-        <!-- DAU source bar -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:12px">Where DAU comes from &mdash; Jun 29</div>
-          <div style="display:flex;height:28px;border-radius:6px;overflow:hidden;font-size:.65rem;font-weight:700;color:#fff;line-height:28px;text-align:center">
-            <div style="width:42%;background:var(--blue)" title="Organic 19,555">Organic 42%</div>
-            <div style="width:30%;background:var(--green)" title="QR 14,083">QR 30%</div>
-            <div style="width:17%;background:#ef4444" title="Facebook 7,749">FB 17%</div>
-            <div style="width:10%;background:var(--amber)" title="Google 4,449">G 10%</div>
-            <div style="width:1%;background:var(--muted)" title="Other 726"></div>
-          </div>
-          <div style="display:flex;gap:16px;margin-top:10px;font-size:.72rem;color:var(--muted);flex-wrap:wrap">
-            <span>&#9679; <span style="color:var(--blue)">Organic</span> 19,555 &mdash; 26 traders</span>
-            <span>&#9679; <span style="color:var(--green)">QR</span> 14,083 &mdash; 6 traders</span>
-            <span>&#9679; <span style="color:#ef4444">Facebook</span> 7,749 &mdash; 2 traders</span>
-            <span>&#9679; <span style="color:var(--amber)">Google</span> 4,449 &mdash; 3 traders</span>
-          </div>
-        </div>
-
-        <!-- Bottom line -->
-        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius);padding:18px 24px;font-size:.85rem;line-height:1.6;color:#991b1b">
-          <strong>Bottom line:</strong> 72% of DAU is free. Paid channels produce 27% of DAU but only 14% of traders. Organic alone delivers 70% of all traders at zero cost. Paid budget should be paused, reallocated, or halved until unit economics are fixed.
-        </div>
       </div>
 
       <!-- ========== TEAM VIEW ========== -->
-      <div id="rca-team" style="display:none">
+      <div id="rcaTeamView" style="display:none">
 
-        <!-- What happened -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:14px">What Happened</div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-            <div style="background:var(--bg);border-radius:var(--radius);padding:14px 18px">
-              <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Facebook &mdash; Jun 29</div>
-              <div style="font-size:.85rem;line-height:1.6;color:var(--text)">
-                <strong>7,019</strong> installs &rarr; <strong style="color:var(--red)">2 FTTs</strong> (0.03%)<br>
-                60% of volume &rarr; Bangladesh (<strong style="color:var(--red)">0 FTTs ever</strong>)<br>
-                Audience Network: 3,814 installs, 0 FTTs<br>
-                DAU: 129 &rarr; <strong>7,749</strong> in 6 days<br>
-                <span style="color:var(--muted);font-size:.78rem">Cost data: missing</span>
-              </div>
-            </div>
-            <div style="background:var(--bg);border-radius:var(--radius);padding:14px 18px">
-              <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Google &mdash; Jun 29</div>
-              <div style="font-size:.85rem;line-height:1.6;color:var(--text)">
-                <strong>$23,077</strong> spend &rarr; <strong style="color:var(--red)">3 FTTs</strong> ($7,692/FTT)<br>
-                Pre-Jun 17: $83&ndash;246/FTT <span style="color:var(--green)">&#10003;</span><br>
-                Post-Jun 18: $3,129&ndash;8,734/FTT <span style="color:var(--red)">&#10007;</span><br>
-                DAU: flat at ~4,449 despite 4&ndash;5&times; spend<br>
-                <span style="color:var(--muted);font-size:.78rem">multi_asset: $41K, 0 FTTs</span>
-              </div>
-            </div>
-          </div>
-
-          <div style="font-size:.85rem;line-height:1.6;color:var(--text);padding:0 2px">
-            Total DAU: <strong style="color:var(--green)">46,621</strong> (+63% vs Jun 23). Source-level DAU: organic <strong>19,555</strong> (42%), QR <strong>14,083</strong> (30%), Facebook <strong>7,749</strong> (17%), Google <strong>4,449</strong> (10%).
-          </div>
-        </div>
-
-        <!-- So what — restructured -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:14px">So What &mdash; DAU Impact</div>
-
-          <!-- DAU source table -->
-          <table style="width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:16px">
-            <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
-              <th style="padding:8px 10px;font-weight:700;color:var(--muted);font-size:.7rem;text-transform:uppercase">Source</th>
-              <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--muted);font-size:.7rem;text-transform:uppercase">DAU</th>
-              <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--muted);font-size:.7rem;text-transform:uppercase">Share</th>
-              <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--muted);font-size:.7rem;text-transform:uppercase">FTTs</th>
-              <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--muted);font-size:.7rem;text-transform:uppercase">Cost</th>
-              <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--muted);font-size:.7rem;text-transform:uppercase">$/FTT</th>
-            </tr></thead>
-            <tbody style="color:var(--text)">
-              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;font-weight:600">Organic</td><td style="padding:8px 10px;text-align:right">19,555</td><td style="padding:8px 10px;text-align:right">42%</td><td style="padding:8px 10px;text-align:right;color:var(--green)">26</td><td style="padding:8px 10px;text-align:right;color:var(--green)">$0</td><td style="padding:8px 10px;text-align:right;color:var(--green)">$0</td></tr>
-              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;font-weight:600">QR code</td><td style="padding:8px 10px;text-align:right">14,083</td><td style="padding:8px 10px;text-align:right">30%</td><td style="padding:8px 10px;text-align:right;color:var(--green)">6</td><td style="padding:8px 10px;text-align:right;color:var(--green)">$0</td><td style="padding:8px 10px;text-align:right;color:var(--green)">$0</td></tr>
-              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;font-weight:600">Facebook</td><td style="padding:8px 10px;text-align:right">7,749</td><td style="padding:8px 10px;text-align:right">17%</td><td style="padding:8px 10px;text-align:right;color:var(--red)">2</td><td style="padding:8px 10px;text-align:right;color:var(--muted)">???</td><td style="padding:8px 10px;text-align:right;color:var(--muted)">???</td></tr>
-              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px;font-weight:600">Google</td><td style="padding:8px 10px;text-align:right">4,449</td><td style="padding:8px 10px;text-align:right">10%</td><td style="padding:8px 10px;text-align:right;color:var(--red)">3</td><td style="padding:8px 10px;text-align:right">$23,077</td><td style="padding:8px 10px;text-align:right;color:var(--red)">$7,692</td></tr>
-              <tr><td style="padding:8px 10px;font-weight:700">Total</td><td style="padding:8px 10px;text-align:right;font-weight:700">46,621</td><td style="padding:8px 10px;text-align:right;font-weight:700">100%</td><td style="padding:8px 10px;text-align:right;font-weight:700">37</td><td style="padding:8px 10px;text-align:right" colspan="2"></td></tr>
-            </tbody>
-          </table>
-
-          <!-- Key callouts in grid -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 16px;font-size:.82rem;line-height:1.6;color:var(--text)">
-              <strong style="color:var(--green)">&#9650; QR code</strong> &mdash; DAU doubled (7K &rarr; 14K) in 2 weeks. Zero cost. Produces FTTs. Strongest growth signal.
-            </div>
-            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 16px;font-size:.82rem;line-height:1.6;color:var(--text)">
-              <strong style="color:var(--red)">&#9660; Organic FTT</strong> &mdash; dropped 70&ndash;79% (82&ndash;123 &rarr; 26/day). Installs stable. Likely app crashes (83&ndash;89% crash-free) or product change ~Jun 17.
-            </div>
-            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 16px;font-size:.82rem;line-height:1.6;color:var(--text)">
-              <strong style="color:var(--green)">&#9650; Efficient geos</strong> &mdash; Kenya <strong>$47</strong>/FTT, Pakistan <strong>$59</strong>, South Africa <strong>$79</strong>, Tanzania <strong>$89</strong>. These should get the budget.
-            </div>
-            <div style="background:var(--bg);border-radius:var(--radius);padding:12px 16px;font-size:.82rem;line-height:1.6;color:var(--text)">
-              <strong style="color:var(--red)">&#9660; Wasteful campaigns</strong> &mdash; multi_asset ($41K, 0 FTTs), brand_keyword ($32K, 8), login ($42K, 13), chart_patterns ($25K, 4).
-            </div>
-          </div>
-        </div>
-
-        <!-- Blindspots — compact -->
-        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400e;margin-bottom:14px">Blindspots</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:.82rem;line-height:1.55;color:#78350f">
-            <div style="padding:10px 14px;background:rgba(255,255,255,.5);border-radius:var(--radius)">
-              <strong>Facebook spend</strong><br>
-              Quality is 0.03% FTT. Cost unknown. Would need CPI &lt;$0.03 to justify &mdash; implausible.<br>
-              <em style="font-size:.75rem">Need: FB Ads Manager daily export</em>
-            </div>
-            <div style="padding:10px 14px;background:rgba(255,255,255,.5);border-radius:var(--radius)">
-              <strong>Organic FTT decline cause</strong><br>
-              70&ndash;79% drop with stable installs. Crashes, product change, or bots?<br>
-              <em style="font-size:.75rem">Need: Crashlytics by screen + product changelog</em>
-            </div>
-            <div style="padding:10px 14px;background:rgba(255,255,255,.5);border-radius:var(--radius)">
-              <strong>Attribution anomaly</strong><br>
-              Google FTDs: 178 installs, 364 FTTs &mdash; 204% rate (impossible).<br>
-              <em style="font-size:.75rem">Need: AppsFlyer attribution window settings</em>
-            </div>
-            <div style="padding:10px 14px;background:rgba(255,255,255,.5);border-radius:var(--radius)">
-              <strong>Source retention</strong><br>
-              FB DAU at 7,749 but do they come back? Will DAU hold or crash next week?<br>
-              <em style="font-size:.75rem">Need: AppsFlyer Cohort D1/D7/D30 by source</em>
-            </div>
-          </div>
-        </div>
-
-        <!-- Confidence summary — reorganized -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:14px">Confidence Summary</div>
-          <div style="display:flex;flex-direction:column;gap:8px;font-size:.82rem;color:var(--text)">
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>FB Bangladesh: 10,114 installs, 0 FTTs &mdash; exclude immediately</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Google cost/FTT: $83&ndash;246 &rarr; $3,129&ndash;8,734 after scaling Jun 18</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Efficient geos: Kenya $47, Pakistan $59, SA $79, Tanzania $89/FTT</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Audience Network (3,814/0) and multi_asset ($41K/0) &mdash; pause both</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>FB DAU 129 &rarr; 7,749 but 2 FTTs &mdash; vanity DAU, not revenue</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>QR DAU doubled (7K &rarr; 14K), zero cost, produces FTTs</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>Organic FTT &darr;70&ndash;79% &mdash; crashes likely, product change or bots not ruled out</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>Pause all FB &mdash; quality definitive, cost data would complete the case</span></div>
-            <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--red-bg);color:var(--red);font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">LOW</span><span>Google aggregate 18.6% FTT &mdash; inflated by attribution anomaly</span></div>
-          </div>
+      <!-- What happened -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:10px">What Happened</div>
+        <div style="font-size:.92rem;line-height:1.7;color:var(--text)">
+          <p style="margin:0 0 12px">Two paid channels are burning budget simultaneously. <span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">Facebook is flooding Bangladesh with zero-value installs</span>. Google scaled spend <strong>4&ndash;5&times;</strong> but cost per trader collapsed <strong style="color:var(--red)">30&ndash;50&times;</strong>.</p>
+          <p style="margin:0 0 12px"><strong>Facebook:</strong> Jun 29 &mdash; <strong>7,019</strong> installs, <strong style="color:var(--red)">2 FTTs</strong> (0.03%). Geo data reveals <strong>60%</strong> of Facebook volume goes to Bangladesh (<strong>10,114</strong> installs over the period, <strong style="color:var(--red)">zero FTTs</strong>). The remaining geos (Algeria, Congo, Morocco, Egypt, Iraq) also produce near-zero FTTs. Audience Network: <strong>3,814</strong> installs, <strong style="color:var(--red)">0 FTTs</strong>. Facebook cost data is still missing.</p>
+          <p style="margin:0 0 12px"><strong>Google:</strong> Spend jumped from <strong>$2.5&ndash;5.4K/day</strong> (pre-Jun 17) to <strong style="color:var(--red)">$19&ndash;26K/day</strong> (Jun 18+). FTTs dropped from <strong style="color:var(--green)">22&ndash;59/day</strong> to <strong style="color:var(--red)">3&ndash;7/day</strong>. Cost per FTT went from <strong style="color:var(--green)">$83&ndash;246</strong> to <strong style="color:var(--red)">$3,129&ndash;8,734</strong>. The &ldquo;multi_asset&rdquo; campaign spent <strong>$41,087</strong> with <strong style="color:var(--red)">0 FTTs</strong>.</p>
+          <p style="margin:0">DAU surged <strong>63%</strong> to <strong style="color:var(--green)">46,621</strong> (Jun 29). Source-level DAU reveals why: <span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">Facebook DAU went from 129 (Jun 23) to 7,749 (Jun 29)</span> &mdash; a 60&times; spike of users who open the app but never trade. Google DAU is flat at ~4,449 despite 4&ndash;5&times; more spend.</p>
         </div>
       </div>
 
+      <!-- So what -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:10px">So What &mdash; DAU Impact</div>
+        <div style="font-size:.92rem;line-height:1.7;color:var(--text)">
+          <p style="margin:0 0 12px"><span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">DAU by source reveals the real picture.</span> Jun 29 DAU breakdown: organic <strong>19,555</strong> (42%), QR <strong>14,083</strong> (30%), Facebook <strong>7,749</strong> (17%), Google <strong>4,449</strong> (10%). Facebook went from <strong>129 DAU</strong> on Jun 23 to <strong>7,749</strong> &mdash; a <strong>60&times;</strong> spike. These users open the app but do not trade. Google DAU is flat at ~4,449 despite spending <strong>$23K/day</strong>.</p>
+          <p style="margin:0 0 12px">Facebook is inflating DAU without producing traders. Google is maintaining DAU but at <strong style="color:var(--red)">$3,129&ndash;8,734 per trader</strong>. The only channels producing traders cost-efficiently are organic (26 FTTs/day, zero cost) and QR (6&ndash;23 FTTs/day, zero cost). <strong>QR DAU doubled</strong> from ~7K to <strong>14,083</strong> since Jun 24 &mdash; the strongest growth signal in the data.</p>
+          <p style="margin:0 0 12px">Geo data reveals where Google <em>should</em> spend. <strong>Kenya</strong>: <strong style="color:var(--green)">$47/FTT</strong>. <strong>Pakistan</strong>: <strong style="color:var(--green)">$59</strong>. <strong>South Africa</strong>: <strong style="color:var(--green)">$79</strong>. <strong>Tanzania</strong>: <strong style="color:var(--green)">$89</strong>. Instead, most Google budget goes to brand keywords ($32K, 8 FTTs), login ($42K, 13 FTTs), and chart patterns ($25K, 4 FTTs).</p>
+          <p style="margin:0">Organic FTT is also declining: from <strong>82&ndash;123 FTTs/day</strong> (early June) to <strong style="color:var(--red)">26</strong> (Jun 29), a <strong>70&ndash;79%</strong> drop with stable install volume. The conversion problem extends beyond paid &mdash; app crashes (83&ndash;89% crash-free) or a product change around Jun 17&ndash;18 is likely suppressing conversion across all channels.</p>
+        </div>
+      </div>
+
+      <!-- Blindspots -->
+      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400e;margin-bottom:10px">Blindspots &mdash; What the Data Cannot Answer Yet</div>
+        <div style="font-size:.85rem;line-height:1.7;color:#78350f">
+          <p style="margin:0 0 10px"><strong>Facebook spend is still missing.</strong> Google spend data is now available and damning ($3K&ndash;$9K per FTT since Jun 18). But Facebook&rsquo;s spend remains blank. At 0.03% FTT rate, Facebook would need a CPI under $0.03 to match Google&rsquo;s best cost/FTT ($47 in Kenya). That&rsquo;s implausible. <em>Required: daily campaign-level spend from Facebook Ads Manager.</em></p>
+          <p style="margin:0 0 10px"><strong>Why did organic FTT drop 70&ndash;79%?</strong> Organic installs are steady (~3,100&ndash;3,600/day) but FTTs fell from 82&ndash;123 to 26. This cannot be explained by source mix &mdash; these are organic users. Hypotheses: (a) app crashes at signup/real-account step, (b) a product change broke the onboarding flow, (c) increased bot traffic inflating organic installs. <em>Required: Firebase crash data segmented by funnel step, plus product changelog for Jun 17&ndash;29.</em></p>
+          <p style="margin:0 0 10px"><strong>Attribution anomaly unresolved.</strong> Google&rsquo;s FTDs campaign: 178 installs, 364 FTTs, $59 cost &mdash; a 204% FTT rate. This is structurally impossible and inflates Google&rsquo;s aggregate numbers. All Google analysis above uses per-campaign rates, not aggregates. <em>Required: AppsFlyer attribution window and re-engagement settings confirmation.</em></p>
+          <p style="margin:0"><strong>Retention by source partially visible.</strong> Source-level DAU shows Facebook producing 7,749 daily active users &mdash; but these users do not trade. We see activity (app opens) but not quality (trades, deposits, sessions). If Facebook DAU drops to near-zero next week, the DAU surge was a one-time spike. <em>Required: Day 1/7/30 retention by media source from AppsFlyer Cohort Report to measure sustained engagement, not just app opens.</em></p>
+        </div>
+      </div>
+
+      <!-- Confidence summary -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:12px">Confidence Summary</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;font-size:.85rem;color:var(--text)">
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Facebook Bangladesh: 10,114 installs, zero FTTs. This geo must be excluded immediately. <em>(AppsFlyer Geo)</em></span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Google cost per FTT collapsed from $83&ndash;246 to $3,129&ndash;8,734 when spend scaled 4&ndash;5&times; on Jun 18. <em>(AppsFlyer Spend)</em></span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Google Kenya ($47/FTT), Pakistan ($59), South Africa ($79), Tanzania ($89) are the only cost-efficient geos. <em>(AppsFlyer Spend + Geo)</em></span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Audience Network: 3,814 installs, zero FTTs. Pause immediately. <em>(AppsFlyer)</em></span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Google multi_asset campaign: $41,087 spent, zero FTTs. Pause immediately. <em>(AppsFlyer)</em></span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>Organic FTT rate dropped 70&ndash;79% (82&ndash;123 &rarr; 26 FTTs/day). App crashes are the likely cause, but product changes or bot traffic are not ruled out.</span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Facebook DAU jumped 129 &rarr; 7,749 in 6 days but produced 2 FTTs on Jun 29. DAU inflation without revenue. <em>(AppsFlyer DAU by Source)</em></span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>QR code DAU doubled (7K &rarr; 14K) and produces FTTs at zero cost &mdash; strongest growth signal. <em>(AppsFlyer DAU by Source)</em></span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>Pausing all Facebook campaigns &mdash; quality data is definitive, but Facebook spend data would confirm the cost dimension.</span></div>
+          <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--red-bg);color:var(--red);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">LOW</span><span>Google aggregate FTT rate (18.6%) &mdash; inflated by attribution anomaly in FTDs campaign. Per-campaign rates are reliable.</span></div>
+        </div>
+      </div>
+
+      </div><!-- /rcaTeamView -->
     </div>
 
     <!-- ===== PART 2: DETAILED ANALYSIS ===== -->
@@ -1850,18 +1783,18 @@ function renderTrendChart() {
 
 let funnelViewMode = 'overall';
 
-function setRcaView(mode) {
-  document.getElementById('rca-ceo').style.display = mode === 'ceo' ? '' : 'none';
-  document.getElementById('rca-team').style.display = mode === 'team' ? '' : 'none';
-  document.querySelectorAll('#rcaViewToggle .fvt-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`#rcaViewToggle .fvt-btn[onclick*="${mode}"]`).classList.add('active');
-}
-
 function setFunnelView(mode) {
   funnelViewMode = mode;
-  document.querySelectorAll('#funnelViewToggle .fvt-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`#funnelViewToggle .fvt-btn[onclick*="${mode}"]`).classList.add('active');
+  document.querySelectorAll('.fvt-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.fvt-btn[onclick*="${mode}"]`).classList.add('active');
   renderFunnel(expandedSrc);
+}
+
+function setRcaView(mode) {
+  document.querySelectorAll('.rca-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(mode === 'ceo' ? 'rcaBtnCeo' : 'rcaBtnTeam').classList.add('active');
+  document.getElementById('rcaCeoView').style.display = mode === 'ceo' ? '' : 'none';
+  document.getElementById('rcaTeamView').style.display = mode === 'team' ? '' : 'none';
 }
 
 function renderFunnel(srcKey) {
