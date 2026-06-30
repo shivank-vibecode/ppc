@@ -154,6 +154,19 @@ This single file contains multiple data sections separated by `#` comment header
 
 **Key rule:** When correlating paid UA performance with DAU movement, always pull the DAU number from Firebase. AppsFlyer tells you what users did in the funnel. Firebase tells you whether they became active.
 
+### Apptweak (`/sources/Apptweak/`)
+Category ranking and ASO data. Contains:
+
+- **Android category rankings** (`android world-ranking-history.csv`): Current Finance category rank per country on Google Play. Lower number = better rank.
+- **iOS category rankings** (`Appleworld-ranking-history.csv`): Current Finance category rank per country on Apple App Store.
+- **Top countries by traders** (`top_30_countries_by_traders_*.csv`): All-time trader count per country. Use to weight geo importance — a high-trader country with a poor store rank is an ASO opportunity.
+- **ASO changes log** (`aso-changes-deriv-app.md`): Timeline of store listing changes (description updates, A/B tests, custom listings, screenshot refreshes). Cross-reference these dates with organic FTT trends to test for correlation.
+
+**How to use ranking data in RCA:**
+1. Cross-reference store rank with FTT rate by geo — a high rank (low number) with zero FTTs indicates paid installs are inflating rank without creating traders (e.g. Bangladesh).
+2. Cross-reference store rank with trader count — a low rank (high number) in a high-trader market signals an organic ASO opportunity (e.g. Nigeria).
+3. Overlay ASO changes timeline with organic conversion trends to identify whether listing changes correlate with organic FTT declines or improvements.
+
 ## Key Column Mappings
 
 The CSVs from AppsFlyer use these column names:
@@ -174,7 +187,7 @@ Do not maintain a static wish list. After every analysis, look at where your con
 
 When you do ask, be specific: name the data, the system to export it from, the format (CSV preferred), the time range, and the columns you need. Explain what question it answers. The user has access to every internal system and will provide whatever you ask for — your job is to ask for exactly the right thing at the right time.
 
-Place any new data files in `/Users/shivank/Desktop/ASO/Client/sources/` in CSV format. AppsFlyer exports go into the `Appsflyer/` subfolder, Firebase/Datadog exports go into the `Datadog/` subfolder. The parser script will attempt to read any CSV in that directory.
+Place any new data files in `/Users/shivank/Desktop/ASO/Client/sources/` in CSV format. AppsFlyer exports go into the `Appsflyer/` subfolder, Firebase/Datadog exports go into the `Datadog/` subfolder, Apptweak exports go into the `Apptweak/` subfolder. The parser script will attempt to read any CSV in that directory.
 
 ## Tone
 
