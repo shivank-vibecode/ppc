@@ -337,82 +337,62 @@
       <!-- ========== CEO VIEW ========== -->
       <div id="rcaCeoView">
 
-        <!-- CEO: Bottom line -->
+        <!-- CEO: What Happened -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:14px">Bottom Line</div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:14px">What Happened</div>
           <div style="font-size:1rem;line-height:1.8;color:var(--text)">
             <p style="margin:0 0 16px;font-size:1.05rem"><span style="background:rgba(239,68,68,.1);padding:2px 6px;border-radius:3px;font-weight:700">DAU is up 63%. Trader acquisition is down 94%.</span> We are paying to fill the app with users who never trade.</p>
-            <p style="margin:0">Paid spend produced <strong style="color:var(--red)">5 traders</strong> on Jun 29. Organic and QR produced <strong style="color:var(--green)">32 traders</strong> at zero cost. The free channels are outperforming paid by 6&times;.</p>
+            <p style="margin:0 0 14px"><strong>Facebook</strong> generated <strong>7,019</strong> installs on Jun 29 but only <strong style="color:var(--red)">2 traders</strong>. 60% of its volume goes to Bangladesh &mdash; <strong>10,114</strong> installs over the period, <strong style="color:var(--red)">zero traders</strong>. Facebook DAU spiked from 129 to 7,749 in 6 days. These users open the app but never trade.</p>
+            <p style="margin:0 0 14px"><strong>Google</strong> scaled spend <strong>4&ndash;5&times;</strong> (from $5K/day to $23K/day) but cost per trader collapsed from <strong style="color:var(--green)">$83</strong> to <strong style="color:var(--red)">$7,692</strong>. One campaign spent <strong>$41,087</strong> and produced zero traders.</p>
+            <p style="margin:0 0 14px"><strong>Organic + QR</strong> produced <strong style="color:var(--green)">32 traders</strong> at zero cost on Jun 29. Paid produced <strong style="color:var(--red)">5</strong>. Free channels outperform paid 6&times;. QR DAU doubled to 14,083 in 2 weeks.</p>
+            <p style="margin:0"><strong>Store rankings are misleading.</strong> Bangladesh ranks <strong>#27</strong> on Android &mdash; inflated by Facebook installs with zero traders. Nigeria, the #1 trader market (2.1M), ranks only <strong style="color:var(--red)">#139</strong>. The best-ranked markets are organic: Botswana #3, Zimbabwe #7.</p>
           </div>
         </div>
 
-        <!-- CEO: Where DAU comes from -->
+        <!-- CEO: So What -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:14px">Where DAU Comes From &mdash; Jun 29</div>
-          <table style="width:100%;border-collapse:collapse;font-size:.88rem;color:var(--text)">
-            <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
-              <th style="padding:8px 12px;font-weight:700">Source</th>
-              <th style="padding:8px 12px;font-weight:700;text-align:right">DAU</th>
-              <th style="padding:8px 12px;font-weight:700;text-align:right">Share</th>
-              <th style="padding:8px 12px;font-weight:700;text-align:right">Traders</th>
-              <th style="padding:8px 12px;font-weight:700;text-align:right">Cost/Trader</th>
-            </tr></thead>
-            <tbody>
-              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px">Organic</td><td style="padding:8px 12px;text-align:right;font-weight:600">19,555</td><td style="padding:8px 12px;text-align:right">42%</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">26</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">$0</td></tr>
-              <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px">QR Code</td><td style="padding:8px 12px;text-align:right;font-weight:600">14,083</td><td style="padding:8px 12px;text-align:right">30%</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">6</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">$0</td></tr>
-              <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:8px 12px">Facebook Ads</td><td style="padding:8px 12px;text-align:right;font-weight:600">7,749</td><td style="padding:8px 12px;text-align:right">17%</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">2</td><td style="padding:8px 12px;text-align:right;color:var(--muted)">unknown</td></tr>
-              <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:8px 12px">Google Ads</td><td style="padding:8px 12px;text-align:right;font-weight:600">4,449</td><td style="padding:8px 12px;text-align:right">10%</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">3</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">$7,692</td></tr>
-              <tr><td style="padding:8px 12px;font-weight:700">Total</td><td style="padding:8px 12px;text-align:right;font-weight:700">46,621</td><td style="padding:8px 12px;text-align:right;font-weight:700">100%</td><td style="padding:8px 12px;text-align:right;font-weight:700">37</td><td style="padding:8px 12px;text-align:right"></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- CEO: Three things to know -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--header);margin-bottom:16px">Three Things to Know</div>
-          <div style="display:flex;flex-direction:column;gap:16px;font-size:.92rem;line-height:1.7;color:var(--text)">
-            <div style="display:flex;gap:14px;align-items:start">
-              <span style="background:var(--red);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:5px;flex-shrink:0;margin-top:3px">1</span>
-              <div><strong>Facebook is targeting Bangladesh &mdash; a market with zero traders.</strong> 10,114 installs, zero first trades. 60% of Facebook&rsquo;s Jun 29 volume goes there. The algorithm is optimizing for cheap installs, not users who trade.</div>
-            </div>
-            <div style="display:flex;gap:14px;align-items:start">
-              <span style="background:var(--red);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:5px;flex-shrink:0;margin-top:3px">2</span>
-              <div><strong>Google spend increased 4&ndash;5&times; but cost per trader went from $83 to $7,692.</strong> Budget shifted from efficient Africa campaigns to expensive search campaigns with near-zero conversion. One campaign spent <strong>$41,087</strong> and produced zero traders.</div>
-            </div>
-            <div style="display:flex;gap:14px;align-items:start">
-              <span style="background:var(--amber);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:5px;flex-shrink:0;margin-top:3px">3</span>
-              <div><strong>Conversion is declining across all channels &mdash; including organic.</strong> Organic trader output dropped 70&ndash;79% despite stable installs. App crash rates (83&ndash;89% crash-free vs 99.5% standard) are the likely cause. ASO listing changes (Jun 16&ndash;23) may also be a factor. This needs engineering investigation.</div>
-            </div>
-            <div style="display:flex;gap:14px;align-items:start">
-              <span style="background:var(--blue);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:5px;flex-shrink:0;margin-top:3px">4</span>
-              <div><strong>Paid installs are inflating store rankings without producing traders.</strong> Bangladesh is now #27 on Android Play Store &mdash; driven by 10K+ Facebook installs with zero traders. Meanwhile, top trader markets like Nigeria (#1 with 2M traders) only rank #139 on Android. The best-ranked markets are organic strongholds: Botswana #3 (437K traders, $0 paid), Zimbabwe #7 (446K traders).</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CEO: Decisions needed -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:16px">Decisions Needed</div>
-          <div style="display:flex;flex-direction:column;gap:12px;font-size:.9rem;line-height:1.6;color:var(--text)">
-            <div style="display:flex;gap:10px;align-items:start">
-              <span style="color:var(--red);font-weight:700;flex-shrink:0">&bull;</span>
-              <div><strong>Pause Facebook Audience Network and exclude Bangladesh</strong> &mdash; zero traders, no plausible cost scenario justifies continuing.</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:start">
-              <span style="color:var(--red);font-weight:700;flex-shrink:0">&bull;</span>
-              <div><strong>Pause Google&rsquo;s worst campaigns</strong> (multi_asset: $41K/0 FTTs, brand keywords: $32K/8 FTTs) and reallocate to Kenya ($47/FTT), Pakistan ($59), South Africa ($79).</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:start">
-              <span style="color:var(--amber);font-weight:700;flex-shrink:0">&bull;</span>
-              <div><strong>Investigate app crash rates with engineering</strong> &mdash; organic conversion collapsed 70&ndash;79%, which suggests a product-level issue affecting all users.</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:start">
-              <span style="color:var(--green);font-weight:700;flex-shrink:0">&bull;</span>
-              <div><strong>Double down on QR code distribution</strong> &mdash; DAU doubled in 2 weeks at zero cost. This is the strongest growth lever available.</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:start">
-              <span style="color:var(--blue);font-weight:700;flex-shrink:0">&bull;</span>
-              <div><strong>Prioritise ASO for Nigeria</strong> &mdash; #1 trader market (2.1M) but only #139 on Android. The Jun 23 description update is a start, but custom listings + screenshots can unlock free organic installs in the highest-value market.</div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:14px">So What</div>
+          <div style="font-size:1rem;line-height:1.8;color:var(--text)">
+            <p style="margin:0 0 16px">The DAU growth is hollow. Here is where users and traders actually come from:</p>
+            <table style="width:100%;border-collapse:collapse;font-size:.88rem;color:var(--text);margin-bottom:18px">
+              <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+                <th style="padding:8px 12px;font-weight:700">Source</th>
+                <th style="padding:8px 12px;font-weight:700;text-align:right">DAU</th>
+                <th style="padding:8px 12px;font-weight:700;text-align:right">Share</th>
+                <th style="padding:8px 12px;font-weight:700;text-align:right">Traders</th>
+                <th style="padding:8px 12px;font-weight:700;text-align:right">Cost/Trader</th>
+              </tr></thead>
+              <tbody>
+                <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px">Organic</td><td style="padding:8px 12px;text-align:right;font-weight:600">19,555</td><td style="padding:8px 12px;text-align:right">42%</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">26</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">$0</td></tr>
+                <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px">QR Code</td><td style="padding:8px 12px;text-align:right;font-weight:600">14,083</td><td style="padding:8px 12px;text-align:right">30%</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">6</td><td style="padding:8px 12px;text-align:right;color:var(--green);font-weight:600">$0</td></tr>
+                <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:8px 12px">Facebook Ads</td><td style="padding:8px 12px;text-align:right;font-weight:600">7,749</td><td style="padding:8px 12px;text-align:right">17%</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">2</td><td style="padding:8px 12px;text-align:right;color:var(--muted)">unknown</td></tr>
+                <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:8px 12px">Google Ads</td><td style="padding:8px 12px;text-align:right;font-weight:600">4,449</td><td style="padding:8px 12px;text-align:right">10%</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">3</td><td style="padding:8px 12px;text-align:right;color:var(--red);font-weight:600">$7,692</td></tr>
+                <tr><td style="padding:8px 12px;font-weight:700">Total</td><td style="padding:8px 12px;text-align:right;font-weight:700">46,621</td><td style="padding:8px 12px;text-align:right;font-weight:700">100%</td><td style="padding:8px 12px;text-align:right;font-weight:700">37</td><td style="padding:8px 12px;text-align:right"></td></tr>
+              </tbody>
+            </table>
+            <p style="margin:0 0 14px"><span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">Paid channels deliver 27% of DAU but only 14% of traders</span> &mdash; and at extreme cost. Organic and QR deliver 72% of DAU and 86% of traders at zero cost. Conversion is also declining across all channels including organic (down 70&ndash;79%), suggesting an app-level issue (crash-free rate: 83&ndash;89% vs 99.5% standard).</p>
+            <p style="margin:0 0 14px;font-weight:600;font-size:.88rem;text-transform:uppercase;letter-spacing:.04em;color:var(--header);margin-top:22px">Decisions Needed</p>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:.92rem;line-height:1.6">
+              <div style="display:flex;gap:10px;align-items:start">
+                <span style="color:var(--red);font-weight:700;flex-shrink:0">&bull;</span>
+                <div><strong>Pause Facebook Audience Network and exclude Bangladesh</strong> &mdash; zero traders, no plausible cost scenario justifies continuing.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:start">
+                <span style="color:var(--red);font-weight:700;flex-shrink:0">&bull;</span>
+                <div><strong>Pause Google&rsquo;s worst campaigns</strong> (multi_asset: $41K/0 traders, brand keywords: $32K/8 traders) and reallocate to Kenya ($47/FTT), Pakistan ($59), South Africa ($79).</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:start">
+                <span style="color:var(--amber);font-weight:700;flex-shrink:0">&bull;</span>
+                <div><strong>Investigate app crash rates with engineering</strong> &mdash; organic conversion collapsed 70&ndash;79%, which suggests a product-level issue affecting all users.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:start">
+                <span style="color:var(--green);font-weight:700;flex-shrink:0">&bull;</span>
+                <div><strong>Double down on QR code distribution</strong> &mdash; DAU doubled in 2 weeks at zero cost. Strongest growth lever available.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:start">
+                <span style="color:var(--blue);font-weight:700;flex-shrink:0">&bull;</span>
+                <div><strong>Prioritise ASO for Nigeria</strong> &mdash; #1 trader market (2.1M) but only #139 on Android. Custom listings + screenshots can unlock free organic installs in the highest-value market.</div>
+              </div>
             </div>
           </div>
         </div>
