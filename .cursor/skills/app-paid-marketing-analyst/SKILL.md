@@ -141,6 +141,50 @@ When the user provides new data (spend, DAU, retention, organic baselines, geo b
 
 Each new dataset doesn't trigger a new "module" — it gives you more material to reason with. Use it wherever it's relevant to the questions you're already investigating.
 
+## Expert-Level Analytical Requirements
+
+These are non-negotiable analytical checks that must be applied to every analysis. They are drawn from expert critique and represent the standard a senior paid UA manager at a trading platform would expect.
+
+### 1. Revenue and ROAS Before Cost/FTT
+
+When revenue data is available (`Revenue activity days appsflyer` column), **always compute ROAS (Return on Ad Spend) first.** Cost/FTT is a proxy; ROAS is the actual business metric. A $47/FTT is meaningless without knowing what that FTT generates in revenue.
+
+- Compute ROAS = Revenue / Cost for every source and campaign
+- Compute Revenue/FTT to understand the actual value of a trader from each channel
+- Compare paid channel Revenue/FTT against organic Revenue/FTT to identify whether paid is acquiring lower-value traders
+- When ROAS < 1.0x, the channel is losing money. State this directly. Don't soften it with "but we need LTV data" if the short-term ROAS is catastrophically low (e.g., 0.04x)
+
+### 2. Attribution Cannibalization
+
+Always check for retargeting campaigns that inflate conversion metrics:
+- If a campaign has more FTTs than installs, it is retargeting existing users, not acquiring new ones
+- Retargeting FTTs should be separated from prospecting FTTs in all metrics
+- Brand keyword and login keyword campaigns capture existing users — they should be labeled as "brand defense" not "user acquisition" and their FTTs excluded from prospecting efficiency calculations
+- When retargeting exists, compute "true prospecting ROAS" by stripping retargeting, brand, and login campaigns
+
+### 3. Campaign Optimization Events
+
+When a campaign has extremely low FTT rates (e.g., < 0.5%), check the campaign name for clues about what the ad platform is optimizing for:
+- `app_installs` in the campaign name → the algorithm is finding cheap installs, not quality users
+- The fix is changing the optimization event (to FTD or FTT), not pausing the channel
+- Always distinguish between "this channel doesn't work" and "this campaign is misconfigured"
+
+### 4. iOS ATT Attribution Gap
+
+Apple Search Ads with zero attributed FTTs is expected behavior under iOS 14.5+ ATT framework. Do not conclude the channel is ineffective without cross-referencing Apple's own reporting or SKAdNetwork postbacks.
+
+### 5. Organic Is Not Pure
+
+"Organic" in AppsFlyer = unattributed. It includes genuine organic users but also:
+- View-through conversions from paid ads
+- Users who clicked paid ads but whose attribution window expired
+- Users influenced by paid brand awareness who searched organically
+State this caveat whenever comparing organic vs paid performance.
+
+### 6. QR Code Is an Attribution Label
+
+"QR code" tells you the last touchpoint was a QR scan. It does not tell you the strategy. Always try to identify the physical source (website, printed material, referral card, partner placement) before recommending scaling.
+
 ## Data Sources
 
 ### AppsFlyer CSVs (`/sources/Appsflyer/`)
@@ -157,9 +201,8 @@ This single file contains multiple data sections separated by `#` comment header
 ### Apptweak (`/sources/Apptweak/`)
 Category ranking and ASO data. Contains:
 
-- **Android category rankings** (`android world-ranking-history.csv`): Current Finance category rank per country on Google Play. Lower number = better rank.
-- **iOS category rankings** (`Appleworld-ranking-history.csv`): Current Finance category rank per country on Apple App Store.
-- **Top countries by traders** (`top_30_countries_by_traders_*.csv`): All-time trader count per country. Use to weight geo importance — a high-trader country with a poor store rank is an ASO opportunity.
+- **Android category rankings** (`category-ranking-history android.csv`): Daily Finance category rank per country on Google Play. Lower number = better rank.
+- **iOS category rankings** (`category-ranking-history apple.csv`): Daily Finance category rank per country on Apple App Store.
 - **ASO changes log** (`aso-changes-deriv-app.md`): Timeline of store listing changes (description updates, A/B tests, custom listings, screenshot refreshes). Cross-reference these dates with organic FTT trends to test for correlation.
 
 **How to use ranking data in RCA:**
@@ -177,6 +220,7 @@ The CSVs from AppsFlyer use these column names:
 | `Unique users ltv days cumulative appsflyer wallet_created` | Real Account creation |
 | `Unique users ltv days cumulative appsflyer first_time_deposit` | First deposit |
 | `Unique users ltv days cumulative appsflyer first_time_trade` | First trade |
+| `Revenue activity days appsflyer` | Revenue attributed to the source/campaign |
 | `Total attributions appsflyer` | Total attributions (includes re-attributions) |
 
 **Important**: "Wallet Created" = "Real Account" in Deriv's terminology. The funnel step names in the brief should use "Real Account", not "Wallet Created".
