@@ -225,6 +225,107 @@
   .src-detail-table .rate{font-size:.62rem;color:var(--muted)}
 
   .footer{text-align:center;padding:0 28px 40px;color:var(--subtle);font-size:.72rem}
+
+  /* RCA bullet + expand */
+  .rca-bullets{list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:10px}
+  .rca-bullets li{display:flex;gap:10px;align-items:baseline;font-size:.95rem;line-height:1.65;color:var(--text)}
+  .rca-bullets li::before{content:'';flex-shrink:0;width:7px;height:7px;border-radius:50%;margin-top:7px}
+  .rca-bullets li.b-red::before{background:var(--red)}
+  .rca-bullets li.b-amber::before{background:var(--amber)}
+  .rca-bullets li.b-green::before{background:var(--green)}
+  .rca-bullets li.b-blue::before{background:var(--blue)}
+  .rca-bullets li.b-muted::before{background:var(--muted)}
+  .rca-expand{border:none;background:none;margin-top:4px}
+  .rca-expand summary{font-size:.78rem;font-weight:600;color:var(--blue);cursor:pointer;padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;user-select:none}
+  .rca-expand summary::-webkit-details-marker{display:none}
+  .rca-expand summary::before{content:'\25B6';font-size:.6rem;transition:transform .2s}
+  .rca-expand[open] summary::before{transform:rotate(90deg)}
+  .rca-expand .rca-detail{padding:16px 0 0;font-size:.92rem;line-height:1.7;color:var(--text);animation:rcaFadeIn .25s ease}
+  @keyframes rcaFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+  /* Checklist */
+  .checklist-progress{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+  .checklist-progress-bar{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .checklist-progress-fill{height:100%;background:var(--green);border-radius:4px;transition:width .4s ease}
+  .checklist-progress-text{font-size:.82rem;font-weight:700;color:var(--header);white-space:nowrap}
+  .checklist-progress-sub{font-size:.72rem;color:var(--muted)}
+  .cl-group{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+  .cl-group-header{display:flex;align-items:center;gap:10px;padding:16px 20px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
+  .cl-group-header:hover{background:rgba(37,99,235,.02)}
+  .cl-group-icon{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .cl-group-title{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;flex:1}
+  .cl-group-count{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+  .cl-items{padding:0;margin:0;list-style:none}
+  .cl-item{display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);transition:background .15s,opacity .15s;align-items:flex-start}
+  .cl-item:last-child{border-bottom:none}
+  .cl-item:hover{background:rgba(37,99,235,.015)}
+  .cl-item.checked{opacity:.55}
+  .cl-item.checked .cl-item-title{text-decoration:line-through}
+  .cl-checkbox{width:20px;height:20px;border:2px solid var(--border);border-radius:5px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px;background:var(--card)}
+  .cl-checkbox:hover{border-color:var(--blue);background:#eff6ff}
+  .cl-checkbox.checked{background:var(--green);border-color:var(--green)}
+  .cl-checkbox.checked::after{content:'\2713';color:#fff;font-size:.75rem;font-weight:800}
+  .cl-item-body{flex:1;min-width:0}
+  .cl-item-title{font-size:.88rem;font-weight:600;color:var(--header);line-height:1.5;margin-bottom:3px}
+  .cl-item-detail{font-size:.8rem;color:var(--muted);line-height:1.55}
+  .cl-item-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .cl-tag{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:5px;white-space:nowrap;letter-spacing:.02em}
+  .cl-tag-owner{background:var(--gray-bg);color:var(--muted)}
+  .cl-tag-critical{background:var(--red-bg);color:var(--red)}
+  .cl-tag-high{background:var(--amber-bg);color:var(--amber)}
+  .cl-tag-medium{background:#dbeafe;color:var(--blue)}
+  .cl-tag-source{background:#f3e8ff;color:#7c3aed}
+  .cl-tag-kpi{background:var(--green-bg);color:var(--green)}
+  .cl-reset{border:none;background:none;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:4px;transition:all .15s}
+  .cl-reset:hover{color:var(--red);background:var(--red-bg)}
+
+  /* Checklist sub-nav */
+  .cl-subnav{display:flex;gap:2px;padding:0 0 20px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+  .cl-subtab{padding:8px 18px;border:none;border-radius:8px;font-size:.76rem;font-weight:700;color:var(--muted);background:transparent;cursor:pointer;transition:all .15s;letter-spacing:-.01em;white-space:nowrap}
+  .cl-subtab:hover{color:var(--text);background:var(--gray-bg)}
+  .cl-subtab.active{color:#fff;background:var(--header)}
+  .cl-subtab .cl-subtab-badge{font-size:.6rem;font-weight:800;padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle}
+  .cl-subpanel{display:none}
+  .cl-subpanel.active{display:block}
+
+  /* Pillar backlog */
+  .cl-pillar-group{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+  .cl-pillar-header{display:flex;align-items:center;gap:10px;padding:14px 20px;cursor:pointer;user-select:none;transition:background .15s}
+  .cl-pillar-header:hover{background:rgba(37,99,235,.02)}
+  .cl-pillar-num{font-size:.68rem;font-weight:800;color:#fff;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cl-pillar-name{font-size:.84rem;font-weight:700;color:var(--header);flex:1}
+  .cl-pillar-priority{font-size:.62rem;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:.04em}
+  .cl-pillar-chevron{font-size:.6rem;color:var(--muted);transition:transform .2s}
+  .cl-pillar-group.open .cl-pillar-chevron{transform:rotate(90deg)}
+  .cl-pillar-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .cl-pillar-group.open .cl-pillar-body{max-height:2000px}
+  .cl-pillar-deferred{font-size:.7rem;color:var(--amber);font-weight:600;font-style:italic;margin-left:6px}
+
+  /* Phase gates */
+  .cl-gates-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+  .cl-gates-header{padding:16px 20px;font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .cl-gate-row{display:flex;align-items:flex-start;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);font-size:.85rem;line-height:1.55}
+  .cl-gate-row:last-child{border-bottom:none}
+  .cl-status-pill{font-size:.62rem;font-weight:800;padding:2px 10px;border-radius:4px;flex-shrink:0;margin-top:2px;letter-spacing:.03em}
+  .cl-status-done{background:var(--green-bg);color:var(--green)}
+  .cl-status-fail{background:var(--red-bg);color:var(--red)}
+  .cl-status-unknown{background:var(--amber-bg);color:var(--amber)}
+  .cl-gate-text{flex:1;color:var(--text)}
+  .cl-gate-action{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+  /* Anti-pattern audit */
+  .cl-ap-row{display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);transition:background .15s}
+  .cl-ap-row:last-child{border-bottom:none}
+  .cl-ap-row:hover{background:rgba(37,99,235,.015)}
+  .cl-ap-num{font-size:.72rem;font-weight:800;color:var(--muted);width:28px;flex-shrink:0;margin-top:2px}
+  .cl-ap-body{flex:1}
+  .cl-ap-name{font-size:.88rem;font-weight:700;color:var(--header);margin-bottom:3px}
+  .cl-ap-evidence{font-size:.8rem;color:var(--muted);line-height:1.55}
+  .cl-ap-link{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:700;color:var(--blue);background:#eff6ff;padding:3px 10px;border-radius:5px;margin-top:6px;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+  .cl-ap-link:hover{background:#dbeafe}
+
+  /* Pillar tag */
+  .cl-tag-pillar{background:#f0e6ff;color:#7c3aed;font-size:.62rem;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.03em}
 </style>
 </head>
 <body>
@@ -330,7 +431,9 @@
         </div>
         <div style="display:flex;background:var(--gray-bg);border-radius:8px;padding:2px;gap:2px" id="rcaViewToggle">
           <button onclick="setRcaView('ceo')" class="rca-btn active" id="rcaBtnCeo" style="font-size:.72rem;padding:5px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all .15s">CEO View</button>
+          <button onclick="setRcaView('growth')" class="rca-btn" id="rcaBtnGrowth" style="font-size:.72rem;padding:5px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all .15s">Growth Lead View</button>
           <button onclick="setRcaView('team')" class="rca-btn" id="rcaBtnTeam" style="font-size:.72rem;padding:5px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all .15s">Team View</button>
+          <button onclick="setRcaView('checklist')" class="rca-btn" id="rcaBtnChecklist" style="font-size:.72rem;padding:5px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all .15s">Daily Checklist <span style="background:var(--amber-bg);color:var(--amber);font-size:.55rem;font-weight:800;padding:1px 5px;border-radius:3px;margin-left:3px;vertical-align:middle">ACTION</span></button>
         </div>
       </div>
 
@@ -338,57 +441,124 @@
       <div id="rcaCeoView">
 
         <!-- CEO: What Happened -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:14px">What Happened</div>
-          <div style="font-size:1rem;line-height:1.8;color:var(--text)">
-            <p style="margin:0 0 16px;font-size:1.05rem"><span style="background:rgba(239,68,68,.1);padding:2px 6px;border-radius:3px;font-weight:700">The Deriv app funnel is breaking across all sources.</span> Organic first-time traders dropped 58% (109/day to 46/day) while organic installs stayed flat at ~3,200/day. The conversion rate halved from 3.45% to 1.43% in 30 days. <strong>This is not a paid problem &mdash; something is breaking the funnel for everyone.</strong></p>
-            <p style="margin:0 0 14px"><strong>Paid campaigns launched in June as a test-and-scale program.</strong> Google started Jun 1 at $2.5&ndash;5K/day. Facebook launched Jun 24. Both are in early learning phase. Total spend: $331K, revenue attributed to paid: $14K. The programs have structural issues (covered below) but should be evaluated as early-stage experiments, not mature channels.</p>
-            <p style="margin:0 0 14px"><strong>App stability is critically low, and the funnel shows exactly where it breaks.</strong> Android crash-free rate is 88.7%, iOS is 83.5% (standard: 99.5%+). Signup rates actually <em>improved</em>, but <strong style="color:var(--red)">Wallet&rarr;First Deposit conversion collapsed 41%</strong> and <strong style="color:var(--red)">First Deposit&rarr;First Trade dropped 26%</strong>. Users are signing up fine but failing at the deposit/trade stage. Versions v1.9.0 and v1.10.2 are flagged. Something broke around Jun 27&ndash;28 specifically &mdash; organic FTTs dropped from 44 to 24/day in 48 hours while installs were up.</p>
-            <p style="margin:0 0 14px;padding:12px 16px;background:rgba(245,158,11,.08);border-radius:6px;border-left:3px solid var(--amber)"><strong style="color:var(--amber)">&#9888; Revenue metric caveat:</strong> Revenue data cannot be compared between organic and paid. Organic revenue ($197K) includes the entire existing user base (50K+ active traders generating revenue over the 30-day window). Paid revenue ($14K) is from users acquired in the last 3 weeks only. Comparing &ldquo;$72/FTT organic vs $30/FTT paid&rdquo; is not apples-to-apples.</p>
-            <p style="margin:0"><strong>Store rankings improved</strong> across 10+ markets (Kenya +20, Zimbabwe +10, Cameroon +33) driven by ASO custom listings (Jun 29) and paid install volume. Rankings are partially fragile if paid volume drops, but ASO changes provide an organic floor.</p>
-          </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:16px">What Happened</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.95rem;line-height:1.7;color:var(--text)">
+            <li>We&rsquo;re adding 62% more users than last month. But <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">first-time trades dropped 72%</mark> &mdash; from 130/day to 36/day. Users are coming in and getting stuck before they can trade.</li>
+            <li>The funnel tells us exactly where: signups are healthy (+19%), but the moment users try to deposit, <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">41% fewer make it through</mark>. And of those who deposit, 26% fewer complete a trade. <strong>The break is at the money step.</strong></li>
+            <li>The likely cause: app crash rate is 88.7% on Android and 83.5% on iOS <mark style="background:rgba(245,158,11,.12);padding:1px 5px;border-radius:3px">(industry standard is 99.5%+)</mark>. That means ~5,700 users hit a crash daily &mdash; and the flagged versions (v1.9.0, v1.10.2) correspond to the deposit and trade screens. <strong>Something broke around Jun 27&ndash;28</strong> that made this much worse overnight.</li>
+            <li>This affects everything. Paid campaigns (<mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">$331K spent</mark>) are pushing users into the same broken funnel. Organic users who used to convert for free are now failing at the same step. Until the deposit/trade experience works, nothing downstream &mdash; campaign optimization, scaling, new channels &mdash; will move the needle.</li>
+          </ul>
         </div>
 
         <!-- CEO: So What -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:16px">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:14px">So What</div>
-          <div style="font-size:1rem;line-height:1.8;color:var(--text)">
-            <p style="margin:0 0 16px"><span style="background:rgba(239,68,68,.1);padding:2px 6px;border-radius:3px;font-weight:700">Two problems are compounding.</span> (1) The app funnel is breaking for everyone &mdash; organic FTT rate halved from 3.45% to 1.43% in 30 days, and (2) paid campaigns are in early stage with expected learning-phase inefficiency plus structural setup issues.</p>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:16px">So What</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.95rem;line-height:1.7;color:var(--text)">
+            <li><strong>One fix unblocks everything.</strong> If deposit conversion returns to 22.6% (where it was 30 days ago), we recover ~63 organic trades/day without spending a dollar more. That&rsquo;s <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">~$136K/month in revenue currently being lost</mark>.</li>
+            <li>The same fix also rescues paid. Paid users hit the identical broken step, so <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">paid CAC drops ~40% mechanically</mark> once the funnel works. We don&rsquo;t need to restructure campaigns to see that improvement.</li>
+            <li>Meanwhile, retargeting is already proving the model works: $59 spent, $10.5K returned <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">(178x ROAS)</mark>. Dormant users who bypass the broken onboarding flow are converting. This confirms the product works &mdash; <strong>the issue is isolated to the deposit/trade step for new users.</strong></li>
+            <li style="padding:12px 16px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red);font-weight:600">Decisions needed: (1) Diagnose what broke on Jun 27&ndash;28 at the deposit/trade step &mdash; <mark style="background:rgba(239,68,68,.15);padding:1px 5px;border-radius:3px">24h</mark>. (2) Cut Google budget from $23K to $5K/day until the funnel recovers &mdash; saves ~$18K/day. (3) Switch Facebook from install optimization to deposit optimization &mdash; <mark style="background:rgba(245,158,11,.15);padding:1px 5px;border-radius:3px">48h</mark>.</li>
+          </ul>
+        </div>
 
-            <p style="margin:0 0 14px"><strong>Problem 1: The organic funnel is collapsing &mdash; and the funnel decomposition shows it is the deposit/trade stage, not onboarding.</strong> Signup rates are actually up (+19%). But Wallet&rarr;First Deposit conversion collapsed 41% and First Deposit&rarr;First Trade dropped 26%. The app is failing users at the moment they try to deposit or trade. Combined with crash rates (Android 88.7%, iOS 83.5% crash-free; v1.9.0 and v1.10.2 flagged), the leading hypothesis is: the app crashes during deposit or trade execution. No amount of traffic &mdash; paid or organic &mdash; will convert until this is fixed.</p>
+        <!-- CEO: Blindspots -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:16px">Blindspots</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.95rem;line-height:1.7;color:var(--text)">
+            <li><strong>DAU (the north star) is rising while revenue drops.</strong> Every decision made &mdash; cheap Facebook installs, Google scale-up, brand defense &mdash; was consistent with hitting DAU. <mark style="background:rgba(245,158,11,.12);padding:1px 5px;border-radius:3px">The metric may be driving the wrong behavior.</mark></li>
+            <li>We have <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">zero KYC and payment gateway data</mark>. If the blocker isn&rsquo;t an app crash but a failed identity check or a declined payment, the fix is completely different. We need this data within 48h.</li>
+            <li><strong>No deploy or release log for Jun 27&ndash;28.</strong> Trades dropped 36% overnight on that date. Without knowing what shipped, we&rsquo;re guessing at the cause.</li>
+          </ul>
+        </div>
 
-            <p style="margin:0 0 14px"><strong>Problem 2: Paid campaigns have structural issues, but are early-stage.</strong> Google started Jun 1 (~4 weeks old). Facebook launched Jun 24 (~1 week old). Campaign-level problems are real and fixable: Facebook is optimizing for installs not traders, Google scaled too fast past its efficient audience ceiling, and multiple Google campaigns produced zero FTTs. But judging a 4-week-old program by mature-channel benchmarks overstates the failure.</p>
+      </div>
 
-            <p style="margin:0 0 14px"><strong style="color:var(--green)">Retargeting is a success story.</strong> The FTDs campaign ($59 cost, $10.5K revenue, 178x ROAS) is bringing back dormant users. This should be preserved and potentially scaled &mdash; it&rsquo;s the best performer in the entire paid portfolio.</p>
+      <!-- ========== GROWTH LEAD VIEW ========== -->
+      <div id="rcaGrowthView" style="display:none">
 
-            <p style="margin:0 0 14px"><strong>Brand keywords ($103K) are defending against competitor bidding.</strong> Competitors bid on &ldquo;Deriv&rdquo; search terms. Brand keyword spend is necessary defense, not waste. The cost may be too high and should be audited, but pausing outright would hand branded traffic to competing brokers.</p>
+        <!-- Phase Assessment -->
+        <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:16px">Phase Assessment</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.9rem;line-height:1.7;color:var(--text)">
+            <li><strong>This app is in <mark style="background:rgba(245,158,11,.15);padding:2px 6px;border-radius:3px;font-weight:700">Phase 1: Signal Hunt</mark>.</strong> MMP is live (AppsFlyer), first paid dollars are flowing ($331K in 4 weeks), but there is no single channel-geo pair with validated LTV:CAC &gt;2:1 at N&ge;200 FTDs. We are still searching for what works.</li>
+            <li>Phase 1 means we should be optimizing for <strong>learning rate</strong> &mdash; which channel-geo pairs produce traders? Instead, budget was scaled 5x before this question was answered. That is the core strategic error.</li>
+            <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>Critical blocker:</strong> We cannot evaluate any channel because <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">the app funnel is broken at the deposit/trade step</mark> (Wallet&rarr;FTD &minus;41%). Until this is fixed, all signal is noise. Phase 1 learning is paused.</li>
+          </ul>
+        </div>
 
-            <p style="margin:0 0 14px"><strong>Apple Search Ads: $4.7K, $0 revenue, 0 FTTs.</strong> Likely an iOS ATT attribution gap &mdash; Apple cannot pass conversion data back to AppsFlyer. Do not conclude the channel is dead without Apple&rsquo;s own reporting.</p>
+        <!-- What Happened -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:16px">What Happened</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.9rem;line-height:1.7;color:var(--text)">
+            <li><strong>The install-to-FTT funnel collapsed.</strong> Organic FTT rate went from 3.45% to <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">1.43%</mark> in 30 days. Installs are flat at ~3,200/day. The problem is entirely post-install &mdash; users get in but cannot complete a trade.</li>
+            <li>Funnel decomposition: Install&rarr;Signup <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px">+19%</mark> (healthy). Signup&rarr;Real Account stable. But <strong>Real Account&rarr;FTD dropped from 22.6% to 13.4%</strong> (&minus;41%) and FTD&rarr;FTT from ~100% to 74.5% (&minus;26%). The break is at the money step. In trading terms: users who want to deposit cannot.</li>
+            <li>App crash-free rate is <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">88.7% Android, 83.5% iOS</mark> (benchmark: 99.5%+). 454K exceptions in 28 days. v1.9.0 and v1.10.2 flagged. The crash versions correspond to the deposit and trade screens. ~5,700 users/day hit a crash where they need to put money in.</li>
+            <li><strong>Jun 27&ndash;28 was a discrete break.</strong> FTTs fell from 44 to 28 overnight while installs and signups went up. Wallet&rarr;FTD dropped from 14.4% to 10.3% in one day. This is not gradual decay &mdash; it looks like a release, config change, or vendor failure.</li>
+            <li><strong>Google Ads ($326K, 0.04x ROAS):</strong> Budget went from $5K/day to $23K/day on Jun 17 &mdash; <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">scaled before learning phase completed</mark>. Result: 5&times; fewer FTTs per dollar. True prospecting (stripping retargeting illusion): $171K spent, 45 FTTs, $3,799/FTT. Anti-pattern #2: scaling blind.</li>
+            <li><strong>Facebook (26K installs, 19 FTTs, 0.07%):</strong> Campaign optimizing for <code>app_installs</code> event. This is <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">anti-pattern #6</mark> &mdash; install optimization in trading produces 5&ndash;10x worse FTT rates. Bangladesh: 10K installs, 0 FTTs. Only 7 days old.</li>
+            <li><strong>FTDs retargeting ($59 cost, 178x ROAS):</strong> The only channel with <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">proven unit economics</mark>. These are dormant traders who bypass the broken deposit flow. Confirms the product works &mdash; the issue is isolated to new-user onboarding-to-deposit.</li>
+            <li><strong>Brand keywords ($103K):</strong> Defensive, not prospecting. Competitors bid on &ldquo;Deriv.&rdquo; Login keywords ($42K) are pure waste. QR code ($183/FTT, $41K revenue) surged 4x on Jun 24 &mdash; needs attribution verification.</li>
+          </ul>
+        </div>
 
-            <p style="margin:0 0 14px;font-weight:600;font-size:.88rem;text-transform:uppercase;letter-spacing:.04em;color:var(--header);margin-top:22px">Decisions Needed</p>
-            <div style="display:flex;flex-direction:column;gap:10px;font-size:.92rem;line-height:1.6">
-              <div style="display:flex;gap:10px;align-items:start">
-                <span style="color:var(--red);font-weight:700;flex-shrink:0">1.</span>
-                <div><strong>Investigate the organic FTT collapse immediately &mdash; focus on deposit/trade stage.</strong> Funnel data shows signups are healthy but Wallet&rarr;FTD and FTD&rarr;FTT are collapsing. Pull Firebase Crashlytics data for v1.9.0 and v1.10.2, specifically for deposit and trade screens. Check if a new app version or server-side change was deployed around Jun 27&ndash;28 (organic FTTs dropped 36% overnight). This affects <em>every</em> channel.</div>
-              </div>
-              <div style="display:flex;gap:10px;align-items:start">
-                <span style="color:var(--red);font-weight:700;flex-shrink:0">2.</span>
-                <div><strong>Google: pause zero-FTT campaigns, reduce budget back to $5K/day during learning.</strong> Immediately pause multi_asset ($41K, 0 FTTs, 0 revenue) and chart-patterns ($25K, 4 FTTs, $76 revenue). Scale back from $23K/day to $4&ndash;5K/day. Keep geo-specific campaigns in Kenya, Nigeria, and Pakistan. The program needs to learn at lower spend before scaling.</div>
-              </div>
-              <div style="display:flex;gap:10px;align-items:start">
-                <span style="color:var(--amber);font-weight:700;flex-shrink:0">3.</span>
-                <div><strong>Facebook: change optimization event from installs to FTD, exclude Bangladesh.</strong> The <code>app_installs</code> optimization event is finding the cheapest installs globally, not traders. This is a setup problem. Give it 2 weeks on FTD optimization before judging the channel. If &lt;0.5% FTT after the switch, then pause.</div>
-              </div>
-              <div style="display:flex;gap:10px;align-items:start">
-                <span style="color:var(--amber);font-weight:700;flex-shrink:0">4.</span>
-                <div><strong>Audit brand keyword cost &mdash; is $103K the right price for defense?</strong> Brand defense is valid, but the CPM may be too high. Compare brand keyword CPC to organic click-through rates. Test reducing brand bids by 30% and monitoring organic recapture.</div>
-              </div>
-              <div style="display:flex;gap:10px;align-items:start">
-                <span style="color:var(--blue);font-weight:700;flex-shrink:0">5.</span>
-                <div><strong>Investigate QR surge.</strong> QR code installs jumped 4&times; on Jun 24 (from ~950/day to 4,099/day) &mdash; the same day Facebook launched. Determine if this is real QR traffic or a misattribution/bot issue. If real, the QR placement is a high-value touchpoint ($183/FTT) worth scaling.</div>
-              </div>
-            </div>
-          </div>
+        <!-- So What -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:16px">So What &mdash; Through the LTV:CAC Lens</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.9rem;line-height:1.7;color:var(--text)">
+            <li><strong>Net Revenue equation is broken at FTD%.</strong> Installs &times; <span style="text-decoration:line-through;color:var(--red)">FTD%</span> &times; Avg Trading Volume &times; Net Revenue Margin &times; Retention Decay &times; (1 &minus; CAC/LTV). The FTD% variable collapsed 41%. Every downstream metric (volume, revenue, LTV) is gated by this step. Fixing it unlocks <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">~$136K/month in organic revenue</mark> and makes all paid channels evaluable.</li>
+            <li><strong>No channel-geo pair has validated LTV:CAC &gt;2:1.</strong> True prospecting cost is $3,799/FTT. Even with a 3&ndash;5&times; LTV multiplier, this is deeply negative. <mark style="background:rgba(245,158,11,.12);padding:1px 5px;border-radius:3px">We cannot scale anything.</mark> Phase gate not met.</li>
+            <li><strong>Contribution margin per cohort is negative across all paid.</strong> Google prospecting: &minus;$170K. Facebook: unmeasurable (install optimization, no FTD signal). Brand: defensive (not meant to be positive). Only FTDs retargeting is positive ($10.5K on $59).</li>
+            <li><strong>The &ldquo;efficient geos&rdquo; are fake.</strong> Kenya 54.9%, Pakistan 63% FTT rate = retargeting disguised as prospecting. These numbers are structurally impossible for cold traffic in any trading vertical. Attribution is flattering the story.</li>
+            <li><strong>DAU as north star is producing the wrong incentives.</strong> DAU is up 62% while FTTs are down 72%. The install-optimized FB campaign, the premature Google scale-up, and the Bangladesh volume all inflate DAU. <mark style="background:rgba(245,158,11,.12);padding:1px 5px;border-radius:3px">The metric is being hit while the business deteriorates.</mark> Recommend switching north star to FTD rate or NDPAU (Net Deposits Per Acquired User).</li>
+          </ul>
+        </div>
+
+        <!-- Highest-Leverage Moves -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:16px">Highest-Leverage Moves &mdash; Sequenced</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.9rem;line-height:1.7;color:var(--text)">
+            <li style="padding:12px 16px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)">
+              <strong>#1. Fix the deposit/trade funnel (Pillar 9: Product Loop).</strong> Until Real Account&rarr;FTD returns to &ge;20%, no channel can be evaluated. Pull Crashlytics by screen, KYC approval rates, payment success rates for Jun 20&ndash;29. Identify the Jun 27&ndash;28 event. <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">24h</mark><br>
+              <span style="font-size:.8rem;color:var(--muted)">KPI target: Organic FTT rate &ge;2.5% within 7 days of fix. Source: AppsFlyer organic daily.</span>
+            </li>
+            <li style="padding:12px 16px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)">
+              <strong>#2. Stop the cash bleed (Pillar 1: Acquisition).</strong> Cut Google from $23K to $5K/day. Pause multi_asset ($41K, 0 FTTs) and chart-patterns ($25K, 4 FTTs). Keep geo-specific at $5K/day for signal collection. Save ~$18K/day. <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">24h</mark><br>
+              <span style="font-size:.8rem;color:var(--muted)">Decision rule: do not re-scale until 7 consecutive days of FTT rate &ge;1% at campaign level (see decision-rules.md).</span>
+            </li>
+            <li style="padding:12px 16px;border-radius:8px;border-left:3px solid var(--amber)">
+              <strong>#3. Fix Facebook optimization event (Pillar 1: Acquisition).</strong> Change from <code>app_installs</code> to <code>first_time_deposit</code>. Exclude Bangladesh. Give 14 days to learn. <mark style="background:rgba(245,158,11,.12);padding:1px 5px;border-radius:3px;font-weight:600">48h</mark><br>
+              <span style="font-size:.8rem;color:var(--muted)">KPI target: FTT rate &ge;0.5% after 14-day learning window. If not met, pause channel. (Anti-pattern #6 remediation.)</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Blindspots / What Would Sharpen This -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:16px">What Would Sharpen This</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.9rem;line-height:1.7;color:var(--text)">
+            <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>Crashlytics crash signatures by screen.</strong> Confirms whether the funnel break is an app crash (hypothesis #1) or something else. <em>Export from Firebase Crashlytics &gt; filter deposit/trade screens &gt; Jun 20&ndash;29 &gt; group by version.</em></li>
+            <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>KYC approval rates &amp; time-to-decision by geo for Jun 20&ndash;29.</strong> If KYC vendor changed rules on Jun 27, that explains Real Account&rarr;FTD without any app crash. <em>Source: KYC vendor dashboard. Columns: date, geo, submissions, approvals, rejections, avg time.</em></li>
+            <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>Payment gateway success rates by provider and geo.</strong> M-Pesa, JazzCash, card processors. If payment failed, users passed KYC but couldn&rsquo;t deposit. <em>Source: payment provider dashboard or backend logs. Columns: date, geo, provider, attempts, successes, error codes.</em></li>
+            <li><strong>90-day cohorted revenue by media source and geo.</strong> Current $72/FTT organic vs $30/FTT paid comparison is invalid (different cohort windows). Cohorted data answers: does paid produce traders with sustainable LTV? <em>Source: trading platform backend. Columns: acquisition_date, media_source, geo, revenue_day_1 through revenue_day_90.</em></li>
+            <li><strong>App release history + backend deploy log for Jun 25&ndash;29.</strong> Identifies the discrete event. <em>Source: Play Console &gt; Release management, App Store Connect &gt; Activity, backend CI/CD pipeline.</em></li>
+            <li><strong>Google Ads audience segment report.</strong> We know campaign types but not what audiences are targeted. Poor audience signals could explain scale-up collapse independently. <em>Source: Google Ads &gt; Audiences tab per campaign.</em></li>
+            <li><strong>Incrementality test design.</strong> At $331K/month in markets with strong organic (Kenya #34, Zimbabwe #7), cannibalization is likely. <em>Propose: geo-holdout in one comparable market for 14 days, measuring organic lift.</em></li>
+          </ul>
+        </div>
+
+        <!-- Confidence Tags -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--header);margin-bottom:16px">Confidence Summary</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;font-size:.88rem;line-height:1.6;color:var(--text)">
+            <li style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>App is in Phase 1. No channel-geo pair has validated economics. Phase gate not met for scaling.</span></li>
+            <li style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Funnel is broken at deposit/trade. Real Account&rarr;FTD &minus;41% is confirmed from source data. Structural, not statistical noise.</span></li>
+            <li style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Google was scaled prematurely. Budget 5x&rsquo;d while learning phase incomplete = anti-pattern #2 (scaling blind).</span></li>
+            <li style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span>Facebook is misconfigured with anti-pattern #6 (install optimization). Provably wrong event. Fixable.</span></li>
+            <li style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>App crash is the cause of funnel break. Directionally supported (88.7% crash-free, flagged versions match screens) but not confirmed without crash-by-screen data.</span></li>
+            <li style="display:flex;align-items:start;gap:8px"><span style="background:var(--amber-bg);color:var(--amber);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">MED</span><span>DAU is driving wrong behavior. Structurally logical but requires exec alignment to change. Not prescribing replacement &mdash; flagging for discussion.</span></li>
+            <li style="display:flex;align-items:start;gap:8px"><span style="background:var(--red-bg);color:var(--red);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">LOW</span><span>QR surge is real traffic. Could be misattribution from FB launch. Cannot stake budget on it without verification.</span></li>
+          </ul>
         </div>
 
       </div>
@@ -398,154 +568,235 @@
 
       <!-- What happened -->
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:10px">What Happened</div>
-        <div style="font-size:.92rem;line-height:1.7;color:var(--text)">
-          <p style="margin:0 0 12px"><span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">Primary finding: Organic FTTs are collapsing.</span> Organic installs held flat (~3,200/day) but the conversion rate halved. This is the single most important signal in the data &mdash; it affects the ROI of every channel, paid and organic alike.</p>
-
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--red)">Organic FTT Rate Decline by Period</p>
-          <div style="overflow-x:auto;margin-bottom:12px">
-            <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
-              <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
-                <th style="padding:6px 10px;font-weight:700">Period</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Avg Installs/Day</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Avg FTTs/Day</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">FTT Rate</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">&Delta; vs Baseline</th>
-              </tr></thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(34,197,94,.04)"><td style="padding:6px 10px;font-weight:600">May 30 &ndash; Jun 7 (baseline)</td><td style="padding:6px 10px;text-align:right">3,305</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">109</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">3.45%</td><td style="padding:6px 10px;text-align:right;color:var(--muted)">&mdash;</td></tr>
-                <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;font-weight:600">Jun 8 &ndash; 16 (Google small)</td><td style="padding:6px 10px;text-align:right">3,255</td><td style="padding:6px 10px;text-align:right">100</td><td style="padding:6px 10px;text-align:right">3.09%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">&minus;10%</td></tr>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:6px 10px;font-weight:600">Jun 17 &ndash; 23 (Google scaled)</td><td style="padding:6px 10px;text-align:right">3,084</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">81</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">2.65%</td><td style="padding:6px 10px;text-align:right;color:var(--red)">&minus;23%</td></tr>
-                <tr style="background:rgba(239,68,68,.06)"><td style="padding:6px 10px;font-weight:700">Jun 24 &ndash; 29 (Google + FB)</td><td style="padding:6px 10px;text-align:right">3,204</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">46</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">1.43%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">&minus;58%</td></tr>
-              </tbody>
-            </table>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:16px">What Happened</div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.9rem;line-height:1.7;color:var(--text)">
+          <li><strong>Organic FTT rate halved in 30 days</strong> &mdash; from 3.45% to <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">1.43%</mark>. Installs stayed flat at ~3,200/day, so traffic is fine. 109 trades/day baseline dropped to 46/day. The problem is post-install.</li>
+          <li>The funnel decomposition shows exactly where: Install&rarr;Signup is up +19%. Signup&rarr;Wallet is stable. But <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">Wallet&rarr;FTD collapsed from 22.6% to 13.4% (&minus;41%)</mark> and FTD&rarr;FTT dropped from ~100% to 74.5% (&minus;26%). <strong>Onboarding works. The deposit/trade step is where users fail.</strong></li>
+          <li>App stability is critically low: <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">Android 88.7% crash-free, iOS 83.5%</mark> <mark style="background:rgba(245,158,11,.12);padding:1px 5px;border-radius:3px">(standard: 99.5%+)</mark>. 454K exceptions in 28 days. v1.9.0 and v1.10.2 are flagged. ~5,700 users crash daily and the affected versions correspond to deposit and trade screens.</li>
+          <li><strong>Something discrete happened Jun 27&ndash;28.</strong> Organic FTTs dropped from 44 to 28 overnight (36% decline) while installs and signups were <em>up</em>. Wallet&rarr;FTD fell from 14.4% to 10.3% in one day. This points to a deploy, config change, or vendor failure &mdash; not a gradual trend.</li>
+          <li style="padding:10px 14px;background:rgba(245,158,11,.04);border-radius:8px;border-left:3px solid var(--amber)"><strong>Revenue comparison caveat:</strong> Organic $197K includes 50K+ lifetime traders active in June. Paid $14K is from users acquired in the last 3 weeks only. Comparing &ldquo;$72/FTT organic vs $30/FTT paid&rdquo; is not valid. Cohorted revenue data is needed for a fair comparison.</li>
+          <li><strong>Google Ads ($326K spent, 0.04x ROAS):</strong> Scaled budget from $5K/day to $23K/day on Jun 17 before learning phase completed. Result: 5&times; fewer FTTs per dollar. True prospecting (stripping retargeting): <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">$171K spent, 45 FTTs, $3,799/FTT</mark>. The &ldquo;efficient geos&rdquo; (Kenya 54.9% FTT rate, Pakistan 63%) are retargeting &mdash; impossible rates for cold traffic.</li>
+          <li><strong>Facebook Ads (26K installs, 19 FTTs, 0.07% FTT rate):</strong> Campaign is optimizing for <code>app_installs</code> &mdash; finding cheapest clicks, not traders. Bangladesh: <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">10K installs, 0 FTTs, $0 revenue</mark>. Only 7 days old. Misconfigured, not a dead channel.</li>
+          <li><strong>FTDs retargeting is proving the model works:</strong> $59 spent, $10.5K returned, <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">178x ROAS</mark>. These are dormant users who already passed onboarding. They bypass the broken deposit step because they already have accounts. This confirms the product works for users who get through.</li>
+          <li><strong>Brand keywords ($103K):</strong> Competitors actively bid on &ldquo;Deriv.&rdquo; This is defense, not prospecting. Login keywords ($42K) are pure waste &mdash; existing users searching their own app. Non-login brand may be over-bid. Test &minus;30%, monitor organic recapture.</li>
+          <li><strong>QR code installs surged 4&times; on Jun 24</strong> (950/day &rarr; 4,099/day), same day as Facebook launch. QR FTTs are the highest-value channel at <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">$183/FTT</mark>. Needs verification: real traffic from website visitors, or misattribution from the FB launch?</li>
+          <li><strong>Apple Search Ads ($4.7K, 0 FTTs):</strong> Expected under iOS 14.5+ ATT. AppsFlyer cannot see iOS conversions. Cross-reference with Apple&rsquo;s own Search Ads reporting before concluding the channel is dead.</li>
+        </ul>
+        <details class="rca-expand">
+          <summary>Expand: Organic FTT decline &amp; funnel tables</summary>
+          <div class="rca-detail">
+            <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--red)">Organic FTT Rate Decline by Period</p>
+            <div style="overflow-x:auto;margin-bottom:14px">
+              <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
+                <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+                  <th style="padding:6px 10px;font-weight:700">Period</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Avg Installs/Day</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Avg FTTs/Day</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">FTT Rate</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">&Delta; vs Baseline</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(34,197,94,.04)"><td style="padding:6px 10px;font-weight:600">May 30 &ndash; Jun 7 (baseline)</td><td style="padding:6px 10px;text-align:right">3,305</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">109</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">3.45%</td><td style="padding:6px 10px;text-align:right;color:var(--muted)">&mdash;</td></tr>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;font-weight:600">Jun 8 &ndash; 16 (Google small)</td><td style="padding:6px 10px;text-align:right">3,255</td><td style="padding:6px 10px;text-align:right">100</td><td style="padding:6px 10px;text-align:right">3.09%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">&minus;10%</td></tr>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:6px 10px;font-weight:600">Jun 17 &ndash; 23 (Google scaled)</td><td style="padding:6px 10px;text-align:right">3,084</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">81</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">2.65%</td><td style="padding:6px 10px;text-align:right;color:var(--red)">&minus;23%</td></tr>
+                  <tr style="background:rgba(239,68,68,.06)"><td style="padding:6px 10px;font-weight:700">Jun 24 &ndash; 29 (Google + FB)</td><td style="padding:6px 10px;text-align:right">3,204</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">46</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">1.43%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">&minus;58%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--red)">Funnel Decomposition &mdash; Where Is Conversion Breaking?</p>
+            <p style="margin:0 0 8px;font-size:.82rem;color:var(--muted)">Organic funnel step rates by period &mdash; calculated from daily SOURCE_DATA</p>
+            <div style="overflow-x:auto;margin-bottom:12px">
+              <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
+                <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+                  <th style="padding:6px 10px;font-weight:700">Period</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Install &rarr; Signup</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Signup &rarr; Wallet</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Wallet &rarr; FTD</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">FTD &rarr; FTT</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Install &rarr; FTT</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(34,197,94,.04)"><td style="padding:6px 10px;font-weight:600">May 30 &ndash; Jun 7 (baseline)</td><td style="padding:6px 10px;text-align:right;color:var(--green)">26.0%</td><td style="padding:6px 10px;text-align:right;color:var(--green)">55.8%</td><td style="padding:6px 10px;text-align:right;color:var(--green)">22.6%</td><td style="padding:6px 10px;text-align:right;color:var(--green)">~100%</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">3.29%</td></tr>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;font-weight:600">Jun 8 &ndash; 16 (Google small)</td><td style="padding:6px 10px;text-align:right">27.5%</td><td style="padding:6px 10px;text-align:right">54.8%</td><td style="padding:6px 10px;text-align:right">20.8%</td><td style="padding:6px 10px;text-align:right">98.4%</td><td style="padding:6px 10px;text-align:right">3.09%</td></tr>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:6px 10px;font-weight:600">Jun 17 &ndash; 23 (Google scaled)</td><td style="padding:6px 10px;text-align:right;color:var(--green)">31.6%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">51.0%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">18.8%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">87.2%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">2.64%</td></tr>
+                  <tr style="background:rgba(239,68,68,.06)"><td style="padding:6px 10px;font-weight:700">Jun 24 &ndash; 29 (Google + FB)</td><td style="padding:6px 10px;text-align:right;color:var(--green)">30.9%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:600">46.4%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">13.4%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:600">74.5%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">1.43%</td></tr>
+                </tbody>
+                <tfoot><tr style="border-top:2px solid var(--border)"><td style="padding:6px 10px;font-weight:700">Baseline &rarr; Final &Delta;</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">+19% &uarr;</td><td style="padding:6px 10px;text-align:right;color:var(--amber);font-weight:600">&minus;17%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">&minus;41%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:600">&minus;26%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">&minus;57%</td></tr></tfoot>
+              </table>
+            </div>
+            <p style="margin:0 0 12px;padding:10px 14px;background:rgba(245,158,11,.08);border-radius:6px;border-left:3px solid var(--amber)"><strong style="color:var(--amber)">&#9888; Revenue metric caveat:</strong> &ldquo;Revenue activity days&rdquo; includes all-time users attributed to a source, not just new cohorts. Organic revenue ($197K) reflects 50K+ existing traders active in June. Paid revenue ($14K) is from users acquired in the last 3 weeks. Direct per-FTT revenue comparison between organic ($72/FTT) and paid ($30/FTT) is not valid. Cohorted revenue data is needed for a fair comparison.</p>
           </div>
-
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--red)">Where in the Funnel Is Conversion Breaking?</p>
-          <p style="margin:0 0 8px;font-size:.82rem;color:var(--muted)">Organic funnel decomposition by period &mdash; calculated from daily SOURCE_DATA</p>
-          <div style="overflow-x:auto;margin-bottom:12px">
-            <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
-              <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
-                <th style="padding:6px 10px;font-weight:700">Period</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Install &rarr; Signup</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Signup &rarr; Wallet</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Wallet &rarr; FTD</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">FTD &rarr; FTT</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Install &rarr; FTT</th>
-              </tr></thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(34,197,94,.04)"><td style="padding:6px 10px;font-weight:600">May 30 &ndash; Jun 7 (baseline)</td><td style="padding:6px 10px;text-align:right;color:var(--green)">26.0%</td><td style="padding:6px 10px;text-align:right;color:var(--green)">55.8%</td><td style="padding:6px 10px;text-align:right;color:var(--green)">22.6%</td><td style="padding:6px 10px;text-align:right;color:var(--green)">~100%</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">3.29%</td></tr>
-                <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;font-weight:600">Jun 8 &ndash; 16 (Google small)</td><td style="padding:6px 10px;text-align:right">27.5%</td><td style="padding:6px 10px;text-align:right">54.8%</td><td style="padding:6px 10px;text-align:right">20.8%</td><td style="padding:6px 10px;text-align:right">98.4%</td><td style="padding:6px 10px;text-align:right">3.09%</td></tr>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:6px 10px;font-weight:600">Jun 17 &ndash; 23 (Google scaled)</td><td style="padding:6px 10px;text-align:right;color:var(--green)">31.6%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">51.0%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">18.8%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">87.2%</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">2.64%</td></tr>
-                <tr style="background:rgba(239,68,68,.06)"><td style="padding:6px 10px;font-weight:700">Jun 24 &ndash; 29 (Google + FB)</td><td style="padding:6px 10px;text-align:right;color:var(--green)">30.9%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:600">46.4%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">13.4%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:600">74.5%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">1.43%</td></tr>
-              </tbody>
-              <tfoot><tr style="border-top:2px solid var(--border)"><td style="padding:6px 10px;font-weight:700">Baseline &rarr; Final &Delta;</td><td style="padding:6px 10px;text-align:right;color:var(--green);font-weight:600">+19% &uarr;</td><td style="padding:6px 10px;text-align:right;color:var(--amber);font-weight:600">&minus;17%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">&minus;41%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:600">&minus;26%</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">&minus;57%</td></tr></tfoot>
-            </table>
+        </details>
+        <details class="rca-expand">
+          <summary>Expand: Google Ads breakdown &amp; attribution</summary>
+          <div class="rca-detail">
+            <p style="margin:0 0 12px"><strong>Google Ads &mdash; $326K spent, $13K revenue, 0.04x ROAS (metric caveated).</strong></p>
+            <div style="overflow-x:auto;margin-bottom:12px">
+              <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
+                <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+                  <th style="padding:6px 10px;font-weight:700">Period</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Daily Spend</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Total Cost</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Revenue</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">ROAS</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">FTTs</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">$/FTT</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;font-weight:600">Jun 1&ndash;16 (learning phase)</td><td style="padding:6px 10px;text-align:right">$2.5&ndash;5.4K</td><td style="padding:6px 10px;text-align:right">$39,088</td><td style="padding:6px 10px;text-align:right">$5,731</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">0.15x</td><td style="padding:6px 10px;text-align:right">367</td><td style="padding:6px 10px;text-align:right">$107</td></tr>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:6px 10px;font-weight:600">Jun 17&ndash;29 (premature scale-up)</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$17&ndash;26K</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$287,407</td><td style="padding:6px 10px;text-align:right">$7,611</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">0.03x</td><td style="padding:6px 10px;text-align:right;color:var(--red)">80</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$3,593</td></tr>
+                  <tr><td style="padding:6px 10px;font-weight:700">Total</td><td style="padding:6px 10px;text-align:right"></td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">$326,494</td><td style="padding:6px 10px;text-align:right;font-weight:700">$13,342</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">0.04x</td><td style="padding:6px 10px;text-align:right;font-weight:700">447</td><td style="padding:6px 10px;text-align:right"></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin:0 0 12px">The scale-up from Jun 17 produced 5&times; fewer FTTs per dollar. Classic paid UA decay at scale. <strong>However, the scale-up also coincides with the organic FTT decline,</strong> suggesting the app-level conversion problem is compounding paid inefficiency.</p>
+            <p style="margin:0 0 8px"><span style="background:rgba(245,158,11,.12);padding:1px 4px;border-radius:3px;font-weight:600;color:var(--amber)">Attribution is distorting the picture.</span> Campaign breakdown:</p>
+            <div style="overflow-x:auto;margin-bottom:12px">
+              <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
+                <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+                  <th style="padding:6px 10px;font-weight:700">Campaign Type</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Cost</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">FTTs</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">Revenue</th>
+                  <th style="padding:6px 10px;font-weight:700;text-align:right">ROAS</th>
+                  <th style="padding:6px 10px;font-weight:700">Note</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(34,197,94,.04)"><td style="padding:6px 10px;font-weight:600">FTDs (retargeting)</td><td style="padding:6px 10px;text-align:right">$59</td><td style="padding:6px 10px;text-align:right;color:var(--green)">365</td><td style="padding:6px 10px;text-align:right;color:var(--green)">$10,563</td><td style="padding:6px 10px;text-align:right;color:var(--green)">178x</td><td style="padding:6px 10px">Best performer. Re-engages dormant users. Preserve and scale.</td></tr>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(245,158,11,.06)"><td style="padding:6px 10px;font-weight:600">Brand keywords</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$103,160</td><td style="padding:6px 10px;text-align:right">28</td><td style="padding:6px 10px;text-align:right">$1,407</td><td style="padding:6px 10px;text-align:right;color:var(--red)">0.01x</td><td style="padding:6px 10px">Brand defense. Cost may be too high. Audit.</td></tr>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(245,158,11,.06)"><td style="padding:6px 10px;font-weight:600">Login keywords</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$41,825</td><td style="padding:6px 10px;text-align:right">14</td><td style="padding:6px 10px;text-align:right">$404</td><td style="padding:6px 10px;text-align:right;color:var(--red)">0.01x</td><td style="padding:6px 10px">Pure waste &mdash; existing users.</td></tr>
+                  <tr><td style="padding:6px 10px;font-weight:700">True prospecting</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">$170,977</td><td style="padding:6px 10px;text-align:right;font-weight:700">45</td><td style="padding:6px 10px;text-align:right;font-weight:700">$1,080</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">0.01x</td><td style="padding:6px 10px;font-weight:600">$3,799/FTT. Deeply underwater.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin:0 0 12px"><strong>Geo-level retargeting inflation:</strong> Kenya 246 installs / 135 FTTs (54.9%), Pakistan 27 / 17 (63%), SA 47 / 21 (44.7%). Impossible for cold traffic. The &ldquo;efficient geos&rdquo; narrative was inflated by retargeting.</p>
           </div>
-          <p style="margin:0 0 12px"><span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">The funnel decomposition pinpoints the break.</span> Signup rates actually <strong>improved</strong> (+19%) &mdash; more users are registering. But <strong style="color:var(--red)">Wallet&rarr;FTD collapsed 41%</strong> (from 22.6% to 13.4%) and <strong style="color:var(--red)">FTD&rarr;FTT dropped 26%</strong> (from ~100% to 74.5%). The crash is not happening at onboarding &mdash; it is happening at the deposit and trading stage. This narrows the investigation: the app is likely crashing or failing during first deposit attempts or first trade execution, not during signup.</p>
-
-          <p style="margin:0 0 12px"><span style="background:rgba(245,158,11,.12);padding:1px 4px;border-radius:3px;font-weight:600;color:var(--amber)">Potential root cause: App stability crisis.</span> Android crash-free rate is 88.7%, iOS is 83.5% (standard: 99.5%+). Versions v1.9.0 and v1.10.2 are flagged. ~5,700 users crash daily, 454K exceptions in 28 days. The funnel decomposition above confirms: the break is at the deposit/trade stage, not onboarding. If the app crashes when users attempt their first deposit or trade, they abandon and never become FTTs.</p>
-
-          <p style="margin:0 0 12px;padding:10px 14px;background:rgba(245,158,11,.08);border-radius:6px;border-left:3px solid var(--amber)"><strong style="color:var(--amber)">&#9888; Revenue metric caveat:</strong> &ldquo;Revenue activity days&rdquo; includes all-time users attributed to a source, not just new cohorts. Organic revenue ($197K) reflects 50K+ existing traders active in June. Paid revenue ($14K) is from users acquired in the last 3 weeks. Direct per-FTT revenue comparison between organic ($72/FTT) and paid ($30/FTT) is not valid &mdash; it compares lifetime organic users against week-old paid cohorts. Cohorted revenue data is needed for a fair comparison.</p>
-
-          <p style="margin:0 0 12px"><strong>Google Ads &mdash; $326K spent, $13K revenue, 0.04x ROAS (metric caveated).</strong></p>
-          <div style="overflow-x:auto;margin-bottom:12px">
-            <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
-              <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
-                <th style="padding:6px 10px;font-weight:700">Period</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Daily Spend</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Total Cost</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Revenue</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">ROAS</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">FTTs</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">$/FTT</th>
-              </tr></thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px;font-weight:600">Jun 1&ndash;16 (learning phase)</td><td style="padding:6px 10px;text-align:right">$2.5&ndash;5.4K</td><td style="padding:6px 10px;text-align:right">$39,088</td><td style="padding:6px 10px;text-align:right">$5,731</td><td style="padding:6px 10px;text-align:right;color:var(--amber)">0.15x</td><td style="padding:6px 10px;text-align:right">367</td><td style="padding:6px 10px;text-align:right">$107</td></tr>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:6px 10px;font-weight:600">Jun 17&ndash;29 (premature scale-up)</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$17&ndash;26K</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$287,407</td><td style="padding:6px 10px;text-align:right">$7,611</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">0.03x</td><td style="padding:6px 10px;text-align:right;color:var(--red)">80</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$3,593</td></tr>
-                <tr><td style="padding:6px 10px;font-weight:700">Total</td><td style="padding:6px 10px;text-align:right"></td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">$326,494</td><td style="padding:6px 10px;text-align:right;font-weight:700">$13,342</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">0.04x</td><td style="padding:6px 10px;text-align:right;font-weight:700">447</td><td style="padding:6px 10px;text-align:right"></td></tr>
-              </tbody>
-            </table>
+        </details>
+        <details class="rca-expand">
+          <summary>Expand: Facebook, Apple, QR details</summary>
+          <div class="rca-detail">
+            <p style="margin:0 0 12px"><strong>Facebook Ads &mdash; 26K installs, $693 total revenue, 19 FTTs (0.07%).</strong> Campaign name (<code>app_installs</code>) confirms install optimization. Bangladesh: <strong style="color:var(--red)">10,114 installs, 0 FTTs, $0 revenue.</strong> Misconfigured campaign, not a failed channel. Only 7 days old. Switching optimization to FTD would target higher-quality users.</p>
+            <p style="margin:0 0 12px"><strong>Apple Search Ads: $4,748 spent, $0 revenue, 0 FTTs.</strong> Expected under iOS 14.5+ ATT. Cross-reference with Apple&rsquo;s own reporting.</p>
+            <p style="margin:0"><strong>QR code installs surged 4&times; on Jun 24</strong> (from ~950/day to 4,099/day) &mdash; the same day Facebook launched. QR FTTs remain the highest-value channel ($183/FTT). Investigate: real traffic or misattribution?</p>
           </div>
-          <p style="margin:0 0 12px">The scale-up from Jun 17 produced 5&times; fewer FTTs per dollar. This is classic paid UA decay at scale &mdash; budget pushes past the efficient audience ceiling. <strong>However, the scale-up also coincides with the organic FTT decline period,</strong> suggesting the app-level conversion problem is compounding the paid inefficiency.</p>
+        </details>
+      </div>
 
-          <p style="margin:0 0 12px"><span style="background:rgba(245,158,11,.12);padding:1px 4px;border-radius:3px;font-weight:600;color:var(--amber)">Attribution is distorting the picture.</span> Google&rsquo;s campaign breakdown reveals three campaign types that should NOT be counted as prospecting:</p>
-          <div style="overflow-x:auto;margin-bottom:12px">
-            <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
-              <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
-                <th style="padding:6px 10px;font-weight:700">Campaign Type</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Cost</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">FTTs</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">Revenue</th>
-                <th style="padding:6px 10px;font-weight:700;text-align:right">ROAS</th>
-                <th style="padding:6px 10px;font-weight:700">Note</th>
-              </tr></thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(34,197,94,.04)"><td style="padding:6px 10px;font-weight:600">FTDs (retargeting)</td><td style="padding:6px 10px;text-align:right">$59</td><td style="padding:6px 10px;text-align:right;color:var(--green)">365</td><td style="padding:6px 10px;text-align:right;color:var(--green)">$10,563</td><td style="padding:6px 10px;text-align:right;color:var(--green)">178x</td><td style="padding:6px 10px">Best performer. Re-engages dormant users. Preserve and scale.</td></tr>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(245,158,11,.06)"><td style="padding:6px 10px;font-weight:600">Brand keywords</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$103,160</td><td style="padding:6px 10px;text-align:right">28</td><td style="padding:6px 10px;text-align:right">$1,407</td><td style="padding:6px 10px;text-align:right;color:var(--red)">0.01x</td><td style="padding:6px 10px">Brand defense &mdash; necessary if competitors bid on &ldquo;Deriv.&rdquo; Cost may be too high. Audit.</td></tr>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(245,158,11,.06)"><td style="padding:6px 10px;font-weight:600">Login keywords</td><td style="padding:6px 10px;text-align:right;color:var(--red)">$41,825</td><td style="padding:6px 10px;text-align:right">14</td><td style="padding:6px 10px;text-align:right">$404</td><td style="padding:6px 10px;text-align:right;color:var(--red)">0.01x</td><td style="padding:6px 10px">Existing users searching &ldquo;Deriv login.&rdquo; Pure waste &mdash; these users know the app.</td></tr>
-                <tr><td style="padding:6px 10px;font-weight:700">True prospecting</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">$170,977</td><td style="padding:6px 10px;text-align:right;font-weight:700">45</td><td style="padding:6px 10px;text-align:right;font-weight:700">$1,080</td><td style="padding:6px 10px;text-align:right;color:var(--red);font-weight:700">0.01x</td><td style="padding:6px 10px;font-weight:600">$3,799/FTT. Unprofitable even accounting for revenue metric issues.</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p style="margin:0 0 12px"><strong>Facebook Ads &mdash; 26K installs, $693 total revenue, 19 FTTs (0.07%).</strong> Campaign name (<code>app_installs</code>) confirms it is optimizing for cheapest installs, not conversions. Bangladesh: <strong style="color:var(--red)">10,114 installs, 0 FTTs, $0 revenue.</strong> This is a misconfigured campaign (setup problem), not a failed channel. Launched Jun 24 &mdash; only 7 days old. Changing the optimization event to FTD would force the algorithm to target higher-quality users.</p>
-
-          <p style="margin:0 0 12px"><strong>Google geo-level data exposes the retargeting problem.</strong> Kenya shows 246 installs / 135 FTTs (54.9% rate), Pakistan 27 / 17 (63%), South Africa 47 / 21 (44.7%). <span style="background:rgba(245,158,11,.12);padding:1px 4px;border-radius:3px;font-weight:600;color:var(--amber)">These conversion rates are impossible for cold traffic.</span> The FTDs retargeting campaign is capturing existing users in these geos. The &ldquo;efficient geos&rdquo; narrative was inflated by retargeting.</p>
-
-          <p style="margin:0 0 12px"><strong>Apple Search Ads: $4,748 spent, $0 revenue, 0 FTTs.</strong> Expected under iOS 14.5+ ATT &mdash; AppsFlyer cannot attribute post-install events on iOS. Cross-reference with Apple&rsquo;s own reporting before drawing conclusions.</p>
-
-          <p style="margin:0"><strong>QR code installs surged 4&times; on Jun 24</strong> (from ~950/day to 4,099/day) &mdash; the same day Facebook launched. QR code FTTs remain the highest-value attributed channel ($183/FTT). Investigate whether the surge is real organic QR traffic or misattribution from the Facebook launch.</p>
+      <!-- Diagnostic Hypotheses -->
+      <div style="background:var(--card);border:1px solid var(--border);border-left:4px solid var(--red);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:6px">Wallet&rarr;FTD Break &mdash; Diagnostic Hypotheses (Ranked)</div>
+        <p style="margin:0 0 12px;font-size:.82rem;color:var(--muted)">Each hypothesis explains how Wallet&rarr;FTD could collapse 41% overnight while signups stayed healthy. Ranked by likelihood given the data pattern.</p>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:normal">
+            <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+              <th style="padding:8px 10px;font-weight:700;width:28px">#</th>
+              <th style="padding:8px 10px;font-weight:700">Hypothesis</th>
+              <th style="padding:8px 10px;font-weight:700">Data Required</th>
+              <th style="padding:8px 10px;font-weight:700">If True, Action</th>
+              <th style="padding:8px 10px;font-weight:700;white-space:nowrap">Owner</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)">
+                <td style="padding:8px 10px;font-weight:700;color:var(--red)">1</td>
+                <td style="padding:8px 10px"><strong>App crash during deposit/trade execution</strong> &mdash; v1.9.0 or v1.10.2 introduced a bug in the deposit or trade flow. 88.7% Android / 83.5% iOS crash-free rates confirm widespread instability.</td>
+                <td style="padding:8px 10px">Crashlytics crash signatures <em>by screen</em> (deposit, trade, wallet). Staged rollout % per version. Release dates vs Jun 27 break.</td>
+                <td style="padding:8px 10px">Hotfix or rollback the flagged version. Force-update users on affected builds.</td>
+                <td style="padding:8px 10px;white-space:nowrap">Mobile Eng</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)">
+                <td style="padding:8px 10px;font-weight:700;color:var(--red)">2</td>
+                <td style="padding:8px 10px"><strong>KYC vendor change or rule update on Jun 27&ndash;28</strong> &mdash; KYC is a prerequisite for first deposit in regulated markets. If approval rates dropped or processing times increased, users who complete wallet setup cannot proceed to deposit.</td>
+                <td style="padding:8px 10px">KYC submission rate, approval rate, time-to-decision, and rejection-reason distribution for Jun 20&ndash;29 by geo.</td>
+                <td style="padding:8px 10px">Escalate to KYC vendor. Adjust rules or switch provider for affected markets.</td>
+                <td style="padding:8px 10px;white-space:nowrap">Compliance / Eng</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:8px 10px;font-weight:700;color:var(--amber)">3</td>
+                <td style="padding:8px 10px"><strong>Payment provider degradation</strong> &mdash; M-Pesa (Kenya), JazzCash (Pakistan), card processors, or USDT on-ramps may have had an outage or increased failure rate around Jun 27&ndash;28.</td>
+                <td style="padding:8px 10px">Deposit success rate by payment provider and geo for Jun 20&ndash;29. Payment gateway error logs.</td>
+                <td style="padding:8px 10px">Switch to backup provider for affected geos. Add client-side retry / fallback.</td>
+                <td style="padding:8px 10px;white-space:nowrap">Payments Team</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:8px 10px;font-weight:700;color:var(--amber)">4</td>
+                <td style="padding:8px 10px"><strong>Backend API degradation</strong> &mdash; increased latency or error rate on critical endpoints (/deposit, /kyc/verify, /trade/execute, /balance) would cause timeouts and abandonment.</td>
+                <td style="padding:8px 10px">P95 latency and error rate on the four endpoints above for Jun 20&ndash;29. Server-side deploy log.</td>
+                <td style="padding:8px 10px">Identify slow queries or infrastructure bottleneck. Scale or revert backend deploy.</td>
+                <td style="padding:8px 10px;white-space:nowrap">Backend Eng</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:8px 10px;font-weight:700;color:var(--amber)">5</td>
+                <td style="padding:8px 10px"><strong>Regulatory or deposit-limit change</strong> &mdash; new deposit limits, mandatory document requirements, or license restrictions in Kenya / Nigeria / Pakistan / Bangladesh around Jun 27.</td>
+                <td style="padding:8px 10px">Compliance changelog. Deposit limit configuration history. Regulatory notices for key markets.</td>
+                <td style="padding:8px 10px">Adjust limits or provide clear user guidance on new requirements.</td>
+                <td style="padding:8px 10px;white-space:nowrap">Legal / Compliance</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 10px;font-weight:700;color:var(--muted)">6</td>
+                <td style="padding:8px 10px"><strong>FX / balance display issue</strong> &mdash; if users see $0, a wrong currency conversion, or an unfamiliar denomination after wallet setup, they abandon before depositing.</td>
+                <td style="padding:8px 10px">QA check of deposit screen across top 5 geos. Verify currency conversion accuracy post-wallet-creation.</td>
+                <td style="padding:8px 10px">Fix display logic. Add localized currency preview on wallet screen.</td>
+                <td style="padding:8px 10px;white-space:nowrap">Mobile Eng</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!-- So what -->
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:10px">So What</div>
-        <div style="font-size:.92rem;line-height:1.7;color:var(--text)">
-          <p style="margin:0 0 14px;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;color:var(--red)">Problem 1: App-level conversion break</p>
-          <p style="margin:0 0 12px"><span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">Organic FTTs down 58% while installs stayed flat.</span> The funnel decomposition reveals <em>where</em> this is happening: <strong>Wallet&rarr;FTD collapsed 41%</strong> and <strong>FTD&rarr;FTT dropped 26%</strong>, while signup rates actually improved. The break is at the deposit and trading stage, not onboarding. The app is likely crashing or failing during first-deposit or first-trade attempts.</p>
-
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--red)">Jun 24&ndash;29: Day-by-day acceleration</p>
-          <div style="overflow-x:auto;margin-bottom:12px">
-            <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
-              <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
-                <th style="padding:5px 8px;font-weight:700">Date</th>
-                <th style="padding:5px 8px;font-weight:700;text-align:right">Installs</th>
-                <th style="padding:5px 8px;font-weight:700;text-align:right">Signups</th>
-                <th style="padding:5px 8px;font-weight:700;text-align:right">Wallets</th>
-                <th style="padding:5px 8px;font-weight:700;text-align:right">FTD</th>
-                <th style="padding:5px 8px;font-weight:700;text-align:right">FTT</th>
-                <th style="padding:5px 8px;font-weight:700;text-align:right">Wallet&rarr;FTD</th>
-                <th style="padding:5px 8px;font-weight:700;text-align:right">FTD&rarr;FTT</th>
-              </tr></thead>
-              <tbody>
-                <tr style="border-bottom:1px solid var(--border)"><td style="padding:5px 8px;font-weight:600">Jun 24</td><td style="padding:5px 8px;text-align:right">3,071</td><td style="padding:5px 8px;text-align:right">963</td><td style="padding:5px 8px;text-align:right">490</td><td style="padding:5px 8px;text-align:right">71</td><td style="padding:5px 8px;text-align:right">63</td><td style="padding:5px 8px;text-align:right">14.5%</td><td style="padding:5px 8px;text-align:right">88.7%</td></tr>
-                <tr style="border-bottom:1px solid var(--border)"><td style="padding:5px 8px;font-weight:600">Jun 25</td><td style="padding:5px 8px;text-align:right">3,154</td><td style="padding:5px 8px;text-align:right">995</td><td style="padding:5px 8px;text-align:right">484</td><td style="padding:5px 8px;text-align:right">78</td><td style="padding:5px 8px;text-align:right">60</td><td style="padding:5px 8px;text-align:right">16.1%</td><td style="padding:5px 8px;text-align:right">76.9%</td></tr>
-                <tr style="border-bottom:1px solid var(--border)"><td style="padding:5px 8px;font-weight:600">Jun 26</td><td style="padding:5px 8px;text-align:right">3,117</td><td style="padding:5px 8px;text-align:right">979</td><td style="padding:5px 8px;text-align:right">459</td><td style="padding:5px 8px;text-align:right">68</td><td style="padding:5px 8px;text-align:right">55</td><td style="padding:5px 8px;text-align:right">14.8%</td><td style="padding:5px 8px;text-align:right">80.9%</td></tr>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:5px 8px;font-weight:600">Jun 27</td><td style="padding:5px 8px;text-align:right">3,201</td><td style="padding:5px 8px;text-align:right">959</td><td style="padding:5px 8px;text-align:right">452</td><td style="padding:5px 8px;text-align:right">65</td><td style="padding:5px 8px;text-align:right;color:var(--amber)">44</td><td style="padding:5px 8px;text-align:right;color:var(--amber)">14.4%</td><td style="padding:5px 8px;text-align:right;color:var(--amber)">67.7%</td></tr>
-                <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.06)"><td style="padding:5px 8px;font-weight:700">Jun 28</td><td style="padding:5px 8px;text-align:right">3,224</td><td style="padding:5px 8px;text-align:right">1,006</td><td style="padding:5px 8px;text-align:right;color:var(--red)">438</td><td style="padding:5px 8px;text-align:right;color:var(--red)">45</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">28</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">10.3%</td><td style="padding:5px 8px;text-align:right;color:var(--red)">62.2%</td></tr>
-                <tr style="background:rgba(239,68,68,.08)"><td style="padding:5px 8px;font-weight:700">Jun 29</td><td style="padding:5px 8px;text-align:right">3,459</td><td style="padding:5px 8px;text-align:right">1,032</td><td style="padding:5px 8px;text-align:right;color:var(--red)">431</td><td style="padding:5px 8px;text-align:right;color:var(--red)">41</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">24</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">9.5%</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">58.5%</td></tr>
-              </tbody>
-            </table>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:16px">So What</div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;font-size:.9rem;line-height:1.7;color:var(--text)">
+          <li><strong>One root cause explains everything.</strong> The deposit/trade step is broken. Wallet&rarr;FTD dropped 41%, FTD&rarr;FTT dropped 26%. Something discrete broke Jun 27&ndash;28 (FTTs fell 36% overnight while installs and signups were up). At-risk organic revenue: <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">~$136K/month</mark> (63 lost trades/day &times; $72/FTT).</li>
+          <li>This is not separate from the paid problem. <strong>Paid installs hit the identical broken step.</strong> If Wallet&rarr;FTD recovers to 22.6%, <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">paid CAC drops ~40% mechanically</mark> across all channels without any campaign restructuring. Fix the funnel and both organic and paid recover simultaneously.</li>
+          <li>Paid campaigns also have secondary structural issues <em>on top of</em> the funnel break: Google was scaled 5&times; before learning phase completed (5&times; fewer FTTs per dollar). Facebook is optimizing for the wrong event (installs vs. deposits). Both are fixable but <strong>cannot be properly evaluated until the funnel works</strong> &mdash; the noise from the broken funnel makes campaign optimization meaningless.</li>
+          <li>The &ldquo;efficient geos&rdquo; in Google are a retargeting illusion. Kenya 54.9%, Pakistan 63%, SA 44.7% FTT rate &mdash; these numbers are impossible for cold traffic. FTDs retargeting is inflating them. <strong>True prospecting reality:</strong> <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">$171K spent, 45 FTTs, 0.01x ROAS, $3,799/FTT</mark>. Deeply underwater even with 3&ndash;5&times; LTV multiplier.</li>
+          <li>FTDs retargeting ($59 cost, $10.5K revenue, <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">178x ROAS</mark>) proves the model works for users who already have accounts. Preserve this as a separate line of effort from prospecting. It bypasses the broken deposit step entirely.</li>
+          <li>Brand keywords ($103K): competitors actively bid on &ldquo;Deriv&rdquo; search terms. Pausing would hand traffic to competitors. But login keywords ($42K) are clearly waste. <strong>Action:</strong> pause login keywords immediately, test &minus;30% bid reduction on non-login brand, monitor organic recapture over 7 days.</li>
+          <li><strong>For prospecting to ever break even:</strong> fix the app funnel first (this benefits all channels), then reduce cost/FTT from $3,799 by 10&ndash;20&times; through better targeting, FTD optimization, and geo-focus on markets that actually convert. Even with fixed funnel, prospecting will take 4&ndash;8 weeks to reach sustainable economics.</li>
+          <li>QR code is the highest-value channel: $41K revenue, $183/FTT, zero acquisition cost. The <mark style="background:rgba(34,197,94,.12);padding:1px 5px;border-radius:3px;font-weight:600">4&times; surge on Jun 24</mark> (same day as FB launch) needs investigation. If real &mdash; these are high-intent website visitors scanning to download &mdash; it&rsquo;s a major scaling opportunity. If misattribution, both QR and Facebook numbers are wrong.</li>
+        </ul>
+        <details class="rca-expand">
+          <summary>Expand: Jun 24&ndash;29 daily acceleration table</summary>
+          <div class="rca-detail">
+            <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--red)">Jun 24&ndash;29: Day-by-day organic funnel</p>
+            <div style="overflow-x:auto;margin-bottom:12px">
+              <table style="width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap">
+                <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+                  <th style="padding:5px 8px;font-weight:700">Date</th>
+                  <th style="padding:5px 8px;font-weight:700;text-align:right">Installs</th>
+                  <th style="padding:5px 8px;font-weight:700;text-align:right">Signups</th>
+                  <th style="padding:5px 8px;font-weight:700;text-align:right">Wallets</th>
+                  <th style="padding:5px 8px;font-weight:700;text-align:right">FTD</th>
+                  <th style="padding:5px 8px;font-weight:700;text-align:right">FTT</th>
+                  <th style="padding:5px 8px;font-weight:700;text-align:right">Wallet&rarr;FTD</th>
+                  <th style="padding:5px 8px;font-weight:700;text-align:right">FTD&rarr;FTT</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:5px 8px;font-weight:600">Jun 24</td><td style="padding:5px 8px;text-align:right">3,071</td><td style="padding:5px 8px;text-align:right">963</td><td style="padding:5px 8px;text-align:right">490</td><td style="padding:5px 8px;text-align:right">71</td><td style="padding:5px 8px;text-align:right">63</td><td style="padding:5px 8px;text-align:right">14.5%</td><td style="padding:5px 8px;text-align:right">88.7%</td></tr>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:5px 8px;font-weight:600">Jun 25</td><td style="padding:5px 8px;text-align:right">3,154</td><td style="padding:5px 8px;text-align:right">995</td><td style="padding:5px 8px;text-align:right">484</td><td style="padding:5px 8px;text-align:right">78</td><td style="padding:5px 8px;text-align:right">60</td><td style="padding:5px 8px;text-align:right">16.1%</td><td style="padding:5px 8px;text-align:right">76.9%</td></tr>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:5px 8px;font-weight:600">Jun 26</td><td style="padding:5px 8px;text-align:right">3,117</td><td style="padding:5px 8px;text-align:right">979</td><td style="padding:5px 8px;text-align:right">459</td><td style="padding:5px 8px;text-align:right">68</td><td style="padding:5px 8px;text-align:right">55</td><td style="padding:5px 8px;text-align:right">14.8%</td><td style="padding:5px 8px;text-align:right">80.9%</td></tr>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.04)"><td style="padding:5px 8px;font-weight:600">Jun 27</td><td style="padding:5px 8px;text-align:right">3,201</td><td style="padding:5px 8px;text-align:right">959</td><td style="padding:5px 8px;text-align:right">452</td><td style="padding:5px 8px;text-align:right">65</td><td style="padding:5px 8px;text-align:right;color:var(--amber)">44</td><td style="padding:5px 8px;text-align:right;color:var(--amber)">14.4%</td><td style="padding:5px 8px;text-align:right;color:var(--amber)">67.7%</td></tr>
+                  <tr style="border-bottom:1px solid var(--border);background:rgba(239,68,68,.06)"><td style="padding:5px 8px;font-weight:700">Jun 28</td><td style="padding:5px 8px;text-align:right">3,224</td><td style="padding:5px 8px;text-align:right">1,006</td><td style="padding:5px 8px;text-align:right;color:var(--red)">438</td><td style="padding:5px 8px;text-align:right;color:var(--red)">45</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">28</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">10.3%</td><td style="padding:5px 8px;text-align:right;color:var(--red)">62.2%</td></tr>
+                  <tr style="background:rgba(239,68,68,.08)"><td style="padding:5px 8px;font-weight:700">Jun 29</td><td style="padding:5px 8px;text-align:right">3,459</td><td style="padding:5px 8px;text-align:right">1,032</td><td style="padding:5px 8px;text-align:right;color:var(--red)">431</td><td style="padding:5px 8px;text-align:right;color:var(--red)">41</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">24</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">9.5%</td><td style="padding:5px 8px;text-align:right;color:var(--red);font-weight:700">58.5%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin:0"><span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">Something broke between Jun 27 and Jun 28.</span> Organic FTTs dropped from 44 to 28 overnight (36% decline). Wallet&rarr;FTD fell from 14.4% to 10.3%. Installs and signups were <em>up</em>, ruling out a traffic problem. <strong>Investigate: app version deploy, server-side change, KYC update, or payment gateway issue around Jun 27&ndash;28.</strong></p>
           </div>
-          <p style="margin:0 0 12px"><span style="background:rgba(239,68,68,.1);padding:1px 4px;border-radius:3px;font-weight:600">Something specific broke between Jun 27 and Jun 28.</span> Organic FTTs dropped from 44 to 28 overnight (36% single-day decline). Wallet&rarr;FTD fell from 14.4% to 10.3%. FTD&rarr;FTT from 67.7% to 62.2%. Installs and signups were <em>up</em> on Jun 28&ndash;29, ruling out a traffic problem. <strong>Investigate: was a new app version released on Jun 27? Was there a server-side change, KYC update, or payment gateway issue?</strong></p>
-
-          <p style="margin:0 0 14px;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;color:var(--amber);margin-top:18px">Problem 2: Paid campaigns &mdash; early-stage with structural issues</p>
-          <p style="margin:0 0 12px"><strong>Google (4 weeks old):</strong> Scaled too fast (from $5K/day to $23K/day) before learning phase completed. The 5&times; budget increase produced 5&times; fewer FTTs per dollar. Additionally, the scale-up period coincides with the organic FTT collapse &mdash; part of the paid performance decline may be the same app-level problem, not just audience exhaustion.</p>
-
-          <p style="margin:0 0 12px"><strong>Facebook (1 week old):</strong> The <code>app_installs</code> optimization event is the entire problem. Facebook&rsquo;s algorithm found the cheapest installs globally (Bangladesh at ~$0.02/install). Switching to FTD optimization + geo-targeting Africa would test whether the channel can find quality users. One week is too early to judge.</p>
-
-          <p style="margin:0 0 12px"><strong>Google&rsquo;s &ldquo;efficient geos&rdquo; are a retargeting illusion.</strong> Kenya 246 installs / 135 FTTs (54.9%), Pakistan 27 / 17 (63%), South Africa 47 / 21 (44.7%). These rates are impossible for cold traffic. The FTDs retargeting campaign inflated these numbers. True prospecting: <strong style="color:var(--red)">$171K spent, 45 FTTs, $1,080 revenue = 0.01x ROAS ($3,799/FTT).</strong> Even with the revenue metric caveat, this is deeply underwater.</p>
-
-          <p style="margin:0 0 12px"><strong>Retargeting (FTDs campaign) is the success story.</strong> $59 cost, $10.5K revenue, 178x ROAS. This campaign re-engages dormant users who already know the product. It should be preserved and potentially scaled as a separate line of effort from prospecting.</p>
-
-          <p style="margin:0 0 12px"><strong>Brand keywords ($103K) are defending against competitor bidding on &ldquo;Deriv.&rdquo;</strong> The principle is sound &mdash; pausing brand defense would hand branded searches to competitors. But the cost may be too high. Audit brand CPC vs organic click-through rates and test a 30% bid reduction.</p>
-
-          <p style="margin:0 0 12px"><strong>For paid prospecting to break even:</strong> Google needs to either reduce cost/FTT from $3,799 to a level that the app&rsquo;s LTV can support, or improve the app conversion funnel so that more installs become FTTs. The second approach benefits all channels simultaneously. Even with 3&ndash;5&times; LTV multiplier, prospecting cost needs to be 10&ndash;20&times; lower than current levels.</p>
-
-          <p style="margin:0"><strong>QR code ($41K revenue, $183/FTT) is the highest-value attributed channel.</strong> Campaign name is <code>deriv-home-mobile-app-qr-install</code>. High-intent website visitors. This touchpoint can be audited and optimized (placement, size, CTA copy). The 4&times; surge on Jun 24 needs investigation &mdash; if real, it represents a major scaling opportunity at zero cost.</p>
-        </div>
+        </details>
+        <details class="rca-expand">
+          <summary>Expand: Full paid campaign analysis</summary>
+          <div class="rca-detail">
+            <p style="margin:0 0 12px"><strong>Google (4 weeks old):</strong> Scaled from $5K/day to $23K/day before learning phase completed. 5&times; budget increase = 5&times; fewer FTTs per dollar. The scale-up period coincides with the organic FTT collapse &mdash; the app-level conversion problem is compounding paid inefficiency.</p>
+            <p style="margin:0 0 12px"><strong>Facebook (1 week old):</strong> The <code>app_installs</code> optimization event is the entire problem. Facebook found the cheapest installs globally (Bangladesh at ~$0.02/install). Switching to FTD optimization + geo-targeting Africa would test the channel properly. One week is too early to judge.</p>
+            <p style="margin:0 0 12px"><strong>Google &ldquo;efficient geos&rdquo; are a retargeting illusion.</strong> Kenya 54.9%, Pakistan 63%, SA 44.7% FTT rate &mdash; impossible for cold traffic. FTDs retargeting inflated these numbers. True prospecting: <strong style="color:var(--red)">$171K, 45 FTTs, $1,080 revenue = 0.01x ROAS ($3,799/FTT).</strong></p>
+            <p style="margin:0 0 12px"><strong>Retargeting (FTDs):</strong> $59 cost, $10.5K revenue, 178x ROAS. Re-engages dormant users. Preserve and scale as a separate effort from prospecting.</p>
+            <p style="margin:0 0 12px"><strong>Brand keywords ($103K):</strong> Defense against competitor bidding on &ldquo;Deriv.&rdquo; Pausing would hand branded searches to competitors. Audit cost (test 30% bid reduction), don&rsquo;t kill.</p>
+            <p style="margin:0 0 12px"><strong>For prospecting break-even:</strong> Fix the app funnel (benefits all channels) or reduce cost/FTT from $3,799 by 10&ndash;20&times;. Even with 3&ndash;5&times; LTV multiplier, prospecting is deeply underwater.</p>
+            <p style="margin:0"><strong>QR code ($41K revenue, $183/FTT):</strong> Highest-value channel. Campaign: <code>deriv-home-mobile-app-qr-install</code>. High-intent website visitors. The 4&times; surge on Jun 24 needs investigation &mdash; if real, major zero-cost scaling opportunity.</p>
+          </div>
+        </details>
       </div>
 
       <!-- Store ranking trends (daily history) -->
@@ -603,59 +854,47 @@
       </div>
 
       <!-- Blindspots -->
-      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400e;margin-bottom:10px">Blindspots &mdash; What We Know and What Remains Open</div>
-        <div style="font-size:.85rem;line-height:1.7;color:#78350f">
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#92400e">&cross; Critical &mdash; Must resolve first</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:16px">Blindspots</div>
 
-          <p style="margin:0 0 10px"><strong>1. Why are organic FTTs declining?</strong> Organic installs are flat (~3,200/day) but FTTs dropped 58% (109/day &rarr; 46/day). The FTT rate halved from 3.45% to 1.43% in 30 days. Leading hypothesis: app crash rates (Android 88.7%, iOS 83.5% crash-free; v1.9.0 and v1.10.2 flagged). But correlation &ne; causation &mdash; it could also be a store listing quality issue, onboarding flow change, or market seasonality. <em>Required: Firebase Crashlytics crash timeline by app version, correlated with daily organic FTT rates. Check if v1.9.0 or v1.10.2 rollout dates align with the FTT decline inflection points.</em></p>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:12px">Critical &mdash; close within 48h</div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:14px;font-size:.9rem;line-height:1.7;color:var(--text)">
+          <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>Is DAU the right north star?</strong> It&rsquo;s up 62% while FTTs are down 72%. Every decision made &mdash; cheap FB installs, Google scale-up, brand defense &mdash; was consistent with hitting DAU. <mark style="background:rgba(245,158,11,.12);padding:1px 5px;border-radius:3px">The metric may be driving the wrong behavior.</mark> Needs exec discussion.</li>
+          <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>KYC funnel data is completely absent.</strong> KYC is required for first deposit in regulated markets. If approval rates dropped or processing time increased around Jun 27, Wallet&rarr;FTD collapses &mdash; and the fix has nothing to do with app crashes. <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">Required: KYC submission rate, approval rate, time-to-decision, rejection reasons for Jun 20&ndash;29 by geo.</mark></li>
+          <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>No release/deploy log for Jun 27&ndash;28.</strong> FTTs dropped 36% overnight. This pattern almost always means a deploy, config flag, or vendor update. <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">Required: Play Console + App Store rollout %, backend deploy log, feature flag changelog, KYC/payment vendor changelog for Jun 25&ndash;29.</mark></li>
+          <li style="padding:10px 14px;background:rgba(239,68,68,.04);border-radius:8px;border-left:3px solid var(--red)"><strong>App Store review sentiment for Jun 20&ndash;29 is unchecked.</strong> If users are reporting deposit failures or crashes in reviews, it corroborates (or contradicts) the hypothesis. <mark style="background:rgba(239,68,68,.12);padding:1px 5px;border-radius:3px;font-weight:600">Required: filter 1&ndash;2 star reviews mentioning &ldquo;deposit,&rdquo; &ldquo;payment,&rdquo; &ldquo;crash,&rdquo; &ldquo;KYC.&rdquo;</mark></li>
+        </ul>
 
-          <p style="margin:0 0 10px"><strong>2. Why did QR installs surge 4&times; on the same day Facebook launched?</strong> QR installs jumped from ~950/day to 4,099/day on Jun 24 &mdash; exactly when Facebook launched at scale. Either (a) the Facebook launch somehow drove QR traffic (misattribution?), (b) QR scanning was independently boosted by a website change, or (c) there is a bot/attribution issue. If real, QR is a $183/FTT channel worth scaling. If misattributed Facebook installs, the QR numbers are inflated. <em>Required: cross-reference QR traffic with website analytics (page views on QR placement page) and check AppsFlyer attribution logs for Jun 24.</em></p>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:12px">Funnel &amp; product investigation</div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:14px;font-size:.9rem;line-height:1.7;color:var(--text)">
+          <li><strong>What exactly breaks at deposit/trade?</strong> We know Wallet&rarr;FTD is &minus;41% and FTD&rarr;FTT is &minus;26%. We don&rsquo;t know why. Is it a crash? Payment failure? KYC bottleneck? See Diagnostic Hypotheses above for ranked possibilities. <em>Required: Crashlytics by screen, payment success rates by provider, KYC approval rates.</em></li>
+          <li><strong>Why did QR installs surge 4&times; on Jun 24?</strong> Same day Facebook launched. If real (high-intent website visitors), QR is a $183/FTT zero-cost channel. If misattribution, both QR and Facebook numbers are wrong. <em>Required: cross-reference with website analytics + AppsFlyer attribution logs.</em></li>
+          <li><strong>What specifically changed Jun 27&ndash;28?</strong> Wallet&rarr;FTD fell from 14.4% to 10.3% in one day while everything upstream was up. This is a discrete event. <em>Required: app release history, server deploy logs, any A/B tests on deposit flow.</em></li>
+        </ul>
 
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#92400e;margin-top:16px">&cross; Funnel &amp; product investigation</p>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:12px">Competitive &amp; market context</div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:14px;font-size:.9rem;line-height:1.7;color:var(--text)">
+          <li><strong>Are competitors also seeing organic declines?</strong> If the entire trading vertical in Africa is down (regulatory change, market shift), the decline may be market-driven, not app-driven. <em>Required: Apptweak competitor trends for IQ Option, OctaFX, Exness, Quotex in Kenya, Nigeria, SA. Check for regulatory announcements from CMA, SEC Nigeria, FSCA.</em></li>
+          <li><strong>Is there a seasonality pattern?</strong> End-of-month, Ramadan, school terms, market volatility all affect trading. <em>Required: YoY organic FTT data for May&ndash;June, or 90-day trailing FTT rates.</em></li>
+        </ul>
 
-          <p style="margin:0 0 10px"><strong>3. What exactly breaks at the deposit/trade stage?</strong> Funnel decomposition confirms Wallet&rarr;FTD (-41%) and FTD&rarr;FTT (-26%) are the collapse points. But we don&rsquo;t know <em>why</em>. Is it a crash during deposit? A payment gateway failure? A KYC verification bottleneck? A trading screen crash? <em>Required: Firebase Crashlytics crash logs filtered to deposit and trade screens for v1.9.0 and v1.10.2. Check app release timeline &mdash; was v1.10.2 deployed around Jun 17 or Jun 27?</em></p>
-
-          <p style="margin:0 0 10px"><strong>4. What changed on Jun 27&ndash;28 specifically?</strong> Organic FTTs dropped 36% overnight (44 &rarr; 28) while installs and signups were up. Wallet&rarr;FTD fell from 14.4% to 10.3%. This looks like a discrete event, not gradual decay. <em>Required: app version release history, server-side deployment logs, KYC/payment provider changelog, and any A/B tests running on the deposit flow around Jun 27&ndash;28.</em></p>
-
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#92400e;margin-top:16px">&cross; Competitive &amp; market context</p>
-
-          <p style="margin:0 0 10px"><strong>5. Are competitors also seeing organic declines?</strong> If the entire online trading vertical in Africa is experiencing a downturn (regulatory change, market volatility shift, seasonal pattern), the organic FTT decline may be partially or fully market-driven, not app-driven. <em>Required: Apptweak competitor download trends for IQ Option, OctaFX, Exness, Quotex in Kenya, Nigeria, South Africa. Also check for any regulatory announcements from CMA (Kenya), SEC (Nigeria), or FSCA (South Africa) in June 2026.</em></p>
-
-          <p style="margin:0 0 10px"><strong>6. Is there a seasonality pattern in trading app conversions?</strong> End-of-month, Ramadan, school terms, and market volatility all affect trading behavior. Was June 2025 similar? <em>Required: year-over-year organic FTT data for May&ndash;June, or at minimum 90-day trailing organic FTT rates to establish a seasonal baseline.</em></p>
-
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#92400e;margin-top:16px">&cross; Paid campaign quality</p>
-
-          <p style="margin:0 0 10px"><strong>7. What ad creatives are running, and is there ad fatigue?</strong> This analysis covers campaign structure but not ad content. For a 4-week-old Google program, creative quality and audience signals are typically the #1 performance lever. Are the same creatives running since Jun 1? Are video vs static vs HTML5 performing differently? <em>Required: Google Ads asset performance report (creative-level CTR, conversion rate). Facebook Ads Manager creative breakdown.</em></p>
-
-          <p style="margin:0 0 10px"><strong>8. What audience targeting is Google using?</strong> Campaign types are known (multi_asset, chart-patterns, geo-specific), but the audience signals, in-market segments, and custom intent keywords are not visible. Poor audience targeting could explain the scale-up efficiency collapse independently of app issues. <em>Required: Google Ads audience segment report for each campaign.</em></p>
-
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#92400e;margin-top:16px">&cross; Incrementality &amp; attribution</p>
-
-          <p style="margin:0 0 10px"><strong>9. Are paid installs truly incremental?</strong> In markets where Deriv already has strong organic presence (Kenya #34, Zimbabwe #7), paid campaigns may be capturing users who would have installed organically. At $331K/month, the program is large enough to warrant incrementality testing. <em>Required: run a geo-holdout test &mdash; pause paid in one comparable market (e.g., Ghana) for 2 weeks and measure whether organic installs compensate. Also compare organic install trends in geo &times; paid-spend to detect cannibalization.</em></p>
-
-          <p style="margin:0 0 10px"><strong>10. Attribution cannibalization scale is still unknown.</strong> The FTDs retargeting campaign ($59 cost, $10.5K revenue, 365 FTTs) captures existing users. How many of the brand/login FTTs would have been attributed differently under first-touch? <em>Required: AppsFlyer assist reports and first-touch vs last-touch comparison for Google campaigns.</em></p>
-
-          <p style="margin:0 0 6px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#92400e;margin-top:16px">&cross; Data gaps</p>
-
-          <p style="margin:0 0 10px"><strong>11. LTV comparison between organic and paid is not fairly answerable with current data.</strong> The $72/FTT organic figure includes all-time users. The $30/FTT paid figure is from 3-week-old cohorts. <em>Required: 90-day cohorted revenue from the trading platform, segmented by media source and geo, comparing only users acquired in the same time window.</em></p>
-
-          <p style="margin:0 0 10px"><strong>12. Facebook campaign structure is still invisible.</strong> Can Facebook produce FTTs at all on FTD optimization? <em>Required: Facebook Ads Manager export with ad set, audience, placement, and optimization event configuration.</em></p>
-
-          <p style="margin:0 0 10px"><strong>13. Facebook cost data is missing.</strong> We have revenue ($693) but not spend. <em>Required: Facebook daily spend by campaign from Ads Manager.</em></p>
-
-          <p style="margin:0 0 10px"><strong>14. Revenue per geo is not available.</strong> Are Nigeria&rsquo;s 800 FTTs high-value or low-value? <em>Required: revenue by media source &times; geo export from AppsFlyer.</em></p>
-
-          <p style="margin:0 0 10px"><strong>15. Organic revenue composition is unknown.</strong> Organic $197K includes all unattributed sources. If paid brand awareness creates &ldquo;organic&rdquo; conversions, reducing paid could reduce organic revenue. <em>Required: organic revenue by geo over time.</em></p>
-
-          <p style="margin:0"><strong>16. Apple Search Ads has $0 revenue and 0 FTTs but $4.7K spend.</strong> Likely iOS ATT attribution gap. <em>Required: Apple Search Ads reporting dashboard + SKAdNetwork postbacks.</em></p>
-        </div>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:12px">Paid campaign &amp; attribution gaps</div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px;font-size:.9rem;line-height:1.7;color:var(--text)">
+          <li><strong>Ad creative quality is invisible.</strong> For a 4-week-old Google program, creative is typically the #1 lever. Are the same creatives running since Jun 1? <em>Required: Google asset performance report, Facebook creative breakdown.</em></li>
+          <li><strong>Google audience targeting is unknown.</strong> Campaign types are known but audience signals are not. Poor targeting could explain the scale-up collapse independently of app issues. <em>Required: Google audience segment report.</em></li>
+          <li><strong>Are paid installs incremental?</strong> In markets with strong organic presence (Kenya #34, Zimbabwe #7), paid may be capturing users who would install anyway. <em>Required: geo-holdout test &mdash; pause paid in one market for 2 weeks.</em></li>
+          <li><strong>LTV comparison is unfair with current data.</strong> Organic $72/FTT includes all-time users. Paid $30/FTT is 3-week cohorts. <em>Required: 90-day cohorted revenue by media source and geo.</em></li>
+          <li><strong>Facebook spend data is missing.</strong> We have revenue ($693) but not total cost. Also missing: ad set structure, placement breakdown, optimization event config. <em>Required: Facebook Ads Manager full export.</em></li>
+          <li><strong>Revenue per geo is unavailable.</strong> Nigeria has 800 FTTs &mdash; are they high-value or low-value? This changes geo prioritization. <em>Required: AppsFlyer revenue &times; geo export.</em></li>
+          <li><strong>Apple Search Ads ($4.7K, 0 FTTs):</strong> Likely iOS ATT gap. Don&rsquo;t kill the channel without checking Apple&rsquo;s own reporting + SKAdNetwork postbacks.</li>
+        </ul>
       </div>
 
       <!-- Confidence summary -->
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px">
         <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:12px">Confidence Summary</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;font-size:.85rem;color:var(--text)">
+          <div style="display:flex;align-items:start;gap:8px;border:1px solid var(--amber);border-radius:8px;padding:10px;background:rgba(245,158,11,.04)"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span><strong>Metric misalignment is producing predictable behavior.</strong> The DAU north star explains the Google scale-up (more installs = more DAU), the Facebook install-optimization choice (cheapest DAU), and the brand-keyword spend (defend DAU). Every major decision in June was consistent with DAU as the goal. Fixing the funnel without addressing the metric will recreate the same paid pipeline in Q4. <em>(Dashboard Engagement Impact data + campaign structure)</em></span></div>
           <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span><strong>Organic FTT rate halved from 3.45% to 1.43% in 30 days.</strong> Installs flat, conversions down 58%. Confirmed by daily SOURCE_DATA across all 31 days. This is the dominant finding and likely the root cause of declining performance across all channels. <em>(AppsFlyer Daily Organic Data)</em></span></div>
           <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span><strong>Funnel break is at deposit/trade stage, not onboarding.</strong> Signup rates up +19%, Wallet&rarr;FTD down 41%, FTD&rarr;FTT down 26%. Confirmed by daily SOURCE_DATA across all 4 funnel steps. The app is failing users at the deposit or trade execution step. <em>(AppsFlyer Daily Organic Funnel)</em></span></div>
           <div style="display:flex;align-items:start;gap:8px"><span style="background:var(--green-bg);color:var(--green);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:2px">HIGH</span><span><strong>App stability is critically low.</strong> Android 88.7% crash-free, iOS 83.5% (standard: 99.5%+). v1.9.0 and v1.10.2 flagged. 454K exceptions in 28 days. Combined with the funnel data pointing to deposit/trade stage, the crash is likely in the trading or payment flow. <em>(Firebase Crashlytics)</em></span></div>
@@ -674,6 +913,105 @@
       </div>
 
       </div><!-- /rcaTeamView -->
+
+      <!-- ========== DAILY CHECKLIST VIEW ========== -->
+      <div id="rcaChecklistView" style="display:none">
+
+        <!-- Progress bar -->
+        <div class="checklist-progress" id="clProgress">
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <span class="checklist-progress-text" id="clProgressText">0 / 26 completed</span>
+              <button class="cl-reset" onclick="resetChecklist()" title="Uncheck all items">Reset all</button>
+            </div>
+            <div class="checklist-progress-bar"><div class="checklist-progress-fill" id="clProgressFill" style="width:0%"></div></div>
+            <div class="checklist-progress-sub" style="margin-top:6px">Pick items daily as team action points &mdash; checked items persist between sessions</div>
+          </div>
+        </div>
+
+        <!-- Sub-nav -->
+        <div class="cl-subnav" id="clSubnav">
+          <button class="cl-subtab active" onclick="setChecklistSubView('queue')">Action Queue <span class="cl-subtab-badge" style="background:var(--red-bg);color:var(--red)" id="clQueueBadge">26</span></button>
+          <button class="cl-subtab" onclick="setChecklistSubView('backlog')">Pillar Backlog <span class="cl-subtab-badge" style="background:#f0e6ff;color:#7c3aed" id="clBacklogBadge">36</span></button>
+          <button class="cl-subtab" onclick="setChecklistSubView('gates')">Phase Gates <span class="cl-subtab-badge" style="background:var(--amber-bg);color:var(--amber)">12</span></button>
+          <button class="cl-subtab" onclick="setChecklistSubView('antipatterns')">Anti-Patterns <span class="cl-subtab-badge" style="background:var(--red-bg);color:var(--red)">3 FAIL</span></button>
+        </div>
+
+        <!-- SUB-PANEL: Action Queue -->
+        <div class="cl-subpanel active" id="clSub-queue">
+          <div class="cl-group">
+            <div class="cl-group-header">
+              <span class="cl-group-icon" style="background:var(--red)"></span>
+              <span class="cl-group-title" style="color:var(--red)">Critical &mdash; Do Today</span>
+              <span class="cl-group-count" style="background:var(--red-bg);color:var(--red)" id="clCount-critical">0 / 6</span>
+            </div>
+            <ul class="cl-items" id="clGroup-critical"></ul>
+          </div>
+          <div class="cl-group">
+            <div class="cl-group-header">
+              <span class="cl-group-icon" style="background:var(--amber)"></span>
+              <span class="cl-group-title" style="color:var(--amber)">This Week &mdash; Campaign &amp; Compliance Fixes</span>
+              <span class="cl-group-count" style="background:var(--amber-bg);color:var(--amber)" id="clCount-week">0 / 7</span>
+            </div>
+            <ul class="cl-items" id="clGroup-week"></ul>
+          </div>
+          <div class="cl-group">
+            <div class="cl-group-header">
+              <span class="cl-group-icon" style="background:var(--blue)"></span>
+              <span class="cl-group-title" style="color:var(--blue)">Data Needed &mdash; Close Blindspots</span>
+              <span class="cl-group-count" style="background:#dbeafe;color:var(--blue)" id="clCount-data">0 / 8</span>
+            </div>
+            <ul class="cl-items" id="clGroup-data"></ul>
+          </div>
+          <div class="cl-group">
+            <div class="cl-group-header">
+              <span class="cl-group-icon" style="background:var(--green)"></span>
+              <span class="cl-group-title" style="color:var(--green)">Daily Monitoring &mdash; Track These Metrics</span>
+              <span class="cl-group-count" style="background:var(--green-bg);color:var(--green)" id="clCount-monitor">0 / 5</span>
+            </div>
+            <ul class="cl-items" id="clGroup-monitor"></ul>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-top:8px">
+            <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px">Decision Rules Driving This Checklist</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;font-size:.8rem;color:var(--text);line-height:1.55">
+              <div style="padding:10px 14px;background:var(--gray-bg);border-radius:8px"><strong>Kill rule:</strong> $500+ spent, 0 FTDs &rarr; kill immediately. <em>(multi_asset: $41K, 0 FTTs)</em></div>
+              <div style="padding:10px 14px;background:var(--gray-bg);border-radius:8px"><strong>Restructure rule:</strong> Campaign optimizing for installs &rarr; change to FTD. <em>(Facebook app_installs)</em></div>
+              <div style="padding:10px 14px;background:var(--gray-bg);border-radius:8px"><strong>Kill rule:</strong> FTD rate &lt;0.3% after 500+ installs &rarr; kill. <em>(FB Audience Network: 3,814 installs, 0%)</em></div>
+              <div style="padding:10px 14px;background:var(--gray-bg);border-radius:8px"><strong>Restructure rule:</strong> One geo &gt;70% spend &rarr; split per-geo. <em>(Bangladesh 39% of FB installs)</em></div>
+              <div style="padding:10px 14px;background:var(--gray-bg);border-radius:8px"><strong>Escalation rule:</strong> App crash-free &lt;99.5% &rarr; escalate to Product. <em>(Android 88.7%, iOS 83.5%)</em></div>
+              <div style="padding:10px 14px;background:var(--gray-bg);border-radius:8px"><strong>Phase gate:</strong> No channel-geo has LTV:CAC &gt;2:1 at N&ge;200 FTDs &rarr; remain Phase 1, do not scale. <em>(All channels negative)</em></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: Pillar Backlog -->
+        <div class="cl-subpanel" id="clSub-backlog">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div>
+              <div style="font-size:.9rem;font-weight:700;color:var(--header)">Pillar Backlog &mdash; Phase 1: Signal Hunt</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Organized by the 12 pillar framework. Priority from the Phase-Pillar Matrix.</div>
+            </div>
+            <span class="checklist-progress-text" id="clBacklogProgressText">0 / 35</span>
+          </div>
+          <div id="clBacklogContainer"></div>
+        </div>
+
+        <!-- SUB-PANEL: Phase Gates -->
+        <div class="cl-subpanel" id="clSub-gates">
+          <div style="font-size:.9rem;font-weight:700;color:var(--header);margin-bottom:4px">Phase Gate Readiness</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:16px">Explicit gates from decision-rules.md. All must be DONE before advancing phase.</div>
+          <div id="clGatesContainer"></div>
+        </div>
+
+        <!-- SUB-PANEL: Anti-Pattern Audit -->
+        <div class="cl-subpanel" id="clSub-antipatterns">
+          <div style="font-size:.9rem;font-weight:700;color:var(--header);margin-bottom:4px">Anti-Pattern Audit</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:16px">7 hard stops from the Head of App Marketing skill. FAIL = currently being violated.</div>
+          <div id="clAntiPatternsContainer"></div>
+        </div>
+
+      </div><!-- /rcaChecklistView -->
+
     </div>
 
     <!-- ===== PART 2: DETAILED ANALYSIS ===== -->
@@ -806,6 +1144,32 @@
           <span class="kpi-badge badge-flat">&#9888; Action needed</span>
         </div>
       </div>
+      <div style="margin-top:14px;padding:16px 20px;background:rgba(239,68,68,.03);border:1px dashed var(--border);border-radius:var(--radius)">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:10px">Required Data &mdash; Currently Absent</div>
+        <div class="kpi-row" style="margin-bottom:12px">
+          <div class="kpi" style="border:1px dashed var(--border);background:var(--card)">
+            <div class="kpi-label"><span class="dot" style="background:var(--red)"></span>ANR Rate (Android)</div>
+            <div class="kpi-val" style="color:var(--muted)">&mdash;</div>
+            <div class="kpi-secondary">Application Not Responding &mdash; hangs are as fatal as crashes during a trade. Pull from Crashlytics &gt; ANR tab.</div>
+          </div>
+          <div class="kpi" style="border:1px dashed var(--border);background:var(--card)">
+            <div class="kpi-label"><span class="dot" style="background:var(--red)"></span>Top 3 Crash Signatures</div>
+            <div class="kpi-val" style="color:var(--muted)">&mdash;</div>
+            <div class="kpi-secondary">Crash stack traces ranked by user impact. Needed to identify if crashes are in deposit/trade/payment flows.</div>
+          </div>
+          <div class="kpi" style="border:1px dashed var(--border);background:var(--card)">
+            <div class="kpi-label"><span class="dot" style="background:var(--amber)"></span>Crash Distribution by Screen</div>
+            <div class="kpi-val" style="color:var(--muted)">&mdash;</div>
+            <div class="kpi-secondary">Signup vs Wallet vs Deposit vs Trade. Confirms where in the funnel the app fails. Pull from Crashlytics breadcrumbs.</div>
+          </div>
+          <div class="kpi" style="border:1px dashed var(--border);background:var(--card)">
+            <div class="kpi-label"><span class="dot" style="background:var(--amber)"></span>API P95 Latency &amp; Error Rate</div>
+            <div class="kpi-val" style="color:var(--muted)">&mdash;</div>
+            <div class="kpi-secondary">Critical endpoints: /deposit, /kyc/verify, /trade/execute, /balance. Jun 20&ndash;29. Pull from Datadog or backend monitoring.</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:.78rem;color:var(--muted);line-height:1.5">These four data points are required to confirm whether the Wallet&rarr;FTD collapse is caused by app crashes, API degradation, or something else entirely. Without them the root cause hypothesis remains unconfirmed.</p>
+      </div>
     </div>
 
     <!-- Funnel Comparison Chart -->
@@ -849,31 +1213,100 @@
       </div>
       <div style="display:grid;gap:12px">
         <div class="kpi" style="border-left:4px solid var(--red)">
-          <div style="font-size:.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em">Priority 1 &mdash; Immediate</div>
-          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Investigate organic FTT collapse &mdash; deposit/trade stage is where funnel breaks</div>
-          <div class="kpi-secondary">Signups up +19%, but Wallet&rarr;FTD down 41% and FTD&rarr;FTT down 26%. Something broke at the deposit/trade stage. Jun 28&ndash;29 FTTs crashed to 28 and 24/day. Check Crashlytics for v1.9.0/v1.10.2 on deposit and trade screens. Check if a deployment or config change happened Jun 27&ndash;28.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div style="font-size:.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em">Priority 1 &mdash; Immediate</div><div style="display:flex;gap:6px"><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--red-bg);color:var(--red)">24h</span><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--gray-bg);color:var(--muted)">Mobile Eng + Backend</span></div></div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Recover ~$136K/month in at-risk organic revenue</div>
+          <div class="kpi-secondary">63 lost FTTs/day &times; $72/FTT &times; 30 days. Signups up +19%, but Wallet&rarr;FTD down 41% and FTD&rarr;FTT down 26%. Focus on deposit/trade stage. Check Crashlytics for v1.9.0/v1.10.2 on deposit and trade screens. Pull KYC approval rates and payment success rates for Jun 20&ndash;29. Check if a deploy or config change happened Jun 27&ndash;28.</div>
         </div>
         <div class="kpi" style="border-left:4px solid var(--red)">
-          <div style="font-size:.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em">Priority 2 &mdash; Critical</div>
-          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Google: pause zero-FTT campaigns, cut daily budget from $23K to $5K</div>
-          <div class="kpi-secondary">Pause multi_asset ($41K, 0 FTTs) and chart-patterns ($25K, 4 FTTs). Reduce to learning-phase budget. Keep geo-specific campaigns in Kenya, Nigeria, Pakistan. Preserve FTDs retargeting (178x ROAS).</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div style="font-size:.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em">Priority 2 &mdash; Critical</div><div style="display:flex;gap:6px"><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--red-bg);color:var(--red)">24h</span><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--gray-bg);color:var(--muted)">Paid UA Team</span></div></div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Stop the bleed of ~$22K/day at 0.04x ROAS &mdash; pause zero-FTT Google campaigns</div>
+          <div class="kpi-secondary">Pause multi_asset ($41K, 0 FTTs) and chart-patterns ($25K, 4 FTTs). Cut budget from $23K to $5K/day. Keep geo-specific campaigns in Kenya, Nigeria, Pakistan. Preserve FTDs retargeting (178x ROAS).</div>
         </div>
         <div class="kpi" style="border-left:4px solid var(--amber)">
-          <div style="font-size:.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.04em">Priority 3 &mdash; High</div>
-          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Facebook: switch optimization from installs to FTD, exclude Bangladesh</div>
-          <div class="kpi-secondary">Current <code>app_installs</code> optimization finds cheapest clicks, not traders. Change event to FTD, exclude Bangladesh (10K installs, 0 FTTs), and give 2 weeks to learn before judging the channel.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div style="font-size:.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.04em">Priority 3 &mdash; High</div><div style="display:flex;gap:6px"><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-bg);color:var(--amber)">48h</span><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--gray-bg);color:var(--muted)">Paid UA Team</span></div></div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Stop polluting DAU with users who will never deposit &mdash; switch FB to FTD optimization</div>
+          <div class="kpi-secondary">Current <code>app_installs</code> optimization finds cheapest clicks, not traders. Change event to FTD, exclude Bangladesh (10K installs, 0 FTTs), and give 2 weeks to learn. If &lt;0.5% FTT after switch, pause channel.</div>
         </div>
         <div class="kpi" style="border-left:4px solid var(--amber)">
-          <div style="font-size:.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.04em">Priority 4 &mdash; High</div>
-          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Audit brand keyword cost &mdash; $103K may be overpaying for defense</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div style="font-size:.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.04em">Priority 4 &mdash; High</div><div style="display:flex;gap:6px"><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-bg);color:var(--amber)">7d</span><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--gray-bg);color:var(--muted)">Paid UA + Finance</span></div></div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Quantify defensive revenue protected by $103K brand keyword spend</div>
           <div class="kpi-secondary">Brand defense is valid (competitors bid on &ldquo;Deriv&rdquo;), but cost may be inflated. Test 30% bid reduction and monitor organic recapture. Pause login keywords ($42K) immediately &mdash; existing users searching &ldquo;Deriv login.&rdquo;</div>
         </div>
         <div class="kpi" style="border-left:4px solid var(--blue)">
-          <div style="font-size:.72rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.04em">Priority 5 &mdash; Investigate</div>
-          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">Explain QR code surge on Jun 24 (4&times; installs)</div>
-          <div class="kpi-secondary">QR installs jumped from ~950/day to 4,099/day on the same day Facebook launched. If real, QR is a $183/FTT channel. If misattribution, QR and Facebook numbers are both wrong. Cross-reference with website analytics.</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div style="font-size:.72rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.04em">Priority 5 &mdash; Investigate</div><div style="display:flex;gap:6px"><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(37,99,235,.08);color:var(--blue)">7d</span><span style="font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--gray-bg);color:var(--muted)">Growth + Analytics</span></div></div>
+          <div style="font-weight:800;margin:8px 0 4px;font-size:.95rem">$183/FTT &mdash; highest-value channel. Verify QR surge before scaling</div>
+          <div class="kpi-secondary">QR installs jumped from ~950/day to 4,099/day on the same day Facebook launched. If real, QR is a zero-cost scaling opportunity. If misattribution, QR and Facebook numbers are both wrong. Cross-reference with website analytics.</div>
         </div>
       </div>
+    </div>
+
+    <!-- 14-Day Watch Metrics -->
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">14-Day Watch Metrics</h2>
+        <span class="section-sub">Daily KPIs to track whether actions are working &middot; Starting Jul 1</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">
+          <thead><tr style="border-bottom:2px solid var(--border);text-align:left">
+            <th style="padding:10px 14px;font-weight:700">#</th>
+            <th style="padding:10px 14px;font-weight:700">Metric</th>
+            <th style="padding:10px 14px;font-weight:700;text-align:right">Current</th>
+            <th style="padding:10px 14px;font-weight:700;text-align:right">7-Day Target</th>
+            <th style="padding:10px 14px;font-weight:700;text-align:right">14-Day Target</th>
+            <th style="padding:10px 14px;font-weight:700">Owner</th>
+            <th style="padding:10px 14px;font-weight:700">Source</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:8px 14px;font-weight:700;color:var(--red)">1</td>
+              <td style="padding:8px 14px;font-weight:600">Organic FTT rate</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--red);font-weight:700">1.43%</td>
+              <td style="padding:8px 14px;text-align:right">&ge;2.5%</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--green)">&ge;3.0%</td>
+              <td style="padding:8px 14px">Mobile Eng + Backend</td>
+              <td style="padding:8px 14px;color:var(--muted)">AppsFlyer daily</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:8px 14px;font-weight:700;color:var(--red)">2</td>
+              <td style="padding:8px 14px;font-weight:600">Wallet &rarr; FTD %</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--red);font-weight:700">13.4%</td>
+              <td style="padding:8px 14px;text-align:right">&ge;18%</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--green)">&ge;20%</td>
+              <td style="padding:8px 14px">Mobile Eng + Payments</td>
+              <td style="padding:8px 14px;color:var(--muted)">AppsFlyer funnel</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:8px 14px;font-weight:700;color:var(--red)">3</td>
+              <td style="padding:8px 14px;font-weight:600">Crash-free rate (Android / iOS)</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--red);font-weight:700">88.7% / 83.5%</td>
+              <td style="padding:8px 14px;text-align:right">&ge;95%</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--green)">&ge;99.0%</td>
+              <td style="padding:8px 14px">Mobile Eng</td>
+              <td style="padding:8px 14px;color:var(--muted)">Firebase Crashlytics</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:8px 14px;font-weight:700;color:var(--amber)">4</td>
+              <td style="padding:8px 14px;font-weight:600">Facebook FTT rate (post-FTD switch)</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--red);font-weight:700">0.07%</td>
+              <td style="padding:8px 14px;text-align:right">&ge;0.3%</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--green)">&ge;0.5%</td>
+              <td style="padding:8px 14px">Paid UA Team</td>
+              <td style="padding:8px 14px;color:var(--muted)">AppsFlyer + FB Ads</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 14px;font-weight:700;color:var(--amber)">5</td>
+              <td style="padding:8px 14px;font-weight:600">KYC approval rate + payment success rate</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--muted)">TBD (baseline)</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--muted)">TBD</td>
+              <td style="padding:8px 14px;text-align:right;color:var(--muted)">TBD</td>
+              <td style="padding:8px 14px">Compliance + Payments</td>
+              <td style="padding:8px 14px;color:var(--muted)">KYC vendor + payment gateway</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:12px 0 0;font-size:.78rem;color:var(--muted);line-height:1.5">If organic FTT rate has not recovered to &ge;2.5% within 7 days of the funnel fix, escalate to exec &mdash; the root cause may not be app stability alone.</p>
     </div>
 
   </div>
@@ -1999,13 +2432,6 @@ function setFunnelView(mode) {
   renderFunnel(expandedSrc);
 }
 
-function setRcaView(mode) {
-  document.querySelectorAll('.rca-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(mode === 'ceo' ? 'rcaBtnCeo' : 'rcaBtnTeam').classList.add('active');
-  document.getElementById('rcaCeoView').style.display = mode === 'ceo' ? '' : 'none';
-  document.getElementById('rcaTeamView').style.display = mode === 'team' ? '' : 'none';
-}
-
 function renderFunnel(srcKey) {
   const isFiltered = srcKey && SOURCE_DATA[srcKey];
   const isCampaign = funnelViewMode === 'campaign' && !isFiltered;
@@ -2395,6 +2821,26 @@ function switchView(view) {
   }
 }
 
+function setRcaView(view) {
+  document.getElementById('rcaCeoView').style.display = view === 'ceo' ? '' : 'none';
+  document.getElementById('rcaGrowthView').style.display = view === 'growth' ? '' : 'none';
+  document.getElementById('rcaTeamView').style.display = view === 'team' ? '' : 'none';
+  document.getElementById('rcaChecklistView').style.display = view === 'checklist' ? '' : 'none';
+  document.querySelectorAll('#rcaViewToggle .rca-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = '';
+    b.style.color = '';
+    b.style.boxShadow = '';
+  });
+  const btnMap = { ceo:'rcaBtnCeo', growth:'rcaBtnGrowth', team:'rcaBtnTeam', checklist:'rcaBtnChecklist' };
+  const btn = document.getElementById(btnMap[view]);
+  btn.classList.add('active');
+  btn.style.background = 'var(--card)';
+  btn.style.color = 'var(--header)';
+  btn.style.boxShadow = '0 1px 3px rgba(0,0,0,.08)';
+  if (view === 'checklist') renderChecklist();
+}
+
 
 /* ===================================================================
  *  ROOT CAUSE ANALYSIS
@@ -2448,6 +2894,334 @@ const RCA_CAMPAIGNS = [
   { name:'Deriv-App-Promo-June-Android', source:'Google', installs:506, ftt:0.40, quality:0.031 },
   { name:'deriv-home-mobile-app-qr-install', source:'QR Code', installs:48418, ftt:0.46, quality:0.018 },
 ];
+
+/* ===================================================================
+ *  DAILY CHECKLIST
+ * =================================================================== */
+
+const CL_ITEMS = {
+  critical: [
+    { id:'cl-diagnose-funnel', pillar:'P9', title:'Diagnose Jun 27\u201328 deposit/trade funnel break', detail:'Pull Crashlytics by screen (deposit, trade, wallet), KYC approval rates, payment gateway success rates for Jun 20\u201329. Identify the discrete event that caused Wallet\u2192FTD to drop from 14.4% to 10.3% overnight.', owner:'Mobile Eng + Payments', priority:'critical', source:'Pillar 9: Product Loop', kpi:'Organic FTT rate \u2265 2.5% within 7 days of fix' },
+    { id:'cl-cut-google', pillar:'P1', title:'Cut Google Ads daily budget from $23K to $5K/day', detail:'Scale-up from Jun 17 produced 5\u00d7 fewer FTTs per dollar. True prospecting: $171K spent, 45 FTTs, $3,799/FTT, 0.01x ROAS. Saves ~$18K/day. Keep geo-specific campaigns at $5K for signal collection.', owner:'UA Manager', priority:'critical', source:'Decision rule: CPFTD >2.5\u00d7 target for 7+ days \u2192 kill or restructure', kpi:'Do not re-scale until FTT rate \u2265 1% for 7 consecutive days' },
+    { id:'cl-pause-multiasset', pillar:'P1', title:'Pause Google multi_asset campaign', detail:'$41K spent, 0 FTTs, $0 revenue. Meets kill rule: $500+ spent with 0 FTDs. Immediate action required.', owner:'UA Manager', priority:'critical', source:'Decision rule: $500+ spent, 0 FTDs \u2192 kill immediately', kpi:'Reallocate budget to campaigns with FTT rate > 1%' },
+    { id:'cl-pause-chartpatterns', pillar:'P1', title:'Pause Google chart-patterns campaign', detail:'$25K spent, 4 FTTs, $76 revenue. $6,250/FTT. Meets kill rule: CPFTD >2.5\u00d7 target sustained for 7+ days.', owner:'UA Manager', priority:'critical', source:'Decision rule: CPFTD >2.5\u00d7 target for 7 days \u2192 kill', kpi:'$0 daily burn on this campaign' },
+    { id:'cl-pause-login', pillar:'P1', title:'Pause Google login keywords campaign', detail:'$42K spent capturing existing users searching their own app login page. These are not new users \u2014 pure waste. 14 FTTs attributed are all existing users re-attributed.', owner:'UA Manager', priority:'critical', source:'Attribution cannibalization: login keywords = existing users, not UA', kpi:'Reallocate $42K/month to prospecting or save' },
+    { id:'cl-crash-escalate', pillar:'P9', title:'Escalate crash-free rate to Product leadership', detail:'Android 88.7%, iOS 83.5% crash-free (industry standard: 99.5%+). ~5,700 users crash daily. Flagged versions v1.9.0 and v1.10.2 correspond to deposit/trade screens. Meets escalation rule: crash-free < threshold \u2192 escalate to Product.', owner:'Head of Product', priority:'critical', source:'Decision rule: App crash-free <99.5% \u2192 escalate to Product', kpi:'Hotfix or rollback within 48h. Target: \u226599.0% in 7 days' }
+  ],
+  week: [
+    { id:'cl-fb-optimization', pillar:'P1', title:'Change Facebook optimization event from app_installs to first_time_deposit', detail:'Campaign is running Anti-pattern #6: install optimization in trading produces 5\u201310\u00d7 worse FTT rates. Current FTT rate: 0.07%. Allow 14 days learning window after switch.', owner:'UA Manager', priority:'high', source:'Decision rule: campaign optimizing for installs \u2192 change to FTD', kpi:'FTT rate \u2265 0.5% after 14-day learning. If not met, pause channel.' },
+    { id:'cl-fb-bangladesh', pillar:'P7', title:'Exclude Bangladesh from Facebook campaigns', detail:'10,114 installs, 0 FTTs, $0 revenue. Algorithm cherry-picked cheapest geo. Bangladesh has no trading intent at current targeting. Meets kill rule for geo-level performance.', owner:'UA Manager', priority:'high', source:'Decision rule: FTD rate <0.3% after 500+ installs \u2192 kill', kpi:'Zero spend on Bangladesh until product/payment readiness confirmed' },
+    { id:'cl-fb-kill-an', pillar:'P1', title:'Kill Facebook Audience Network placement', detail:'3,814 installs, 0 FTTs, 0% FTD rate. Meets kill rule: FTD rate <0.3% after 500+ installs. Audience Network in trading apps typically produces low-intent users.', owner:'UA Manager', priority:'high', source:'Decision rule: FTD rate <0.3% after 500+ installs \u2192 kill', kpi:'Zero spend on Audience Network placement' },
+    { id:'cl-brand-bid', pillar:'P1', title:'Test \u221230% bid reduction on Google brand keywords (non-login)', detail:'Brand defense costs $103K/month. Competitors bid on "Deriv" but cost may be inflated. Test bid reduction and monitor organic recapture over 7 days. Do not pause \u2014 competitors will capture traffic.', owner:'UA Manager', priority:'high', source:'Brand keywords are defense, not prospecting. Audit cost vs organic click-through.', kpi:'If organic recapture \u2265 70% of lost clicks, maintain lower bid. If <50%, revert.' },
+    { id:'cl-qr-verify', pillar:'P5', title:'Verify QR code surge is real traffic (not misattribution)', detail:'QR installs surged 4\u00d7 on Jun 24 (950/day \u2192 4,099/day) \u2014 same day Facebook launched. If real, QR is highest-value channel ($183/FTT, $0 cost). If misattribution, both QR and Facebook numbers are wrong.', owner:'Analytics', priority:'high', source:'Cross-reference website analytics + AppsFlyer attribution logs', kpi:'Confirm or reject QR as a zero-cost scaling opportunity' },
+    { id:'cl-asa-verify', pillar:'P5', title:'Pull Apple Search Ads own reporting to verify iOS ATT gap', detail:'AppsFlyer shows $4.7K spent, 0 FTTs. Expected under iOS 14.5+ ATT \u2014 AppsFlyer cannot see iOS conversions. Apple\u2019s own Search Ads dashboard likely shows real numbers. Don\u2019t kill the channel without this data.', owner:'UA Manager', priority:'high', source:'iOS ATT attribution gap: do not conclude channel is ineffective without Apple reporting', kpi:'Determine true CPFTD from Apple\u2019s reporting. Kill if > 3\u00d7 target after verification.' },
+    { id:'cl-compliance-workflow', pillar:'P8', title:'Confirm compliance pre-approval workflow exists for creative launches', detail:'Phase 0\u21921 gate requires a documented compliance pre-approval workflow. In regulated trading, one non-compliant ad can trigger regulatory investigation costing more than the entire marketing budget. Anti-pattern #4: creative volume without compliance.', owner:'Compliance + Creative', priority:'high', source:'Phase gate: compliance pre-approval workflow documented and enforced', kpi:'Workflow documented, 1+ creative processed through it' }
+  ],
+  data: [
+    { id:'cl-data-crashlytics', pillar:'P9', title:'Export Crashlytics crash signatures by screen for Jun 20\u201329', detail:'Confirms whether the funnel break is an app crash at deposit/trade screens (hypothesis #1) or something else. Filter: deposit, trade, wallet screens. Group by version (v1.9.0, v1.10.2).', owner:'Mobile Eng', priority:'medium', source:'Firebase Crashlytics \u2192 filter by screen \u2192 Jun 20\u201329 \u2192 group by version', kpi:'Raises app crash hypothesis from MEDIUM to HIGH confidence' },
+    { id:'cl-data-kyc', pillar:'P8', title:'Pull KYC approval rates & time-to-decision by geo for Jun 20\u201329', detail:'If KYC vendor changed rules on Jun 27, that explains Wallet\u2192FTD collapse without any app crash. Columns needed: date, geo, submissions, approvals, rejections, avg processing time.', owner:'Compliance', priority:'medium', source:'KYC vendor dashboard or backend API', kpi:'Confirms or eliminates hypothesis #2 (KYC vendor change)' },
+    { id:'cl-data-payments', pillar:'P9', title:'Pull payment gateway success rates by provider and geo for Jun 20\u201329', detail:'M-Pesa (Kenya), JazzCash (Pakistan), card processors, USDT on-ramps. If payments failed, users passed KYC but couldn\u2019t deposit. Columns: date, geo, provider, attempts, successes, error codes.', owner:'Payments Team', priority:'medium', source:'Payment provider dashboard or backend logs', kpi:'Confirms or eliminates hypothesis #3 (payment degradation)' },
+    { id:'cl-data-release', pillar:'P12', title:'Get app release history + backend deploy log for Jun 25\u201329', detail:'FTTs dropped 36% overnight Jun 27\u201328. This pattern indicates a deploy, config change, or vendor update. Need: Play Console rollout %, App Store Connect activity, backend CI/CD, feature flag changelog.', owner:'Eng / DevOps', priority:'medium', source:'Play Console + App Store Connect + CI/CD pipeline', kpi:'Identifies the discrete event that caused the break' },
+    { id:'cl-data-cohort-revenue', pillar:'P5', title:'Export 90-day cohorted revenue by media source and geo', detail:'Current organic $72/FTT vs paid $30/FTT comparison is invalid (different cohort windows). Cohorted data answers: does paid produce traders with sustainable LTV? Columns: acquisition_date, media_source, geo, revenue_day_1 through revenue_day_90.', owner:'Data / BI', priority:'medium', source:'Trading platform backend', kpi:'Enables LTV:CAC calculation \u2014 gate for Phase 2' },
+    { id:'cl-data-google-audiences', pillar:'P1', title:'Export Google Ads audience segment report per campaign', detail:'Campaign types are known but audience signals are not. Poor audience targeting could explain the scale-up collapse independently of app issues.', owner:'UA Manager', priority:'medium', source:'Google Ads \u2192 Audiences tab per campaign', kpi:'Determines if targeting is a separate issue from app funnel' },
+    { id:'cl-data-fb-spend', pillar:'P5', title:'Export Facebook Ads Manager full campaign-level data', detail:'We have revenue ($693) but not total cost. Also missing: ad set structure, placement breakdown, optimization event configuration details. Columns: Date, Campaign, Ad Set, Amount Spent, Impressions, Clicks, Installs, Optimization Event.', owner:'UA Manager', priority:'medium', source:'Facebook Ads Manager \u2192 Export', kpi:'Enables true Facebook ROAS calculation and campaign restructure' },
+    { id:'cl-data-revenue-parser', pillar:'P12', title:'Update parse_sources.py to extract Revenue activity days appsflyer column', detail:'The parser currently does not extract the revenue column from AppsFlyer CSVs. This blocks automated ROAS calculation in the daily brief. Without it, revenue analysis requires manual cross-referencing.', owner:'Analytics / Eng', priority:'medium', source:'Pillar 12: Tech Stack \u2014 parser gap blocks Pillar 5: Measurement', kpi:'Parser outputs revenue per source/campaign; enables automated ROAS in daily briefs' }
+  ],
+  monitor: [
+    { id:'cl-mon-ftt', pillar:'P5', title:'Track organic FTT rate daily', detail:'Baseline: 3.45% (May 30\u2013Jun 7). Current: 1.43% (Jun 24\u201329). Target after funnel fix: \u2265 2.5%. Source: AppsFlyer daily organic export.', owner:'Analytics', priority:'high', source:'AppsFlyer organic daily', kpi:'Target: \u2265 2.5% within 7 days of funnel fix' },
+    { id:'cl-mon-wallet-ftd', pillar:'P5', title:'Track Wallet \u2192 FTD conversion daily', detail:'Baseline: 22.6%. Current: 9.5% (Jun 29). This is the primary funnel break. Recovery to \u2265 20% unlocks ~$136K/month in organic revenue and makes paid channels evaluable.', owner:'Analytics', priority:'high', source:'AppsFlyer organic funnel', kpi:'Target: \u2265 20% (recovery to near-baseline)' },
+    { id:'cl-mon-crash', pillar:'P9', title:'Track crash-free rate daily (both platforms)', detail:'Current: Android 88.7%, iOS 83.5%. Industry standard: 99.5%+. ~5,700 users hit a crash daily. Track v1.9.0 and v1.10.2 specifically.', owner:'Mobile Eng', priority:'high', source:'Firebase Crashlytics', kpi:'Target: \u2265 99.0% within 7 days, \u2265 99.5% within 14 days' },
+    { id:'cl-mon-campaign-ftt', pillar:'P1', title:'Track campaign-level FTT rates before any re-scaling', detail:'Do NOT increase Google or Facebook budget until a campaign shows FTT rate \u2265 1% for 7 consecutive days. This is the Phase 1 gate: signal before spend.', owner:'UA Manager', priority:'high', source:'AppsFlyer campaign daily', kpi:'Gate: FTT rate \u2265 1% for 7 consecutive days before any budget increase' },
+    { id:'cl-mon-concentration', pillar:'P11', title:'Weekly concentration risk check', detail:'Thresholds: any single channel >60% of total FTDs, any single geo >50% of FTDs, any single creative concept >40% of ad spend. Currently organic is ~90% of FTTs \u2014 healthy dependency but masks paid weakness.', owner:'Analytics', priority:'high', source:'Pillar 11: Operating Model \u2014 concentration risk thresholds', kpi:'No single channel >60%, no single geo >50%, no single creative >40%' }
+  ]
+};
+
+const CL_BACKLOG = {
+  P2: { name:'ASO', phasePriority:'HIGH', color:'#16a34a', items:[
+    { id:'bl-aso-nigeria', title:'Monitor Nigeria custom listing lift', detail:'Custom listing applied Jun 29. Nigeria is #1 by FTTs (800) and highest organic FTT rate (3.1%) but only #139 Android, #73 iOS. Expect 2\u20134 weeks for measurable rank change.', owner:'ASO Manager', kpi:'Android #139 \u2192 top 100 in 30 days' },
+    { id:'bl-aso-kenya-ab', title:'Verify Kenya A/B test outcome (Eng vs Swahili)', detail:'A/B test started Jun 16. Signal window has elapsed. Pull results from Play Console experiments. This determines localization strategy for all Swahili-speaking markets.', owner:'ASO Manager', kpi:'Statistical winner identified; apply to listing' },
+    { id:'bl-aso-nigeria-screenshots', title:'Design screenshot A/B test for Nigeria', detail:'Nigeria is the #1 organic FTT market at 3.1% rate. Screenshots are the primary store CVR lever. Test trading-focused vs education-focused visual concepts.', owner:'Creative + ASO', kpi:'A/B test launched within 14 days; 2-week run for significance' },
+    { id:'bl-aso-competitors', title:'Set up weekly competitor rank tracking', detail:'Track IQ Option, OctaFX, Exness, Quotex across Kenya, Nigeria, SA, Zimbabwe. Identifies competitive movement and share-of-shelf trends.', owner:'ASO Manager', kpi:'Weekly tracker live; alerts on \u226510-position competitor jumps' },
+    { id:'bl-aso-cvr-baseline', title:'Establish store CVR baseline', detail:'No store CVR benchmark exists. Pull impression-to-install rate from Play Console and App Store Connect for top 5 geos. Category average for Finance: 2\u20135%.', owner:'ASO Manager', kpi:'Baseline documented; below average = prioritize listing A/B tests' }
+  ]},
+  P3: { name:'Lifecycle', phasePriority:'MEDIUM', color:'#2563eb', items:[
+    { id:'bl-lifecycle-welcome', title:'Confirm welcome onboarding sequence is live', detail:'Phase 0\u21921 gate requires at least 1 lifecycle welcome sequence live with baseline metrics. If not live, this blocks phase progression.', owner:'CRM / Lifecycle', kpi:'Sequence live with open rate, click rate, signup-to-wallet CVR measured' },
+    { id:'bl-lifecycle-deposit-nudge', title:'Build deposit-nudge sequence for Wallet\u2192FTD drop-off', detail:'~5,700 users/day complete wallet creation but fail to deposit. A 3-touch sequence (push + email + in-app) at 24h/72h/7d post-wallet could recover 5\u201315% of this drop-off.', owner:'CRM / Lifecycle', kpi:'Deposit-nudge CVR target: 5\u201315% of recipients make FTD' },
+    { id:'bl-lifecycle-push-optin', title:'Audit push notification opt-in rate', detail:'Push is the primary CRM channel for trading apps. Benchmark: iOS >40%, Android >50%. Low opt-in limits all downstream lifecycle programs.', owner:'CRM / Lifecycle', kpi:'iOS >40%, Android >50% opt-in' },
+    { id:'bl-lifecycle-reactivation', title:'Design dormant user reactivation sequence', detail:'FTDs retargeting proves 178x ROAS on dormant traders. A lifecycle sequence targeting 30\u201360 day dormant users with market alerts, new feature highlights, and deposit incentives extends this model at near-zero cost.', owner:'CRM / Lifecycle', kpi:'Reactivation rate target: 5\u201312% of dormant 30-60d cohort' }
+  ]},
+  P4: { name:'Creative', phasePriority:'HIGH', color:'#dc2626', items:[
+    { id:'bl-creative-compliance', title:'Establish compliance pre-approval workflow for creatives', detail:'Anti-pattern #4: never ramp creative volume without compliance pre-approval. In regulated trading, one non-compliant ad triggers regulatory investigation. Build a 24\u201348h review cycle.', owner:'Compliance + Creative', kpi:'Workflow documented; first 5 creatives processed through it' },
+    { id:'bl-creative-refresh', title:'Audit creative refresh cadence', detail:'Target: 3+ net-new creative variants per week per channel. Stale creatives drive CTR decline >30% and frequency spikes >4x/week. Check current variant count and age.', owner:'Creative Studio', kpi:'3+ new variants/week shipped; CTR stable or improving' },
+    { id:'bl-creative-frequency', title:'Monitor Meta ad frequency', detail:'Frequency >4x/week = audience fatigue threshold per decision-rules.md. CTR declining >30% from peak with frequency >4x triggers creative refresh. Check current frequency.', owner:'UA Manager', kpi:'Frequency <4x/week; if exceeded, pause and refresh creative' },
+    { id:'bl-creative-concepts', title:'Develop 3+ new creative concepts post-FTD optimization switch', detail:'After Facebook switches to FTD optimization, the algorithm needs fresh creative to test against the new audience signal. Concepts: education-first, social proof, market opportunity, earnings potential (compliance-approved).', owner:'Creative Studio', kpi:'3 concepts in production within 7 days of optimization switch' }
+  ]},
+  P5: { name:'Measurement', phasePriority:'HIGH', color:'#2563eb', items:[
+    { id:'bl-meas-postbacks', title:'Validate MMP postbacks end-to-end for all 5 funnel events', detail:'Phase 0\u21921 gate: MMP integrated, postbacks validated for signup, wallet_created, first_time_deposit, first_time_trade, and DAU/revenue events. Verify each fires correctly in AppsFlyer.', owner:'Analytics / Eng', kpi:'All 5 events confirmed firing with <15% discrepancy vs platform' },
+    { id:'bl-meas-skan', title:'Deploy SKAN/AdAttributionKit conversion value schema', detail:'Apple Search Ads shows 0 FTTs in AppsFlyer. Without SKAN, all iOS attribution is dark. Deploy a conversion value mapping for FTD and FTT events.', owner:'Mobile Eng', kpi:'SKAN schema live; iOS conversions visible within 14 days' },
+    { id:'bl-meas-discrepancy', title:'Investigate MMP vs Google Ads discrepancy', detail:'Decision rule: MMP and platform within 15% = trust MMP. If >30% divergence, check postback configs, SDK version, event mapping. Current discrepancy unknown.', owner:'Analytics', kpi:'Discrepancy <15% or root cause identified and fixed' },
+    { id:'bl-meas-organic-caveat', title:'Document organic conflation caveat in all briefs', detail:'Anti-pattern #7: "Organic" in AppsFlyer = unattributed. Includes view-through spillover, expired attribution windows, brand-influenced search. Must state caveat in every organic vs paid comparison.', owner:'Analytics', kpi:'Caveat present in every daily brief; organic never presented as pure' }
+  ]},
+  P6: { name:'Affiliates', phasePriority:'MEDIUM', color:'#64748b', items:[
+    { id:'bl-aff-status', title:'Assess current affiliate program status', detail:'Pillar 6 is MEDIUM priority in Phase 1. If no affiliate program exists, park until Phase 2. If active, audit immediately for quality.', owner:'Growth Lead', kpi:'Status documented: active/inactive. If active, proceed to audit.' },
+    { id:'bl-aff-payout', title:'Audit affiliate payout model (CPA vs CPI)', detail:'Decision rule: if affiliate requests CPI-only, negotiate CPA (FTD-based) or hybrid. CPI misaligns incentives \u2014 affiliate profits from installs regardless of quality.', owner:'Affiliate Manager', kpi:'All affiliates on CPA or hybrid model; no pure CPI' },
+    { id:'bl-aff-incentivized', title:'Screen for incentivized/reward-app traffic', detail:'Decision rule: incentivized traffic = reject or require strict post-install quality gates. FTD rates typically <0.1% from reward apps.', owner:'Affiliate Manager', kpi:'Zero incentivized affiliates; all traffic passes FTD rate >0.2% gate' }
+  ]},
+  P7: { name:'Geo Strategy', phasePriority:'HIGH', color:'#d97706', items:[
+    { id:'bl-geo-tiers', title:'Formalize geo tier framework', detail:'Tier 2: KE, NG, ZA, ZW (proven organic demand, M-Pesa/local payments). Tier 3: BD, PK, IN, VN (high volume, low conversion, needs payment method validation). Pricing, targeting, and KPIs differ by tier.', owner:'Growth Lead', kpi:'Tier doc published; CPI/CPFTD benchmarks set per tier' },
+    { id:'bl-geo-payments', title:'Confirm dominant payment method per Tier 2 geo', detail:'Decision rule: without the right payment method, FTD rate collapses 30\u201360%. Verify: M-Pesa (Kenya), EcoCash (Zimbabwe), bank transfer (Nigeria), card/EFT (South Africa).', owner:'Payments Team', kpi:'Top payment method integrated and live per T2 geo' },
+    { id:'bl-geo-regulatory', title:'Confirm regulatory license per active geo', detail:'Non-negotiable prerequisite for geo entry. Verify: CMA (Kenya), SEC (Nigeria), FSCA (South Africa). If unlicensed, pause paid UA immediately in that geo.', owner:'Legal / Compliance', kpi:'License confirmed for all geos with active paid spend' },
+    { id:'bl-geo-localization', title:'Localization audit: title, screenshots, keywords per geo', detail:'Decision rule: untranslated listing tanks store CVR. Verify localization for top 5 geos. Custom listings applied Jun 29 \u2014 verify they are live and correctly localized.', owner:'ASO Manager', kpi:'All T2 geos have localized title + screenshots + keywords' }
+  ]},
+  P8: { name:'Compliance', phasePriority:'HIGH', color:'#dc2626', items:[
+    { id:'bl-comp-creative-audit', title:'Audit active creatives for prohibited language', detail:'Decision rule: block immediately any creative referencing specific returns, guarantees, or risk-free language. Regulatory violation risk in all regulated jurisdictions.', owner:'Compliance', kpi:'100% of live creatives reviewed; zero prohibited claims found or removed' },
+    { id:'bl-comp-geo-rulebook', title:'Build geo-compliance rulebook for top 5 markets', detail:'Regulatory requirements vary dramatically by jurisdiction. Document required disclaimers, prohibited claims, age restrictions, and risk warnings for KE, NG, ZA, ZW, PK.', owner:'Legal / Compliance', kpi:'Rulebook published for 5 geos; creative team trained' },
+    { id:'bl-comp-new-geo', title:'Define legal review process for new geo launches', detail:'Decision rule: new geo in a jurisdiction not previously operated \u2192 full legal review before any ad spend. Establish the review template and timeline.', owner:'Legal', kpi:'Process documented; <5 business day turnaround' },
+    { id:'bl-comp-affiliate-audit', title:'Audit affiliate creatives for compliance', detail:'Decision rule: affiliate producing non-compliant creative \u2192 suspend immediately, audit all active creatives. If affiliates exist, this is mandatory.', owner:'Compliance + Affiliates', kpi:'All affiliate creatives reviewed; non-compliant suspended' }
+  ]},
+  P10: { name:'Brand & PR', phasePriority:'LOW', color:'#64748b', deferred:'Deferred until Anti-pattern #3 clears (brand before LTV). No channel-geo has validated LTV:CAC >2:1.', items:[
+    { id:'bl-brand-sos', title:'Set up share-of-search tracking', detail:'Track branded search volume for Deriv vs IQ Option, OctaFX, Exness, Quotex. Establishes awareness baseline before any brand investment.', owner:'Analytics', kpi:'Monthly share-of-search report live' },
+    { id:'bl-brand-reviews', title:'Monthly review-sentiment analysis', detail:'Filter 1\u20132 star reviews mentioning "deposit," "payment," "crash," "KYC." Correlates product issues with store rating impact. App store rating <4.0 triggers Product escalation.', owner:'ASO + Product', kpi:'Monthly report; issues escalated within 48h' }
+  ]},
+  P11: { name:'Operating Model', phasePriority:'MEDIUM', color:'#64748b', items:[
+    { id:'bl-ops-cadence', title:'Establish weekly Phase 1 review cadence', detail:'Weekly 30-min review: funnel metrics, campaign kill/scale decisions, phase gate progress. Without cadence, decisions are ad hoc and learning rate drops.', owner:'Growth Lead', kpi:'Weekly meeting scheduled; decision log maintained' },
+    { id:'bl-ops-budget', title:'Define budget approval thresholds', detail:'Decision rule: total spend proposal exceeding board-approved budget by >20% requires approval. Current: $331K/month with no documented approval threshold.', owner:'Growth Lead + Finance', kpi:'Thresholds documented; any >20% increase requires sign-off' },
+    { id:'bl-ops-analytics-hire', title:'Assign marketing analytics resource for cohorted revenue', detail:'Decision rule: spending >$100K/month with no cohort LTV dashboard \u2192 hire/assign data analyst. Current: >$300K/month with no cohorted revenue reporting.', owner:'Growth Lead + HR', kpi:'Resource assigned; first cohort report within 30 days' }
+  ]},
+  P12: { name:'Tech Stack', phasePriority:'MEDIUM', color:'#64748b', items:[
+    { id:'bl-tech-revenue-parser', title:'Update parse_sources.py to extract revenue column', detail:'Revenue activity days appsflyer column exists in CSVs but is not parsed. This blocks automated ROAS in daily briefs and forces manual analysis.', owner:'Analytics / Eng', kpi:'Revenue extracted per source/campaign in parser output' },
+    { id:'bl-tech-mmp-config', title:'Audit MMP attribution config', detail:'Verify attribution windows, deduplication logic, and re-attribution settings. Misconfigured windows inflate or deflate channel credit.', owner:'Analytics', kpi:'Config documented; windows match business intent' },
+    { id:'bl-tech-event-mapping', title:'Verify Firebase/AppsFlyer event mapping matches funnel', detail:'Confirm that signup, wallet_created, first_time_deposit, first_time_trade events fire identically in both systems. Mismatches cause DAU vs funnel data conflicts.', owner:'Mobile Eng', kpi:'Events match across systems; <5% discrepancy' }
+  ]}
+};
+
+const PHASE_GATES = {
+  phase0to1: { label:'Phase 0 \u2192 Phase 1 Gates (upstream \u2014 confirm these are met)', color:'var(--amber)', items:[
+    { id:'pg-mmp', text:'MMP integrated, postbacks validated end-to-end for all 5 funnel events (signup, wallet_created, FTD, FTT, revenue)', status:'UNKNOWN', action:'Run postback validation test in AppsFlyer \u2192 verify each event fires correctly' },
+    { id:'pg-skan', text:'SKAN/AdAttributionKit conversion value schema deployed and tested', status:'UNKNOWN', action:'Deploy conversion value mapping for FTD and FTT; verify in Apple\u2019s SKAdNetwork dashboard' },
+    { id:'pg-test-campaigns', text:'At least 1 Google + 1 Meta test campaign running 7+ days with MMP attribution within 15% of platform', status:'UNKNOWN', action:'Compare AppsFlyer vs Google/Meta reported installs for last 7 days; if >15% gap, fix postbacks' },
+    { id:'pg-store-listing', text:'Store listing live on both stores with researched keywords and professional screenshots', status:'DONE', action:'Confirmed via Apptweak data; custom listings applied Jun 29' },
+    { id:'pg-compliance', text:'Compliance pre-approval workflow documented and enforced', status:'UNKNOWN', action:'Document the creative review process; process 1+ creative through it' },
+    { id:'pg-lifecycle', text:'At least 1 lifecycle welcome sequence live with baseline metrics', status:'UNKNOWN', action:'Check CRM platform for active welcome sequence; measure open/click/CVR' },
+    { id:'pg-dashboard', text:'Real-time dashboard showing daily funnel metrics by source', status:'DONE', action:'This dashboard satisfies the gate' }
+  ]},
+  phase1to2: { label:'Phase 1 \u2192 Phase 2 Gates (target \u2014 all must be met to scale)', color:'var(--red)', items:[
+    { id:'pg-ltv-cac', text:'At least 1 channel-geo pair with N\u2265200 FTDs, LTV:CAC >2:1 (or on track at D60 cohort), payback <120 days', status:'FAIL', action:'No channel is close. Google: 0.04x ROAS, $3,799/FTT prospecting. Facebook: 0.07% FTT rate. Fix funnel first, then re-evaluate.' },
+    { id:'pg-two-pairs', text:'At least 2 additional channel-geo pairs with FTD rate >0.5% and CPFTD <2\u00d7 the best pair', status:'FAIL', action:'No pair has validated FTD rate >0.5% after attribution correction. All pairs are negative.' },
+    { id:'pg-store-cvr', text:'Store listing CVR baseline established with at least 1 A/B test completed', status:'UNKNOWN', action:'Pull store CVR from Play Console + App Store Connect; run 1 screenshot A/B test' },
+    { id:'pg-deposit-nudge', text:'Lifecycle deposit-nudge sequence live with measured CVR', status:'UNKNOWN', action:'Build and launch deposit-nudge for Wallet\u2192FTD drop-off; measure against holdout' },
+    { id:'pg-compliance-volume', text:'Compliance workflow has processed 20+ creatives without blocking launches', status:'UNKNOWN', action:'Track creatives through the workflow; target <48h turnaround per creative' }
+  ]}
+};
+
+const ANTI_PATTERNS = [
+  { id:1, name:'Phase skipping', rule:'Never propose Phase-3 tactics before Phase-0 instrumentation is confirmed working.', status:'PASS', evidence:'All recommendations are Phase 1 appropriate. No MMM, brand sponsorships, or incrementality holdouts proposed.', remediation:null },
+  { id:2, name:'Scaling blind', rule:'Never recommend scaling spend on a channel with no measured FTD-to-LTV signal.', status:'FAIL', evidence:'Google budget scaled 5\u00d7 (from $5K to $23K/day) on Jun 17 before any channel-geo validated LTV:CAC >2:1. Resulted in $287K spent at 0.03x ROAS.', remediation:'cl-cut-google' },
+  { id:3, name:'Brand before LTV', rule:'Never allocate brand/awareness spend before at least one channel-geo has validated LTV:CAC >2:1.', status:'FAIL', evidence:'$103K spent on brand keywords while no channel-geo has positive unit economics. Brand amplifies what works; nothing works yet.', remediation:'cl-brand-bid' },
+  { id:4, name:'Creative volume without compliance', rule:'Never ramp creative production without a compliance pre-approval workflow.', status:'UNKNOWN', evidence:'Compliance workflow status is unknown. If creatives are being produced without pre-approval, this is a regulatory risk.', remediation:'cl-compliance-workflow' },
+  { id:5, name:'Blended metrics', rule:'Never present blended CPI, blended ROAS, or blended FTD rate as a health signal.', status:'PASS', evidence:'Dashboard decomposes by channel, geo, and campaign. Retargeting separated from prospecting. Revenue caveats stated.', remediation:null },
+  { id:6, name:'Install optimization', rule:'Never optimize paid campaigns for installs when FTD or FTT events are available.', status:'FAIL', evidence:'Facebook campaign name contains app_installs. Install-optimized campaigns in trading produce 5\u201310\u00d7 worse FTT rates. Current Facebook FTT rate: 0.07%.', remediation:'cl-fb-optimization' },
+  { id:7, name:'Organic conflation', rule:'Never treat MMP "organic" as pure organic.', status:'PASS', evidence:'Dashboard and briefs caveat that organic includes view-through spillover, expired attribution windows, and brand-influenced search.', remediation:null }
+];
+
+const CL_STORAGE_KEY = 'deriv-rca-checklist-v1';
+
+function getCheckedState() {
+  try { return JSON.parse(localStorage.getItem(CL_STORAGE_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+
+function saveCheckedState(state) {
+  try { localStorage.setItem(CL_STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function toggleCheckItem(id) {
+  const state = getCheckedState();
+  state[id] = !state[id];
+  saveCheckedState(state);
+  updateChecklistUI();
+}
+
+function resetChecklist() {
+  try { localStorage.removeItem(CL_STORAGE_KEY); } catch(e) {}
+  renderChecklist();
+}
+
+function setChecklistSubView(sub) {
+  document.querySelectorAll('#clSubnav .cl-subtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cl-subpanel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`#clSubnav .cl-subtab[onclick*="${sub}"]`).classList.add('active');
+  document.getElementById('clSub-' + sub).classList.add('active');
+  if (sub === 'backlog') renderBacklog();
+  if (sub === 'gates') renderPhaseGates();
+  if (sub === 'antipatterns') renderAntiPatterns();
+}
+
+function renderChecklistItem(item, state) {
+  const checked = state[item.id] ? 'checked' : '';
+  const pillarTag = item.pillar ? `<span class="cl-tag cl-tag-pillar">${item.pillar}</span>` : '';
+  return `<li class="cl-item ${checked}" id="item-${item.id}">
+    <div class="cl-checkbox ${checked}" onclick="toggleCheckItem('${item.id}')"></div>
+    <div class="cl-item-body">
+      <div class="cl-item-title">${item.title}</div>
+      <div class="cl-item-detail">${item.detail}</div>
+      <div class="cl-item-meta">
+        ${pillarTag}
+        <span class="cl-tag cl-tag-owner">${item.owner}</span>
+        <span class="cl-tag cl-tag-${item.priority}">${item.priority.toUpperCase()}</span>
+        <span class="cl-tag cl-tag-source">${item.source}</span>
+        <span class="cl-tag cl-tag-kpi">${item.kpi}</span>
+      </div>
+    </div>
+  </li>`;
+}
+
+function renderChecklist() {
+  const state = getCheckedState();
+  Object.keys(CL_ITEMS).forEach(group => {
+    const container = document.getElementById('clGroup-' + group);
+    if (!container) return;
+    container.innerHTML = CL_ITEMS[group].map(item => renderChecklistItem(item, state)).join('');
+  });
+  updateChecklistUI();
+}
+
+function renderBacklog() {
+  const container = document.getElementById('clBacklogContainer');
+  if (!container || container.children.length > 0) return;
+  const state = getCheckedState();
+  const priorityColors = { CRITICAL:'var(--red)', HIGH:'var(--amber)', MEDIUM:'var(--blue)', LOW:'var(--muted)' };
+  const priorityBgs = { CRITICAL:'var(--red-bg)', HIGH:'var(--amber-bg)', MEDIUM:'#dbeafe', LOW:'var(--gray-bg)' };
+  let html = '';
+  Object.keys(CL_BACKLOG).forEach(key => {
+    const pillar = CL_BACKLOG[key];
+    const deferredNote = pillar.deferred ? `<span class="cl-pillar-deferred">\u2014 ${pillar.deferred}</span>` : '';
+    const itemsHtml = pillar.items.map(item => {
+      const checked = state[item.id] ? 'checked' : '';
+      return `<li class="cl-item ${checked}" id="item-${item.id}">
+        <div class="cl-checkbox ${checked}" onclick="toggleCheckItem('${item.id}')"></div>
+        <div class="cl-item-body">
+          <div class="cl-item-title">${item.title}</div>
+          <div class="cl-item-detail">${item.detail}</div>
+          <div class="cl-item-meta">
+            <span class="cl-tag cl-tag-owner">${item.owner}</span>
+            <span class="cl-tag cl-tag-kpi">${item.kpi}</span>
+          </div>
+        </div>
+      </li>`;
+    }).join('');
+    html += `<div class="cl-pillar-group" id="pillar-${key}">
+      <div class="cl-pillar-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="cl-pillar-num" style="background:${pillar.color}">${key.replace('P','')}</span>
+        <span class="cl-pillar-name">${pillar.name} ${deferredNote}</span>
+        <span class="cl-pillar-priority" style="background:${priorityBgs[pillar.phasePriority]};color:${priorityColors[pillar.phasePriority]}">${pillar.phasePriority}</span>
+        <span class="cl-group-count" style="background:var(--gray-bg);color:var(--muted)" id="clCount-${key}">0 / ${pillar.items.length}</span>
+        <span class="cl-pillar-chevron">\u25B6</span>
+      </div>
+      <div class="cl-pillar-body"><ul class="cl-items">${itemsHtml}</ul></div>
+    </div>`;
+  });
+  container.innerHTML = html;
+  updateChecklistUI();
+}
+
+function renderPhaseGates() {
+  const container = document.getElementById('clGatesContainer');
+  if (!container || container.children.length > 0) return;
+  const statusClass = { DONE:'cl-status-done', FAIL:'cl-status-fail', UNKNOWN:'cl-status-unknown' };
+  let html = '';
+  Object.keys(PHASE_GATES).forEach(phaseKey => {
+    const phase = PHASE_GATES[phaseKey];
+    const gateRows = phase.items.map(g => {
+      return `<div class="cl-gate-row">
+        <span class="cl-status-pill ${statusClass[g.status]}">${g.status}</span>
+        <div class="cl-gate-text">
+          <div style="font-weight:600">${g.text}</div>
+          <div class="cl-gate-action">${g.action}</div>
+        </div>
+      </div>`;
+    }).join('');
+    const doneCount = phase.items.filter(g => g.status === 'DONE').length;
+    const failCount = phase.items.filter(g => g.status === 'FAIL').length;
+    html += `<div class="cl-gates-section">
+      <div class="cl-gates-header" style="color:${phase.color}">
+        <span>${phase.label}</span>
+        <span style="margin-left:auto;font-size:.7rem;font-weight:700;color:var(--green)">${doneCount} done</span>
+        ${failCount ? `<span style="font-size:.7rem;font-weight:700;color:var(--red)">${failCount} fail</span>` : ''}
+      </div>
+      ${gateRows}
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderAntiPatterns() {
+  const container = document.getElementById('clAntiPatternsContainer');
+  if (!container || container.children.length > 0) return;
+  const statusClass = { PASS:'cl-status-done', FAIL:'cl-status-fail', UNKNOWN:'cl-status-unknown' };
+  let html = '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">';
+  ANTI_PATTERNS.forEach(ap => {
+    const linkHtml = ap.remediation ? `<button class="cl-ap-link" onclick="setChecklistSubView('queue');setTimeout(function(){var el=document.getElementById('item-${ap.remediation}');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.boxShadow='0 0 0 3px rgba(37,99,235,.3)';setTimeout(function(){el.style.boxShadow=''},2000)}},200)">\u2192 Go to action: ${ap.remediation}</button>` : '';
+    html += `<div class="cl-ap-row">
+      <span class="cl-ap-num">AP#${ap.id}</span>
+      <span class="cl-status-pill ${statusClass[ap.status]}" style="margin-top:2px">${ap.status}</span>
+      <div class="cl-ap-body">
+        <div class="cl-ap-name">${ap.name}</div>
+        <div style="font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:4px">${ap.rule}</div>
+        <div class="cl-ap-evidence">${ap.evidence}</div>
+        ${linkHtml}
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function updateChecklistUI() {
+  const state = getCheckedState();
+  let totalDone = 0, totalAll = 0;
+  Object.keys(CL_ITEMS).forEach(group => {
+    const items = CL_ITEMS[group];
+    const done = items.filter(i => state[i.id]).length;
+    totalDone += done;
+    totalAll += items.length;
+    const countEl = document.getElementById('clCount-' + group);
+    if (countEl) countEl.textContent = done + ' / ' + items.length;
+    items.forEach(item => {
+      const li = document.getElementById('item-' + item.id);
+      const cb = li ? li.querySelector('.cl-checkbox') : null;
+      if (li) li.classList.toggle('checked', !!state[item.id]);
+      if (cb) cb.classList.toggle('checked', !!state[item.id]);
+    });
+  });
+  const pct = totalAll ? Math.round((totalDone / totalAll) * 100) : 0;
+  const fill = document.getElementById('clProgressFill');
+  const text = document.getElementById('clProgressText');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = totalDone + ' / ' + totalAll + ' completed (' + pct + '%)';
+  const badge = document.getElementById('clQueueBadge');
+  if (badge) badge.textContent = totalAll - totalDone;
+
+  let blDone = 0, blAll = 0;
+  Object.keys(CL_BACKLOG).forEach(key => {
+    const items = CL_BACKLOG[key].items;
+    const done = items.filter(i => state[i.id]).length;
+    blDone += done;
+    blAll += items.length;
+    const countEl = document.getElementById('clCount-' + key);
+    if (countEl) countEl.textContent = done + ' / ' + items.length;
+    items.forEach(item => {
+      const li = document.getElementById('item-' + item.id);
+      const cb = li ? li.querySelector('.cl-checkbox') : null;
+      if (li) li.classList.toggle('checked', !!state[item.id]);
+      if (cb) cb.classList.toggle('checked', !!state[item.id]);
+    });
+  });
+  const blText = document.getElementById('clBacklogProgressText');
+  if (blText) blText.textContent = blDone + ' / ' + blAll;
+  const blBadge = document.getElementById('clBacklogBadge');
+  if (blBadge) blBadge.textContent = blAll - blDone;
+}
 
 function renderRootCause() {
   // FTT Decay chart
