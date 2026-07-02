@@ -47,5 +47,20 @@ Only include actions backed by HIGH-confidence findings. For MEDIUM-confidence f
 
 For LOW-confidence findings, do not recommend action — instead, recommend gathering the data needed to raise confidence.
 
-1. [Action + evidence basis + expected DAU impact + confidence level]
-2. [...]
+**Every action must include a Status and Previous Brief reference** to create continuity between briefs. This is the feedback loop — the user marks items done/blocked/skipped in the dashboard checklist, and those updates flow into the next brief.
+
+| # | Status | Action | Basis | Confidence | vs Previous Brief |
+|---|--------|--------|-------|------------|-------------------|
+| 1 | NEW | [Action that was not in the prior brief] | [Evidence] | HIGH | First appearance |
+| 2 | DONE | [Action completed by the user] | [Evidence it was done] | — | Was #N in [date] brief. User comment: "..." |
+| 3 | ESCALATED | [Action from prior brief that was not acted on and is getting worse] | [Updated evidence] | HIGH | Was #N in [date] brief — Day N of recommending. [Cumulative impact since first recommendation] |
+| 4 | CARRIED | [Action from prior brief, unchanged status] | [Same or updated evidence] | HIGH | Was #N in [date] brief |
+| 5 | DROPPED | [Action from prior brief that is no longer relevant] | [Why it's no longer needed] | — | Was #N in [date] brief. Dropped because [reason] |
+
+Status values:
+- **NEW** — First time this action appears
+- **DONE** — User marked it done in feedback.json or data confirms it was implemented
+- **ESCALATED** — Carried forward from prior brief AND the underlying problem got worse
+- **CARRIED** — Carried forward from prior brief, no material change
+- **DROPPED** — Was in prior brief but no longer relevant (data changed, or user marked "skipped")
+- **BLOCKED** — User marked it blocked in feedback.json — include their comment explaining why

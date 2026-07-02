@@ -301,6 +301,35 @@
   .cl-pillar-group.open .cl-pillar-body{max-height:2000px}
   .cl-pillar-deferred{font-size:.7rem;color:var(--amber);font-weight:600;font-style:italic;margin-left:6px}
 
+  /* Checklist feedback */
+  .cl-comment-wrap{margin-top:8px}
+  .cl-comment-toggle{border:none;background:none;font-size:.72rem;font-weight:600;color:var(--blue);cursor:pointer;padding:0;display:flex;align-items:center;gap:4px}
+  .cl-comment-toggle:hover{text-decoration:underline}
+  .cl-comment-toggle .cl-has-comment{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0}
+  .cl-comment-area{margin-top:6px;display:none}
+  .cl-comment-area.open{display:block}
+  .cl-comment{width:100%;min-height:48px;max-height:140px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.78rem;color:var(--text);resize:vertical;background:var(--bg);line-height:1.5;transition:border-color .15s}
+  .cl-comment:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.1)}
+  .cl-comment::placeholder{color:var(--subtle)}
+  .cl-comment-ts{font-size:.62rem;color:var(--subtle);margin-top:4px;font-style:italic}
+  .cl-status-wrap{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+  .cl-status-select{border:1px solid var(--border);border-radius:5px;font-size:.65rem;font-weight:700;padding:2px 6px;background:var(--card);color:var(--muted);cursor:pointer;letter-spacing:.02em;appearance:none;-webkit-appearance:none;padding-right:16px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center}
+  .cl-status-select:focus{outline:none;border-color:var(--blue)}
+  .cl-status-select.st-done{background-color:var(--green-bg);color:var(--green);border-color:var(--green)}
+  .cl-status-select.st-in-progress{background-color:var(--amber-bg);color:var(--amber);border-color:var(--amber)}
+  .cl-status-select.st-blocked{background-color:var(--red-bg);color:var(--red);border-color:var(--red)}
+  .cl-status-select.st-skipped{background-color:var(--gray-bg);color:var(--muted);border-color:var(--muted)}
+  .cl-feedback-bar{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:14px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+  .cl-feedback-bar-left{flex:1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .cl-feedback-pill{font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:6px}
+  .cl-feedback-btn{border:none;padding:8px 18px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+  .cl-feedback-btn-primary{background:var(--blue);color:#fff}
+  .cl-feedback-btn-primary:hover{background:#1d4ed8;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+  .cl-feedback-btn-secondary{background:var(--gray-bg);color:var(--muted)}
+  .cl-feedback-btn-secondary:hover{background:var(--border);color:var(--text)}
+  .cl-saved-toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#fff;padding:12px 20px;border-radius:10px;font-size:.82rem;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translateY(80px);opacity:0;transition:all .3s ease;z-index:999}
+  .cl-saved-toast.show{transform:translateY(0);opacity:1}
+
   /* Phase gates */
   .cl-gates-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
   .cl-gates-header{padding:16px 20px;font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
@@ -920,15 +949,27 @@
       <!-- ========== DAILY CHECKLIST VIEW ========== -->
       <div id="rcaChecklistView" style="display:none">
 
+        <!-- Feedback bar -->
+        <div class="cl-feedback-bar" id="clFeedbackBar">
+          <div class="cl-feedback-bar-left">
+            <span style="font-size:.82rem;font-weight:700;color:var(--header)">Feedback Loop</span>
+            <span class="cl-feedback-pill" style="background:var(--green-bg);color:var(--green)" id="clFbDone">0 done</span>
+            <span class="cl-feedback-pill" style="background:var(--amber-bg);color:var(--amber)" id="clFbInProgress">0 in progress</span>
+            <span class="cl-feedback-pill" style="background:var(--red-bg);color:var(--red)" id="clFbBlocked">0 blocked</span>
+            <span class="cl-feedback-pill" style="background:#dbeafe;color:var(--blue)" id="clFbComments">0 comments</span>
+          </div>
+          <button class="cl-feedback-btn cl-feedback-btn-secondary" onclick="resetChecklist()" title="Reset all statuses and comments">Reset</button>
+          <button class="cl-feedback-btn cl-feedback-btn-primary" onclick="downloadFeedbackJSON()" title="Download feedback as JSON for the next daily brief">&#x2193; Save Feedback</button>
+        </div>
+
         <!-- Progress bar -->
         <div class="checklist-progress" id="clProgress">
           <div style="flex:1">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
               <span class="checklist-progress-text" id="clProgressText">0 / 26 completed</span>
-              <button class="cl-reset" onclick="resetChecklist()" title="Uncheck all items">Reset all</button>
             </div>
             <div class="checklist-progress-bar"><div class="checklist-progress-fill" id="clProgressFill" style="width:0%"></div></div>
-            <div class="checklist-progress-sub" style="margin-top:6px">Pick items daily as team action points &mdash; checked items persist between sessions</div>
+            <div class="checklist-progress-sub" style="margin-top:6px">Update status &amp; add comments &mdash; then hit <strong>&ldquo;Save Feedback&rdquo;</strong> to export for the next daily brief</div>
           </div>
         </div>
 
@@ -1014,6 +1055,7 @@
         </div>
 
       </div><!-- /rcaChecklistView -->
+      <div class="cl-saved-toast" id="clSavedToast">Feedback saved to feedback.json</div>
 
     </div>
 
@@ -3392,27 +3434,130 @@ const ANTI_PATTERNS = [
   { id:7, name:'Organic conflation', rule:'Never treat MMP "organic" as pure organic.', status:'PASS', evidence:'Dashboard and briefs caveat that organic includes view-through spillover, expired attribution windows, and brand-influenced search.', remediation:null }
 ];
 
-const CL_STORAGE_KEY = 'deriv-rca-checklist-v1';
+const CL_STORAGE_KEY = 'deriv-rca-checklist-v2';
+const CL_STATUSES = ['open','done','in-progress','blocked','skipped'];
+const CL_STATUS_LABELS = {open:'Open',done:'Done','in-progress':'In Progress',blocked:'Blocked',skipped:'Skipped'};
 
-function getCheckedState() {
-  try { return JSON.parse(localStorage.getItem(CL_STORAGE_KEY)) || {}; }
-  catch(e) { return {}; }
+function getFeedbackState() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(CL_STORAGE_KEY));
+    if (!raw) {
+      const legacy = JSON.parse(localStorage.getItem('deriv-rca-checklist-v1'));
+      if (legacy) {
+        const migrated = {};
+        Object.keys(legacy).forEach(id => {
+          migrated[id] = { status: legacy[id] ? 'done' : 'open', comment: '', statusChangedAt: null };
+        });
+        return migrated;
+      }
+      return {};
+    }
+    return raw;
+  } catch(e) { return {}; }
 }
 
-function saveCheckedState(state) {
+function saveFeedbackState(state) {
   try { localStorage.setItem(CL_STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
 }
 
+function getItemState(state, id) {
+  return state[id] || { status: 'open', comment: '', statusChangedAt: null };
+}
+
 function toggleCheckItem(id) {
-  const state = getCheckedState();
-  state[id] = !state[id];
-  saveCheckedState(state);
+  const state = getFeedbackState();
+  const cur = getItemState(state, id);
+  cur.status = cur.status === 'done' ? 'open' : 'done';
+  cur.statusChangedAt = new Date().toISOString();
+  state[id] = cur;
+  saveFeedbackState(state);
   updateChecklistUI();
 }
 
+function updateItemStatus(id, newStatus) {
+  const state = getFeedbackState();
+  const cur = getItemState(state, id);
+  cur.status = newStatus;
+  cur.statusChangedAt = new Date().toISOString();
+  state[id] = cur;
+  saveFeedbackState(state);
+  updateChecklistUI();
+}
+
+function updateItemComment(id, value) {
+  const state = getFeedbackState();
+  const cur = getItemState(state, id);
+  cur.comment = value;
+  state[id] = cur;
+  saveFeedbackState(state);
+  updateFeedbackSummary();
+}
+
+function toggleCommentArea(id) {
+  const area = document.getElementById('clCommentArea-' + id);
+  if (area) {
+    area.classList.toggle('open');
+    if (area.classList.contains('open')) {
+      const ta = area.querySelector('textarea');
+      if (ta) ta.focus();
+    }
+  }
+}
+
 function resetChecklist() {
-  try { localStorage.removeItem(CL_STORAGE_KEY); } catch(e) {}
+  if (!confirm('Reset all statuses and comments? This cannot be undone.')) return;
+  try {
+    localStorage.removeItem(CL_STORAGE_KEY);
+    localStorage.removeItem('deriv-rca-checklist-v1');
+  } catch(e) {}
   renderChecklist();
+}
+
+function downloadFeedbackJSON() {
+  const state = getFeedbackState();
+  const allItems = [];
+  Object.keys(CL_ITEMS).forEach(group => {
+    CL_ITEMS[group].forEach(item => {
+      const s = getItemState(state, item.id);
+      allItems.push({
+        id: item.id,
+        group: group,
+        title: item.title,
+        status: s.status,
+        comment: s.comment || '',
+        statusChangedAt: s.statusChangedAt || null
+      });
+    });
+  });
+  Object.keys(CL_BACKLOG).forEach(key => {
+    CL_BACKLOG[key].items.forEach(item => {
+      const s = getItemState(state, item.id);
+      allItems.push({
+        id: item.id,
+        group: 'backlog-' + key,
+        title: item.title,
+        status: s.status,
+        comment: s.comment || '',
+        statusChangedAt: s.statusChangedAt || null
+      });
+    });
+  });
+  const payload = {
+    briefDate: new Date().toISOString().slice(0, 10),
+    savedAt: new Date().toISOString(),
+    items: allItems.filter(i => i.status !== 'open' || i.comment)
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'feedback.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const toast = document.getElementById('clSavedToast');
+  if (toast) {
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
 }
 
 function setChecklistSubView(sub) {
@@ -3426,13 +3571,28 @@ function setChecklistSubView(sub) {
 }
 
 function renderChecklistItem(item, state) {
-  const checked = state[item.id] ? 'checked' : '';
+  const s = getItemState(state, item.id);
+  const isDone = s.status === 'done';
+  const checkedCls = isDone ? 'checked' : '';
+  const statusCls = 'st-' + s.status;
   const pillarTag = item.pillar ? `<span class="cl-tag cl-tag-pillar">${item.pillar}</span>` : '';
-  return `<li class="cl-item ${checked}" id="item-${item.id}">
-    <div class="cl-checkbox ${checked}" onclick="toggleCheckItem('${item.id}')"></div>
+  const hasComment = s.comment ? '<span class="cl-has-comment"></span>' : '';
+  const commentLabel = s.comment ? 'Edit comment' : 'Add comment';
+  const commentOpen = s.comment ? 'open' : '';
+  const tsLine = s.statusChangedAt ? `<div class="cl-comment-ts">Last updated ${new Date(s.statusChangedAt).toLocaleString()}</div>` : '';
+  const statusOpts = CL_STATUSES.map(st =>
+    `<option value="${st}" ${s.status === st ? 'selected' : ''}>${CL_STATUS_LABELS[st]}</option>`
+  ).join('');
+  return `<li class="cl-item ${checkedCls}" id="item-${item.id}">
+    <div class="cl-checkbox ${checkedCls}" onclick="toggleCheckItem('${item.id}')"></div>
     <div class="cl-item-body">
-      <div class="cl-item-title">${item.title}</div>
-      <div class="cl-item-detail">${item.detail}</div>
+      <div style="display:flex;align-items:flex-start;gap:8px">
+        <div style="flex:1">
+          <div class="cl-item-title">${item.title}</div>
+          <div class="cl-item-detail">${item.detail}</div>
+        </div>
+        <select class="cl-status-select ${statusCls}" onchange="updateItemStatus('${item.id}',this.value)">${statusOpts}</select>
+      </div>
       <div class="cl-item-meta">
         ${pillarTag}
         <span class="cl-tag cl-tag-owner">${item.owner}</span>
@@ -3440,12 +3600,19 @@ function renderChecklistItem(item, state) {
         <span class="cl-tag cl-tag-source">${item.source}</span>
         <span class="cl-tag cl-tag-kpi">${item.kpi}</span>
       </div>
+      <div class="cl-comment-wrap">
+        <button class="cl-comment-toggle" onclick="toggleCommentArea('${item.id}')">${hasComment}${commentLabel}</button>
+        <div class="cl-comment-area ${commentOpen}" id="clCommentArea-${item.id}">
+          <textarea class="cl-comment" placeholder="Add feedback for the next daily brief..." oninput="updateItemComment('${item.id}',this.value)">${s.comment || ''}</textarea>
+          ${tsLine}
+        </div>
+      </div>
     </div>
   </li>`;
 }
 
 function renderChecklist() {
-  const state = getCheckedState();
+  const state = getFeedbackState();
   Object.keys(CL_ITEMS).forEach(group => {
     const container = document.getElementById('clGroup-' + group);
     if (!container) return;
@@ -3457,7 +3624,7 @@ function renderChecklist() {
 function renderBacklog() {
   const container = document.getElementById('clBacklogContainer');
   if (!container || container.children.length > 0) return;
-  const state = getCheckedState();
+  const state = getFeedbackState();
   const priorityColors = { CRITICAL:'var(--red)', HIGH:'var(--amber)', MEDIUM:'var(--blue)', LOW:'var(--muted)' };
   const priorityBgs = { CRITICAL:'var(--red-bg)', HIGH:'var(--amber-bg)', MEDIUM:'#dbeafe', LOW:'var(--gray-bg)' };
   let html = '';
@@ -3465,15 +3632,37 @@ function renderBacklog() {
     const pillar = CL_BACKLOG[key];
     const deferredNote = pillar.deferred ? `<span class="cl-pillar-deferred">\u2014 ${pillar.deferred}</span>` : '';
     const itemsHtml = pillar.items.map(item => {
-      const checked = state[item.id] ? 'checked' : '';
-      return `<li class="cl-item ${checked}" id="item-${item.id}">
-        <div class="cl-checkbox ${checked}" onclick="toggleCheckItem('${item.id}')"></div>
+      const s = getItemState(state, item.id);
+      const isDone = s.status === 'done';
+      const checkedCls = isDone ? 'checked' : '';
+      const statusCls = 'st-' + s.status;
+      const hasComment = s.comment ? '<span class="cl-has-comment"></span>' : '';
+      const commentLabel = s.comment ? 'Edit comment' : 'Add comment';
+      const commentOpen = s.comment ? 'open' : '';
+      const tsLine = s.statusChangedAt ? `<div class="cl-comment-ts">Last updated ${new Date(s.statusChangedAt).toLocaleString()}</div>` : '';
+      const statusOpts = CL_STATUSES.map(st =>
+        `<option value="${st}" ${s.status === st ? 'selected' : ''}>${CL_STATUS_LABELS[st]}</option>`
+      ).join('');
+      return `<li class="cl-item ${checkedCls}" id="item-${item.id}">
+        <div class="cl-checkbox ${checkedCls}" onclick="toggleCheckItem('${item.id}')"></div>
         <div class="cl-item-body">
-          <div class="cl-item-title">${item.title}</div>
-          <div class="cl-item-detail">${item.detail}</div>
+          <div style="display:flex;align-items:flex-start;gap:8px">
+            <div style="flex:1">
+              <div class="cl-item-title">${item.title}</div>
+              <div class="cl-item-detail">${item.detail}</div>
+            </div>
+            <select class="cl-status-select ${statusCls}" onchange="updateItemStatus('${item.id}',this.value)">${statusOpts}</select>
+          </div>
           <div class="cl-item-meta">
             <span class="cl-tag cl-tag-owner">${item.owner}</span>
             <span class="cl-tag cl-tag-kpi">${item.kpi}</span>
+          </div>
+          <div class="cl-comment-wrap">
+            <button class="cl-comment-toggle" onclick="toggleCommentArea('${item.id}')">${hasComment}${commentLabel}</button>
+            <div class="cl-comment-area ${commentOpen}" id="clCommentArea-${item.id}">
+              <textarea class="cl-comment" placeholder="Add feedback for the next daily brief..." oninput="updateItemComment('${item.id}',this.value)">${s.comment || ''}</textarea>
+              ${tsLine}
+            </div>
           </div>
         </div>
       </li>`;
@@ -3546,49 +3735,90 @@ function renderAntiPatterns() {
 }
 
 function updateChecklistUI() {
-  const state = getCheckedState();
+  const state = getFeedbackState();
   let totalDone = 0, totalAll = 0;
+  let statusCounts = { done:0, 'in-progress':0, blocked:0, skipped:0, open:0 };
+  let commentCount = 0;
+
+  function processItems(items) {
+    items.forEach(item => {
+      const s = getItemState(state, item.id);
+      const isDone = s.status === 'done';
+      statusCounts[s.status] = (statusCounts[s.status] || 0) + 1;
+      if (s.comment) commentCount++;
+      if (isDone) totalDone++;
+      totalAll++;
+      const li = document.getElementById('item-' + item.id);
+      if (!li) return;
+      const cb = li.querySelector('.cl-checkbox');
+      const sel = li.querySelector('.cl-status-select');
+      li.classList.toggle('checked', isDone);
+      if (cb) cb.classList.toggle('checked', isDone);
+      if (sel) {
+        sel.value = s.status;
+        sel.className = 'cl-status-select st-' + s.status;
+      }
+    });
+  }
+
   Object.keys(CL_ITEMS).forEach(group => {
     const items = CL_ITEMS[group];
-    const done = items.filter(i => state[i.id]).length;
-    totalDone += done;
-    totalAll += items.length;
+    const groupDoneBefore = totalDone;
+    const groupAllBefore = totalAll;
+    processItems(items);
+    const groupDone = totalDone - groupDoneBefore;
     const countEl = document.getElementById('clCount-' + group);
-    if (countEl) countEl.textContent = done + ' / ' + items.length;
-    items.forEach(item => {
-      const li = document.getElementById('item-' + item.id);
-      const cb = li ? li.querySelector('.cl-checkbox') : null;
-      if (li) li.classList.toggle('checked', !!state[item.id]);
-      if (cb) cb.classList.toggle('checked', !!state[item.id]);
-    });
+    if (countEl) countEl.textContent = groupDone + ' / ' + items.length;
   });
-  const pct = totalAll ? Math.round((totalDone / totalAll) * 100) : 0;
+
+  const queueTotal = totalAll;
+  const queueDone = totalDone;
+  const pct = queueTotal ? Math.round((queueDone / queueTotal) * 100) : 0;
   const fill = document.getElementById('clProgressFill');
   const text = document.getElementById('clProgressText');
   if (fill) fill.style.width = pct + '%';
-  if (text) text.textContent = totalDone + ' / ' + totalAll + ' completed (' + pct + '%)';
+  if (text) text.textContent = queueDone + ' / ' + queueTotal + ' completed (' + pct + '%)';
   const badge = document.getElementById('clQueueBadge');
-  if (badge) badge.textContent = totalAll - totalDone;
+  if (badge) badge.textContent = queueTotal - queueDone;
 
   let blDone = 0, blAll = 0;
   Object.keys(CL_BACKLOG).forEach(key => {
     const items = CL_BACKLOG[key].items;
-    const done = items.filter(i => state[i.id]).length;
-    blDone += done;
+    const beforeDone = totalDone;
+    processItems(items);
+    const keyDone = totalDone - beforeDone;
+    blDone += keyDone;
     blAll += items.length;
     const countEl = document.getElementById('clCount-' + key);
-    if (countEl) countEl.textContent = done + ' / ' + items.length;
-    items.forEach(item => {
-      const li = document.getElementById('item-' + item.id);
-      const cb = li ? li.querySelector('.cl-checkbox') : null;
-      if (li) li.classList.toggle('checked', !!state[item.id]);
-      if (cb) cb.classList.toggle('checked', !!state[item.id]);
-    });
+    if (countEl) countEl.textContent = keyDone + ' / ' + items.length;
   });
   const blText = document.getElementById('clBacklogProgressText');
   if (blText) blText.textContent = blDone + ' / ' + blAll;
   const blBadge = document.getElementById('clBacklogBadge');
   if (blBadge) blBadge.textContent = blAll - blDone;
+
+  updateFeedbackSummary();
+}
+
+function updateFeedbackSummary() {
+  const state = getFeedbackState();
+  let counts = { done:0, 'in-progress':0, blocked:0, skipped:0, open:0 };
+  let comments = 0;
+  function count(items) {
+    items.forEach(item => {
+      const s = getItemState(state, item.id);
+      counts[s.status] = (counts[s.status] || 0) + 1;
+      if (s.comment) comments++;
+    });
+  }
+  Object.keys(CL_ITEMS).forEach(g => count(CL_ITEMS[g]));
+  Object.keys(CL_BACKLOG).forEach(k => count(CL_BACKLOG[k].items));
+
+  const el = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+  el('clFbDone', counts.done + ' done');
+  el('clFbInProgress', counts['in-progress'] + ' in progress');
+  el('clFbBlocked', counts.blocked + ' blocked');
+  el('clFbComments', comments + ' comment' + (comments !== 1 ? 's' : ''));
 }
 
 function renderRootCause() {
