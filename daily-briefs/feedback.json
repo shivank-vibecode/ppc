@@ -1,0 +1,54 @@
+{
+  "briefDate": "2026-07-02",
+  "savedAt": "2026-07-02T08:13:52.634Z",
+  "items": [
+    {
+      "id": "cl-pause-multiasset",
+      "group": "critical",
+      "title": "Pause Google multi_asset campaign",
+      "status": "done",
+      "comment": "this is a web campaign that is not dedicated to app install. Any spend we see here bring us a client from web so we should not count the spend mentioned in this. We should only keep the conversion numbers from this campaign. ",
+      "statusChangedAt": "2026-07-02T08:12:43.230Z"
+    },
+    {
+      "id": "cl-pause-chartpatterns",
+      "group": "critical",
+      "title": "Pause Google chart-patterns campaign",
+      "status": "done",
+      "comment": "this is a web campaign that is not dedicated to app install. Any spend we see here bring us a client from web so we should not count the spend mentioned in this. We should only keep the conversion numbers from this campaign. ",
+      "statusChangedAt": "2026-07-02T08:12:26.913Z"
+    },
+    {
+      "id": "cl-pause-login",
+      "group": "critical",
+      "title": "Pause Google login keywords campaign",
+      "status": "done",
+      "comment": "this is a web campaign that is not dedicated to app install. Any spend we see here bring us a client from web so we should not count the spend mentioned in this. We should only keep the conversion numbers from this campaign. ",
+      "statusChangedAt": "2026-07-02T08:12:56.316Z"
+    },
+    {
+      "id": "cl-fb-bangladesh",
+      "group": "week",
+      "title": "Exclude Bangladesh from Facebook campaigns",
+      "status": "done",
+      "comment": "",
+      "statusChangedAt": null
+    },
+    {
+      "id": "cl-fb-kill-an",
+      "group": "week",
+      "title": "Kill Facebook Audience Network placement",
+      "status": "done",
+      "comment": "This was done but cross check the fresh numbers coming in to validate",
+      "statusChangedAt": "2026-07-02T08:13:32.532Z"
+    },
+    {
+      "id": "cl-brand-bid",
+      "group": "week",
+      "title": "Test −30% bid reduction on Google brand keywords (non-login)",
+      "status": "done",
+      "comment": "this is a web campaign that is not dedicated to app install. Any spend we see here bring us a client from web so we should not count the spend mentioned in this. We should only keep the conversion numbers from this campaign. ",
+      "statusChangedAt": "2026-07-02T08:13:40.302Z"
+    }
+  ]
+}
