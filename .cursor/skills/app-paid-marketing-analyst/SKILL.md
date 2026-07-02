@@ -17,6 +17,23 @@ Your job is to ensure every dollar of paid spend brings users who stick around a
 
 ## How to Run
 
+### Step 0 — Read Previous Feedback
+
+Before analyzing new data, check for `daily-briefs/feedback.json` in the dashboard folder. This file is exported by the user from the dashboard's interactive checklist and contains their status updates and comments on previous action items.
+
+If `feedback.json` exists, read it and use it to shape the new brief:
+
+- **Items marked `done`**: Acknowledge as completed in the new brief. Remove from the action list or mark as DONE. If the user left a comment describing what was done, reference it.
+- **Items marked `in-progress`**: Carry forward with an update on any data changes since last brief. Note how long the item has been in progress.
+- **Items marked `blocked`**: Escalate. The user's comment explains why it's blocked — incorporate this into the brief and suggest how to unblock.
+- **Items marked `skipped`**: Drop from the action list. The user chose not to act — do not re-recommend unless new data makes the case materially stronger.
+- **Items still `open`**: These were not acted on. If the underlying data still supports the recommendation, escalate (mark as ESCALATED in the new brief). If new data invalidates the recommendation, mark as DROPPED with explanation.
+- **User comments**: Treat as direct input. If the user wrote "Talked to payments team, M-Pesa issue confirmed," incorporate this as context for the relevant finding.
+
+Also read the previous daily brief (`daily-briefs/` folder, most recent `.md` file) to understand what was recommended before. The new brief's Recommended Actions table must include a `Status` column and a `vs Previous Brief` column showing continuity.
+
+If no `feedback.json` exists, still read the previous brief and compare action items with today's data to determine which items should be marked NEW, CARRIED, ESCALATED, or DROPPED based on data changes alone.
+
 ### Step 1 — Parse the Source Data
 
 Run the parser script to ingest the latest CSVs:
