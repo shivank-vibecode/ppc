@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The MT5 Pivot — Deriv</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --coral:#FF444F;
+    --coral-soft:#FFF0F1;
+    --coral-mid:#FFD6D8;
+    --blue:#2563EB;
+    --blue-soft:#EFF6FF;
+    --blue-mid:#BFDBFE;
+    --green:#059669;
+    --green-soft:#ECFDF5;
+    --amber:#D97706;
+    --amber-soft:#FFFBEB;
+
+    --bg:#FFFFFF;
+    --bg-page:#F8F9FB;
+    --bg-card:#FFFFFF;
+    --border:#E5E7EB;
+    --border-light:#F0F1F3;
+
+    /* Text hierarchy */
+    --text-primary:#111827;     /* headlines, key numbers */
+    --text-secondary:#374151;   /* card titles, strong body */
+    --text-body:#4B5563;        /* body copy */
+    --text-muted:#6B7280;       /* supporting text */
+    --text-caption:#9CA3AF;     /* captions, labels, meta */
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--bg-page);
+    color:var(--text-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    font-size:14px;
+    line-height:1.6;
+  }
+
+  /* ═══ HERO ═══ */
+  .hero{
+    background:var(--bg);
+    border-bottom:1px solid var(--border);
+    padding:56px 48px 44px;
+    text-align:center;
+  }
+  .hero h1{
+    font-size:clamp(28px,4vw,48px);
+    font-weight:800;
+    letter-spacing:-0.035em;
+    line-height:1.1;
+    color:var(--text-primary);
+    max-width:700px;
+    margin:0 auto;
+  }
+  .hero h1 .accent{color:var(--coral)}
+  .hero p{
+    font-size:clamp(14px,1.3vw,16px);
+    font-weight:400;
+    color:var(--text-muted);
+    max-width:560px;
+    margin:14px auto 0;
+    line-height:1.65;
+  }
+
+  /* ═══ TWO-COLUMN LAYOUT ═══ */
+  .columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
+    max-width:1360px;
+    margin:0 auto;
+    padding:32px 28px 80px;
+    align-items:start;
+  }
+  .column{display:flex;flex-direction:column;gap:16px}
+
+  /* Column header — prominent two-track markers */
+  .col-header{
+    position:sticky;top:0;z-index:10;
+    background:var(--bg-page);
+    padding:0 0 16px;
+  }
+  .col-header-inner{
+    padding:20px 22px 18px;
+    border-radius:14px;
+    border:1px solid var(--border);
+  }
+  .col-header-inner.a{
+    background:linear-gradient(135deg,#FFF5F5,#FFF0F1);
+    border-color:var(--coral-mid);
+    border-left:4px solid var(--coral);
+  }
+  .col-header-inner.b{
+    background:linear-gradient(135deg,#F0F7FF,#EFF6FF);
+    border-color:var(--blue-mid);
+    border-left:4px solid var(--blue);
+  }
+  .col-approach{
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .col-approach.a{color:var(--coral)}
+  .col-approach.b{color:var(--blue)}
+  .col-header h2{
+    font-size:22px;
+    font-weight:800;
+    color:var(--text-primary);
+    letter-spacing:-0.02em;
+    line-height:1.2;
+    margin-bottom:6px;
+  }
+  .col-header p{
+    font-size:13px;
+    color:var(--text-muted);
+    line-height:1.5;
+    font-weight:400;
+  }
+
+  /* ═══ CARD ═══ */
+  .card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card.capstone{border-top:2px solid var(--coral)}
+
+  /* Card head — prominent task header */
+  .card-head{
+    padding:0;
+  }
+  .card-head-bar{
+    padding:14px 22px 12px;
+    background:var(--bg-page);
+    border-bottom:1px solid var(--border-light);
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+  }
+  .card.capstone .card-head-bar{
+    background:linear-gradient(135deg,#FFF8F8,#FFF2F3);
+    border-bottom-color:var(--coral-mid);
+  }
+  .task-num{
+    width:32px;height:32px;
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;
+    flex-shrink:0;
+    letter-spacing:-0.02em;
+  }
+  .task-num.coral{background:var(--coral);color:#fff}
+  .task-num.green{background:var(--green);color:#fff}
+  .task-num.blue{background:var(--blue);color:#fff}
+  .task-num.amber{background:var(--amber);color:#fff}
+  .card-title-area{flex:1;min-width:0}
+  .card-title-area h3{
+    font-size:15px;
+    font-weight:700;
+    color:var(--text-primary);
+    letter-spacing:-0.01em;
+    line-height:1.3;
+    margin-bottom:4px;
+  }
+  .card-title-area .task-desc{
+    font-size:12px;
+    color:var(--text-muted);
+    line-height:1.4;
+  }
+  .badge{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    flex-shrink:0;
+    align-self:center;
+  }
+  .badge.coral{background:var(--coral-soft);color:var(--coral)}
+  .badge.green{background:var(--green-soft);color:var(--green)}
+  .badge.amber{background:var(--amber-soft);color:var(--amber)}
+  .badge.blue{background:var(--blue-soft);color:var(--blue)}
+
+  /* Card body */
+  .card-body{padding:16px 22px 22px}
+  .card-body p{
+    font-size:13px;
+    color:var(--text-body);
+    line-height:1.65;
+    margin-bottom:10px;
+  }
+  .card-body p:last-child{margin-bottom:0}
+  .card-body strong{color:var(--text-secondary);font-weight:600}
+
+  /* ═══ STATS ═══ */
+  .stats-row{display:flex;gap:20px;margin:14px 0;flex-wrap:wrap}
+  .stat .val{
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:-0.03em;
+    line-height:1;
+    color:var(--text-primary);
+  }
+  .stat .val.coral{color:var(--coral)}
+  .stat .val.green{color:var(--green)}
+  .stat .val.amber{color:var(--amber)}
+  .stat .lbl{
+    font-size:10px;
+    font-weight:500;
+    color:var(--text-caption);
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    margin-top:4px;
+  }
+
+  /* ═══ DETAIL GRID ═══ */
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+  .detail-item{
+    padding:12px 14px;
+    background:var(--bg-page);
+    border:1px solid var(--border-light);
+    border-radius:9px;
+  }
+  .detail-item h4{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-bottom:3px;
+    color:var(--coral);
+  }
+  .detail-item.blue-accent h4{color:var(--blue)}
+  .detail-item p{
+    font-size:12px!important;
+    color:var(--text-muted)!important;
+    line-height:1.45!important;
+    margin-bottom:0!important;
+  }
+
+  /* ═══ FUNNEL ═══ */
+  .funnel{display:flex;flex-direction:column;gap:4px;margin:12px 0}
+  .funnel-step{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 12px;
+    background:var(--bg-page);
+    border-radius:8px;
+    font-size:12px;
+    color:var(--text-body);
+  }
+  .funnel-step .n{
+    width:20px;height:20px;border-radius:50%;
+    background:var(--coral-soft);color:var(--coral);
+    font-size:10px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .funnel-step strong{color:var(--text-secondary)}
+
+  /* Tags */
+  .tag-row{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+  .tag-pill{
+    padding:3px 10px;border-radius:5px;
+    font-size:11px;font-weight:500;
+    background:var(--bg-page);
+    border:1px solid var(--border);
+    color:var(--text-muted);
+  }
+
+  /* Callout */
+  .callout{
+    background:var(--coral-soft);
+    border:1px solid var(--coral-mid);
+    border-radius:9px;
+    padding:12px 14px;
+    margin-top:10px;
+  }
+  .callout p{font-size:12px!important;color:var(--text-secondary)!important;margin-bottom:0!important}
+  .callout.blue-callout{background:var(--blue-soft);border-color:var(--blue-mid)}
+  .callout.gap-callout{background:#FEF2F2;border:1px solid #FECACA;border-left:3px solid var(--coral)}
+  .callout.gap-callout .gap-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--coral);margin-bottom:4px}
+  .callout.unlock-callout{background:var(--green-soft);border:1px solid #A7F3D0;border-left:3px solid var(--green)}
+  .callout.unlock-callout .unlock-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:4px}
+
+  /* ═══ MOCKUPS ═══ */
+  .mockup{
+    margin:14px 0;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    position:relative;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  .mockup-label{
+    position:absolute;top:8px;right:10px;
+    font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;
+    color:#fff;background:rgba(0,0,0,0.45);
+    padding:2px 7px;border-radius:3px;z-index:2;
+  }
+
+  /* MT5 Window */
+  .mt5-window{background:#F5F5F5;color:#333}
+  .mt5-titlebar{background:linear-gradient(180deg,#E8E8E8,#D5D5D5);padding:5px 10px;font-size:11px;font-weight:600;color:#555;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #C0C0C0}
+  .mt5-titlebar .dots{display:flex;gap:3px}
+  .mt5-titlebar .dots span{width:7px;height:7px;border-radius:50%}
+  .mt5-body{padding:12px 14px}
+  .mt5-heading{font-size:12px;font-weight:700;color:#222;margin-bottom:6px}
+  .mt5-label{font-size:10px;color:#777;margin-bottom:4px}
+  .mt5-input{background:#fff;border:1px solid #CCC;border-radius:3px;padding:5px 8px;font-size:9px;color:#999;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+  .mt5-input .btn{background:#4A76B8;color:#fff;font-size:9px;padding:2px 7px;border-radius:2px;font-weight:600}
+  .mt5-broker-list{background:#fff;border:1px solid #CCC;border-radius:3px;overflow:hidden}
+  .mt5-broker-item{padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:8px}
+  .mt5-broker-item.selected{background:#0078D7;color:#fff}
+  .mt5-broker-item .broker-dot{width:8px;height:8px;border-radius:50%}
+  .mt5-broker-item.selected .broker-dot{background:#FFD700}
+  .mt5-broker-empty{padding:14px}
+  .mt5-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
+  .mt5-btn{padding:4px 14px;font-size:10px;border-radius:2px;border:1px solid #AAA;background:#ECECEC;color:#333}
+  .mt5-btn.primary{background:#4A76B8;color:#fff;border-color:#4A76B8}
+
+  /* MQL5 site */
+  .web-mockup{background:#1B1F2A}
+  .web-topbar{background:#262B38;padding:6px 12px;display:flex;align-items:center;gap:10px;font-size:10px;border-bottom:1px solid rgba(255,255,255,0.08)}
+  .web-topbar .nav-items{display:flex;gap:10px;color:rgba(255,255,255,0.4);font-weight:500}
+  .web-topbar .nav-items span.active{color:#fff}
+  .web-topbar .logo-text{font-weight:800;color:#4A76B8;font-size:13px}
+  .web-banner{margin:10px 12px;background:linear-gradient(135deg,var(--coral),#FF6B4A);border-radius:6px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+  .web-banner::after{content:'';position:absolute;right:-20px;top:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.1)}
+  .web-banner .banner-text{font-size:12px;font-weight:700;color:#fff;z-index:1;position:relative}
+  .web-banner .banner-sub{font-size:10px;color:rgba(255,255,255,0.8);margin-top:1px}
+  .web-banner .banner-cta{background:#fff;color:var(--coral);font-size:10px;font-weight:700;padding:4px 11px;border-radius:4px;z-index:1;position:relative}
+  .web-tickers{padding:6px 12px;display:flex;gap:12px;font-size:10px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden}
+  .web-tickers .up{color:#34D399} .web-tickers .down{color:#FF444F}
+
+  /* Guardian Angel */
+  .ga-scene{background:#1B1B2F;position:relative;min-height:220px;overflow:hidden}
+  .ga-chart{position:absolute;inset:0;padding:8px}
+  .ga-chart-pair{font-size:10px;font-weight:600;color:rgba(255,255,255,0.4)}
+  .ga-order-panel{display:inline-flex;gap:1px;font-size:9px;margin:6px 0}
+  .ga-order-panel .sell-btn{background:#CC3333;color:#fff;padding:3px 7px;border-radius:2px 0 0 2px;font-weight:700}
+  .ga-order-panel .lot{background:#222;color:#ccc;padding:3px 5px}
+  .ga-order-panel .buy-btn{background:#336699;color:#fff;padding:3px 7px;border-radius:0 2px 2px 0;font-weight:700}
+  .ga-candles{display:flex;align-items:flex-end;gap:2px;height:90px;padding:0 12px;margin-top:4px}
+  .ga-candle{width:4px;border-radius:1px;flex-shrink:0}
+  .ga-candle.up{background:#34D399} .ga-candle.down{background:#FF444F}
+
+  .ga-popup{position:absolute;bottom:10px;right:10px;width:240px;background:linear-gradient(180deg,#EAEAEA,#D8D8D8);border-radius:5px;box-shadow:0 4px 20px rgba(0,0,0,0.4);border:1px solid #AAA;font-family:'Segoe UI',Tahoma,sans-serif;color:#333;overflow:hidden}
+  .ga-popup-title{background:linear-gradient(180deg,#F2F2F2,#E0E0E0);padding:4px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #BBB}
+  .ga-popup-title .ga-name{font-size:10px;font-weight:700;display:flex;align-items:center;gap:4px}
+  .ga-popup-title .ga-win-controls{display:flex;gap:2px;font-size:8px}
+  .ga-popup-title .ga-win-controls span{width:14px;height:12px;background:#D0D0D0;border:1px solid #999;border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:7px;color:#555;font-weight:700}
+  .ga-popup-bar{padding:3px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #CCC;background:#ECECEC}
+  .ga-popup-bar .timestamp{font-size:9px;font-weight:600;color:#336699}
+  .ga-popup-bar .nav{font-size:9px;color:#666}
+  .ga-popup-body{padding:7px 8px;display:flex;gap:6px}
+  .ga-popup-body .ga-angel-icon{font-size:16px;flex-shrink:0}
+  .ga-popup-body .ga-msg-area{flex:1;background:linear-gradient(180deg,#F5F8F0,#E8EDDF);border:1px solid #C8CDB8;border-radius:3px;padding:7px 8px;font-size:9.5px;line-height:1.5;color:#444}
+  .ga-popup-body .ga-side-icons{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+  .ga-popup-body .ga-side-icons .sicon{width:20px;height:20px;border-radius:50%;background:linear-gradient(180deg,#6699CC,#4477AA);display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.2)}
+  .ga-popup-footer{padding:4px 8px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #BBB;background:#E0E0E0}
+  .ga-popup-footer .ga-btns{display:flex;gap:4px}
+  .ga-popup-footer .ga-btns .gbtn{width:20px;height:20px;border-radius:50%;background:linear-gradient(180deg,#E8E8E8,#C0C0C0);border:1px solid #999;display:flex;align-items:center;justify-content:center;font-size:9px}
+  .ga-popup-footer .ga-links{font-size:8px;color:#336699;display:flex;gap:6px;text-decoration:underline}
+
+  /* URL breakdown */
+  .url-breakdown{
+    background:#1E293B;
+    border-radius:8px;padding:14px 14px;margin:12px 0;
+    font-family:'SF Mono','Fira Code','Courier New',monospace;
+    font-size:10px;line-height:2.2;
+    border:1px solid #334155;overflow-x:auto;
+  }
+  .url-breakdown .base{color:#94A3B8}
+  .url-breakdown .param{font-weight:600}
+  .url-breakdown .param.server{color:#FB7185} .url-breakdown .param.utm{color:#60A5FA} .url-breakdown .param.acct{color:#34D399} .url-breakdown .param.site{color:#FBBF24}
+  .url-breakdown .arrow-label{display:inline-flex;font-family:'Inter',sans-serif;font-size:8px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-left:6px;padding:2px 5px;border-radius:3px}
+  .url-breakdown .arrow-label.server{background:rgba(251,113,133,0.15);color:#FB7185}
+  .url-breakdown .arrow-label.utm{background:rgba(96,165,250,0.15);color:#60A5FA}
+  .url-breakdown .arrow-label.acct{background:rgba(52,211,153,0.15);color:#34D399}
+  .url-breakdown .arrow-label.site{background:rgba(251,191,36,0.15);color:#FBBF24}
+
+  /* Google mockup */
+  .search-mockup{background:#fff}
+  .search-bar-mock{padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #E5E7EB}
+  .search-bar-mock .glogo{font-size:15px;font-weight:800}
+  .search-bar-mock .glogo span:nth-child(1){color:#4285F4} .search-bar-mock .glogo span:nth-child(2){color:#EA4335} .search-bar-mock .glogo span:nth-child(3){color:#FBBC05} .search-bar-mock .glogo span:nth-child(4){color:#4285F4} .search-bar-mock .glogo span:nth-child(5){color:#34A853} .search-bar-mock .glogo span:nth-child(6){color:#EA4335}
+  .search-bar-mock .sbar{flex:1;background:#F1F3F4;border:1px solid #DFE1E5;border-radius:20px;padding:6px 12px;font-size:12px;color:#333}
+  .search-results{padding:10px 12px 12px}
+  .search-result{margin-bottom:12px}
+  .search-result .sr-url{font-size:10px;color:#70757A;margin-bottom:2px;display:flex;align-items:center;gap:5px}
+  .search-result .sr-url .ad-tag{background:#FFF0F1;color:var(--coral);font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;border:1px solid #FFD6D8}
+  .search-result .sr-title{font-size:13px;font-weight:600;color:#1A0DAB;margin-bottom:2px}
+  .search-result .sr-desc{font-size:11px;color:#4D5156;line-height:1.4}
+  .search-result.organic .sr-title{color:#1A0DAB}
+
+  /* YouTube mockup */
+  .yt-mockup{background:#0F0F0F}
+  .yt-topbar{padding:8px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .yt-topbar .yt-logo{font-size:14px;font-weight:800;color:#fff;display:flex;align-items:center;gap:3px}
+  .yt-topbar .yt-logo .yt-red{background:#FF0000;color:#fff;font-size:9px;padding:2px 4px;border-radius:2px;font-weight:800}
+  .yt-topbar .yt-sbar{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,0.5)}
+  .yt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 12px}
+  .yt-thumb{width:100%;aspect-ratio:16/9;border-radius:6px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .yt-thumb.ad-thumb{background:linear-gradient(135deg,#1a0a0a,#2a1515);border:1px solid rgba(255,68,79,0.2)}
+  .yt-thumb.vid-thumb{background:linear-gradient(135deg,#0a1a0a,#152a15);border:1px solid rgba(255,255,255,0.06)}
+  .yt-thumb .play-btn{width:28px;height:28px;background:rgba(255,0,0,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
+  .yt-thumb .ad-badge{position:absolute;bottom:4px;left:4px;background:var(--coral);color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px}
+  .yt-thumb .dur{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.8);color:#fff;font-size:9px;padding:1px 4px;border-radius:2px;font-weight:600}
+  .yt-info{padding:6px 0 0}
+  .yt-info .yt-title{font-size:11px;font-weight:600;color:#F1F1F1;line-height:1.25;margin-bottom:2px}
+  .yt-info .yt-channel{font-size:10px;color:rgba(255,255,255,0.45)}
+
+  /* Telegram mockup */
+  .tg-mockup{background:#17212B}
+  .tg-header{background:#1D2733;padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.04)}
+  .tg-header .tg-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5CA0D3,#2B6DA0);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+  .tg-header .tg-info .tg-name{font-size:12px;font-weight:600;color:#E8EAED}
+  .tg-header .tg-info .tg-members{font-size:10px;color:rgba(255,255,255,0.35)}
+  .tg-messages{padding:10px 12px}
+  .tg-msg{margin-bottom:8px}
+  .tg-msg .tg-bubble{background:#2B5278;border-radius:0 10px 10px 10px;padding:8px 12px;max-width:92%}
+  .tg-msg .tg-sender{font-size:10px;font-weight:600;color:#5CA0D3;margin-bottom:2px}
+  .tg-msg .tg-text{font-size:11px;color:#D0D4DA;line-height:1.45}
+  .tg-msg .tg-time{font-size:9px;color:rgba(255,255,255,0.3);text-align:right;margin-top:2px}
+  .tg-ad{background:linear-gradient(135deg,rgba(255,68,79,0.12),rgba(255,68,79,0.06));border:1px solid rgba(255,68,79,0.2);border-radius:10px;padding:10px 12px;max-width:92%}
+  .tg-ad-tag{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:5px}
+  .tg-ad-brand{font-size:12px;font-weight:700;color:#FF6B73;margin-bottom:3px}
+  .tg-ad-desc{font-size:10.5px;color:rgba(255,255,255,0.55);line-height:1.4;margin-bottom:6px}
+  .tg-ad-cta{display:inline-block;background:var(--coral);color:#fff;font-size:10px;font-weight:700;padding:4px 12px;border-radius:4px}
+
+  /* ═══ RESPONSIVE ═══ */
+  @media(max-width:1024px){
+    .columns{grid-template-columns:1fr;gap:40px}
+    .col-header{position:static}
+  }
+  @media(max-width:768px){
+    .hero{padding:40px 20px 32px}
+    .columns{padding:0 16px 48px}
+    .detail-grid{grid-template-columns:1fr}
+    .yt-grid{grid-template-columns:1fr}
+    .ga-popup{width:180px;right:6px;bottom:6px}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Dominate the <span class="accent">MT5 ecosystem.</span></h1>
+  <p>Two fronts. Inside MetaQuotes' walled garden and across every external platform where MT5 traders search, learn, and choose brokers.</p>
+</div>
+
+<div class="columns">
+
+  <!-- ═══ LEFT: Part A ═══ -->
+  <div class="column">
+    <div class="col-header">
+      <div class="col-header-inner a">
+        <div class="col-approach a">Approach 1 — Inside the walled garden</div>
+        <h2>MetaQuotes ecosystem</h2>
+        <p>Paid marketing and broker tools native to MQL5.com, the MT5 platform itself, Finteza analytics, and the MetaTrader marketplace.</p>
+      </div>
+    </div>
+
+    <!-- A1: MQ Leads -->
+    <div class="card">
+      <div class="card-head"><div class="card-head-bar">
+        <div class="task-num coral">A1</div>
+        <div class="card-title-area">
+          <h3>MQ Leads: inside the platform at the moment of intent</h3>
+          <div class="task-desc">Direct integration into MT5's broker selection screen</div>
+        </div>
+        <div class="badge coral">$15 / lead</div>
+      </div></div>
+      <div class="card-body">
+        <div class="mockup mt5-window">
+          <div class="mockup-label">What the trader sees</div>
+          <div class="mt5-titlebar"><span>Open an Account</span><div class="dots"><span style="background:#FF5F57"></span><span style="background:#FFBD2E"></span><span style="background:#28CA41"></span></div></div>
+          <div class="mt5-body">
+            <div class="mt5-heading">List of brokers</div>
+            <div class="mt5-label">Select a broker you want to trade through</div>
+            <div class="mt5-input"><span style="font-size:9px">add new broker like 'BrokerName'...</span><span class="btn">Find</span></div>
+            <div class="mt5-broker-list"><div class="mt5-broker-item selected"><span class="broker-dot"></span><strong>Deriv (SVG) LLC</strong></div><div class="mt5-broker-empty"></div></div>
+            <div class="mt5-actions"><span class="mt5-btn primary">Next ›</span><span class="mt5-btn">Cancel</span></div>
+          </div>
+        </div>
+        <p>Finteza checks the trader's geography — <strong>only Deriv's server appears</strong> in the broker list. Competitors are filtered out entirely.</p>
+        <div class="stats-row">
+          <div class="stat"><div class="val coral">$15</div><div class="lbl">Per verified lead</div></div>
+          <div class="stat"><div class="val green">46.8%</div><div class="lbl">Demo → Real</div></div>
+          <div class="stat"><div class="val">134</div><div class="lbl">Funded / mo</div></div>
+        </div>
+        <div class="funnel">
+          <div class="funnel-step"><div class="n">1</div><strong>Download</strong> — MT5 from MetaQuotes (8M+ visitors/mo)</div>
+          <div class="funnel-step"><div class="n">2</div><strong>Launch</strong> — Opens terminal → broker selection</div>
+          <div class="funnel-step"><div class="n">3</div><strong>Filter</strong> — Finteza geo-check; only Deriv shown</div>
+          <div class="funnel-step"><div class="n">4</div><strong>Register</strong> — Verified demo on Deriv server</div>
+          <div class="funnel-step"><div class="n">5</div><strong>Convert</strong> — Onboarding → KYC → deposit</div>
+        </div>
+        <p style="font-size:12px;color:var(--text-caption)">Pay only for verified contacts. Pre-booking locks out competitors in target geos.</p>
+      </div>
+    </div>
+
+    <!-- A2: MQL5 Display -->
+    <div class="card">
+      <div class="card-head"><div class="card-head-bar">
+        <div class="task-num coral">A2</div>
+        <div class="card-title-area">
+          <h3>MQL5.com display ads & community</h3>
+          <div class="task-desc">Banner advertising and marketplace presence</div>
+        </div>
+        <div class="badge green">905% DOAS</div>
+      </div></div>
+      <div class="card-body">
+        <div class="mockup web-mockup">
+          <div class="mockup-label">MQL5.com banner</div>
+          <div class="web-topbar"><span class="logo-text">MQL5</span><div class="nav-items"><span>Forum</span><span class="active">Market</span><span>Signals</span><span>VPS</span></div></div>
+          <div class="web-banner"><div><div class="banner-text">Trade Synthetic Indices on MT5</div><div class="banner-sub">Unique markets 24/7 — only on Deriv</div></div><span class="banner-cta">TRADE NOW</span></div>
+          <div class="web-tickers"><span>EURUSD <span class="up">+0.58%</span></span><span>GOLD <span class="down">-0.43%</span></span><span>BTC <span class="up">+3.24%</span></span></div>
+        </div>
+        <p><strong>Current banners alone</strong> generate $76K deposits on just $8.4K spend — passive ads on one surface of the ecosystem.</p>
+        <div class="stats-row">
+          <div class="stat"><div class="val">$8.4K</div><div class="lbl">Spend / mo</div></div>
+          <div class="stat"><div class="val coral">$76K</div><div class="lbl">Deposits / mo</div></div>
+          <div class="stat"><div class="val green">905%</div><div class="lbl">DOAS</div></div>
+        </div>
+        <p>Beyond banners: <strong>Programs Market</strong> (10K+ EAs), Signals marketplace, forums, and the newer <strong>MetaTrader Markets</strong> hub.</p>
+      </div>
+    </div>
+
+    <!-- A3: Guardian Angel -->
+    <div class="card">
+      <div class="card-head"><div class="card-head-bar">
+        <div class="task-num green">A3</div>
+        <div class="card-title-area">
+          <h3>Guardian Angel: in-platform retention EA</h3>
+          <div class="task-desc">Automated trader coaching via MT5 Expert Advisor</div>
+        </div>
+        <div class="badge green">$5 / user</div>
+      </div></div>
+      <div class="card-body">
+        <div class="mockup ga-scene">
+          <div class="mockup-label">MT5 EA in action</div>
+          <div class="ga-chart">
+            <div class="ga-chart-pair">USDJPY, H4</div>
+            <div class="ga-order-panel"><span class="sell-btn">SELL</span><span class="lot">1.00</span><span class="buy-btn">BUY</span></div>
+            <div class="ga-candles">
+              <div class="ga-candle up" style="height:22px"></div><div class="ga-candle down" style="height:16px"></div><div class="ga-candle up" style="height:13px"></div>
+              <div class="ga-candle down" style="height:18px"></div><div class="ga-candle up" style="height:26px"></div><div class="ga-candle down" style="height:10px"></div>
+              <div class="ga-candle up" style="height:20px"></div><div class="ga-candle up" style="height:24px"></div><div class="ga-candle down" style="height:22px"></div>
+              <div class="ga-candle up" style="height:30px"></div><div class="ga-candle down" style="height:12px"></div><div class="ga-candle up" style="height:35px"></div>
+              <div class="ga-candle up" style="height:40px"></div><div class="ga-candle down" style="height:22px"></div><div class="ga-candle up" style="height:44px"></div>
+              <div class="ga-candle up" style="height:38px"></div><div class="ga-candle down" style="height:26px"></div><div class="ga-candle up" style="height:48px"></div>
+              <div class="ga-candle down" style="height:30px"></div><div class="ga-candle up" style="height:56px"></div><div class="ga-candle up" style="height:62px"></div>
+              <div class="ga-candle down" style="height:42px"></div><div class="ga-candle up" style="height:68px"></div><div class="ga-candle up" style="height:74px"></div>
+            </div>
+          </div>
+          <div class="ga-popup">
+            <div class="ga-popup-title"><div class="ga-name">🛡 Guardian Angel</div><div class="ga-win-controls"><span>—</span><span>✕</span></div></div>
+            <div class="ga-popup-bar"><div class="timestamp">11/13/2019 9:59 AM</div><div class="nav">✉ ◄ 2 of 2</div></div>
+            <div class="ga-popup-body">
+              <div class="ga-angel-icon">🕊</div>
+              <div class="ga-msg-area">If you are new in trading, it is recommended to initially make small trades with as little risk as possible until you gain experience.</div>
+              <div class="ga-side-icons"><div class="sicon">⚙</div><div class="sicon">🌙</div></div>
+            </div>
+            <div class="ga-popup-footer"><div class="ga-btns"><div class="gbtn">📋</div><div class="gbtn">🔊</div></div><div class="ga-links"><span>Tutorial</span><span>Feedback</span><span>About</span></div></div>
+          </div>
+        </div>
+        <p>Runs as an <strong>Expert Advisor inside MT5</strong>. Real-time notifications in 12+ languages — trade stats, risk alerts, educational nudges.</p>
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Retention</h4><p>30% uplift in volume, trades, re-deposits.</p></div>
+          <div class="detail-item"><h4>PPC ROI</h4><p>Extends LTV of paid-acquired users.</p></div>
+          <div class="detail-item"><h4>Demo → Real</h4><p>$1/user limited version nudges conversion.</p></div>
+          <div class="detail-item"><h4>1-Week Setup</h4><p>60-day eval · $900 setup · $10K cap.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A4: Funnel Architecture -->
+    <div class="card capstone">
+      <div class="card-head"><div class="card-head-bar">
+        <div class="task-num coral">A4</div>
+        <div class="card-title-area">
+          <h3>Finteza: tracking + deep links we don't have today</h3>
+          <div class="task-desc">We're blind inside MT5 — Finteza gives us event tracking and pre-configured onboarding</div>
+        </div>
+        <div class="badge coral">Eng. needed</div>
+      </div></div>
+      <div class="card-body">
+        <div class="callout gap-callout" style="margin-top:0">
+          <div class="gap-label">The gap today</div>
+          <p><strong>We can't track anything inside MT5.</strong> Once a trader downloads the platform, we lose them — no attribution, no funnel visibility, no way to know which ad brought them or what they did next.</p>
+        </div>
+
+        <div class="callout unlock-callout">
+          <div class="unlock-label">What Finteza unlocks</div>
+          <p><strong>Finteza</strong> is MetaQuotes' native analytics for MT5. It gives us two things: <strong>end-to-end event tracking</strong> (ad click through to first trade) and <strong>enhanced deep links</strong> that pre-configure MT5 on install.</p>
+        </div>
+
+        <p style="margin-top:14px">Deep links open MT5 with <strong>Deriv's server pre-selected</strong> and the <strong>account type matching the ad</strong> — live ad shows live form, demo ad shows demo. No server search, no competitors, no mismatch.</p>
+
+        <div class="url-breakdown">
+          <span class="base">https://download.mql5.com/.../mt5/ios?</span><br>
+          <span class="param server">server=DerivSVG-Server</span> <span class="arrow-label server">← Deriv only, competitors hidden</span><br>
+          <span class="param utm">&amp;utm_campaign=Africa_Q1</span> <span class="arrow-label utm">← Campaign tracking</span><br>
+          <span class="param utm">&amp;utm_source=YouTube_Ad</span> <span class="arrow-label utm">← Source attribution</span><br>
+          <span class="param site">&amp;master_site_id=DRV_001</span> <span class="arrow-label site">← Finteza analytics ID</span><br>
+          <span class="param acct">&amp;account_type=2</span> <span class="arrow-label acct">← Matches the ad shown</span>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><h4>Server Pre-Select</h4><p>Deriv auto-selected. All competitors filtered out.</p></div>
+          <div class="detail-item"><h4>Account Type Match</h4><p>Type=2 for live, type=1 for demo. Matches the ad.</p></div>
+          <div class="detail-item"><h4>Full Attribution</h4><p>UTM + Finteza ID written into MT5 Lead Source fields.</p></div>
+          <div class="detail-item"><h4>Event Tracking</h4><p>Ad click → install → signup → KYC → deposit → trade. Not possible today.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RIGHT: Part B ═══ -->
+  <div class="column">
+    <div class="col-header">
+      <div class="col-header-inner b">
+        <div class="col-approach b">Approach 2 — Capture external demand</div>
+        <h2>Platforms where MT5 traders search</h2>
+        <p>Google, YouTube, Telegram, and niche ad platforms outside MetaQuotes where traders actively look for MT5 brokers and content.</p>
+      </div>
+    </div>
+
+    <!-- B1: Google Search -->
+    <div class="card">
+      <div class="card-head"><div class="card-head-bar">
+        <div class="task-num blue">B1</div>
+        <div class="card-title-area">
+          <h3>Google Search Ads: high-intent MT5 queries</h3>
+          <div class="task-desc">Capture traders actively searching for an MT5 broker</div>
+        </div>
+        <div class="badge blue">Highest intent</div>
+      </div></div>
+      <div class="card-body">
+        <div class="mockup search-mockup">
+          <div class="mockup-label">Search results</div>
+          <div class="search-bar-mock"><div class="glogo"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div><div class="sbar">best MT5 broker 2025</div></div>
+          <div class="search-results">
+            <div class="search-result"><div class="sr-url"><span class="ad-tag">Sponsored</span> deriv.com/mt5</div><div class="sr-title">Trade on MT5 with Deriv — Synthetics, Forex & More</div><div class="sr-desc">Open a free MT5 account in minutes. Unique synthetic indices 24/7. Pre-configured setup.</div></div>
+            <div class="search-result organic"><div class="sr-url">forexbrokers.com › mt5</div><div class="sr-title">Best MT5 Brokers 2025 — Expert Reviews</div><div class="sr-desc">We tested 47 MT5 brokers across spreads, execution, features...</div></div>
+          </div>
+        </div>
+        <p>People typing "best MT5 broker" have chosen MT5 — they just need a broker. <strong>Deriv should be the first answer.</strong></p>
+        <div class="detail-grid">
+          <div class="detail-item blue-accent"><h4>Transactional</h4><p>"best MT5 broker", "MT5 download", "open MT5 account"</p></div>
+          <div class="detail-item blue-accent"><h4>Comparison</h4><p>"MT5 vs MT4", "which is better"</p></div>
+          <div class="detail-item blue-accent"><h4>Long-Tail</h4><p>"MT5 EA setup", "best VPS for MT5"</p></div>
+          <div class="detail-item blue-accent"><h4>Negatives</h4><p>"crack", "free download", job terms</p></div>
+        </div>
+        <p style="font-size:12px;color:var(--text-caption)">Landing pages should deep-link to MT5 install with Deriv pre-configured — not deriv.com.</p>
+      </div>
+    </div>
+
+    <!-- B2: YouTube -->
+    <div class="card">
+      <div class="card-head"><div class="card-head-bar">
+        <div class="task-num blue">B2</div>
+        <div class="card-title-area">
+          <h3>YouTube Ads: own the MT5 content ecosystem</h3>
+          <div class="task-desc">Search ads, in-stream pre-roll, and creator partnerships</div>
+        </div>
+        <div class="badge blue">All levels</div>
+      </div></div>
+      <div class="card-body">
+        <div class="mockup yt-mockup">
+          <div class="mockup-label">YouTube search</div>
+          <div class="yt-topbar"><div class="yt-logo"><span class="yt-red">▶</span> YouTube</div><div class="yt-sbar">MT5 best broker 2025</div></div>
+          <div class="yt-grid">
+            <div class="yt-video"><div class="yt-thumb ad-thumb"><span class="play-btn">▶</span><span class="ad-badge">AD</span></div><div class="yt-info"><div class="yt-title">Trade Synthetics on MT5 — Only on Deriv</div><div class="yt-channel">Deriv · Sponsored</div></div></div>
+            <div class="yt-video"><div class="yt-thumb vid-thumb"><span class="play-btn">▶</span><span class="dur">14:32</span></div><div class="yt-info"><div class="yt-title">Best MT5 Brokers 2025 — Top 5</div><div class="yt-channel">ForexMentor · 245K views</div></div></div>
+          </div>
+        </div>
+        <p>Where traders <strong>learn MT5, compare brokers, and watch live trading</strong>.</p>
+        <div class="detail-grid">
+          <div class="detail-item blue-accent"><h4>Search Ads</h4><p>"MT5 tutorial", "best MT5 broker"</p></div>
+          <div class="detail-item blue-accent"><h4>In-Stream</h4><p>Pre-roll on MT5 tutorial channels</p></div>
+          <div class="detail-item blue-accent"><h4>Sponsored</h4><p>Partner with MT5 educators for reviews</p></div>
+          <div class="detail-item blue-accent"><h4>Own Channel</h4><p>Deriv MT5 tutorials + synthetics content</p></div>
+        </div>
+        <div class="callout blue-callout"><p><strong>Double duty:</strong> Paid ads drive immediate acquisition. Organic content compounds over time.</p></div>
+      </div>
+    </div>
+
+    <!-- B3: Telegram -->
+    <div class="card">
+      <div class="card-head"><div class="card-head-bar">
+        <div class="task-num blue">B3</div>
+        <div class="card-title-area">
+          <h3>Telegram, Discord & social communities</h3>
+          <div class="task-desc">Sponsored ads and partnerships in active trading groups</div>
+        </div>
+        <div class="badge amber">Africa + Latam</div>
+      </div></div>
+      <div class="card-body">
+        <div class="mockup tg-mockup">
+          <div class="mockup-label">Trading group</div>
+          <div class="tg-header"><div class="tg-avatar">MT</div><div class="tg-info"><div class="tg-name">MT5 Traders Africa 🇳🇬🇬🇭</div><div class="tg-members">12,847 members, 342 online</div></div></div>
+          <div class="tg-messages">
+            <div class="tg-msg"><div class="tg-bubble"><div class="tg-sender">Admin</div><div class="tg-text">📊 XAUUSD BUY @ 2641.50<br>TP: 2658 | SL: 2632 | MT5 only</div><div class="tg-time">10:32 AM</div></div></div>
+            <div class="tg-msg"><div class="tg-bubble"><div class="tg-sender">@TraderKwame</div><div class="tg-text">Which broker for synthetics? Need good MT5 setup</div><div class="tg-time">10:35 AM</div></div></div>
+            <div class="tg-msg"><div class="tg-ad"><div class="tg-ad-tag">Sponsored</div><div class="tg-ad-body"><div class="tg-ad-brand">Deriv — Trade Synthetic Indices on MT5</div><div class="tg-ad-desc">The only broker with 24/7 synthetic markets. Open a free MT5 account in minutes.</div><div class="tg-ad-cta">Open Account →</div></div></div></div>
+          </div>
+        </div>
+        <p>Traders discover brokers through <strong>trusted communities</strong> — especially in Africa and Latam.</p>
+        <div class="detail-grid">
+          <div class="detail-item blue-accent"><h4>Signal Groups</h4><p>Partner with providers in target geos.</p></div>
+          <div class="detail-item blue-accent"><h4>Telegram Ads</h4><p>Target by channel + geography.</p></div>
+          <div class="detail-item blue-accent"><h4>Discord Servers</h4><p>AMAs, community presence, education.</p></div>
+          <div class="detail-item blue-accent"><h4>Influencers</h4><p>Authentic endorsement at scale.</p></div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+  </div>
+</body>
+</html>
