@@ -1,0 +1,343 @@
+import { useState, useMemo, useEffect } from "react";
+
+const WORKSTREAMS = [
+  "All",
+  "Nargis AI Agent",
+  "GTM Strategy",
+  "Bing Ads Audit",
+  "PPC Campaign Audit",
+  "Budget & CPA",
+  "LTV & Data Modelling",
+  "App Campaigns",
+  "YouTube",
+  "Partner Data",
+  "Team & Process",
+];
+
+const STATUS_OPTIONS = ["Not Started", "In Progress", "Blocked", "Done"];
+
+const INITIAL_TASKS = [
+  // ── Nargis AI Agent ──
+  { id: 1, workstream: "Nargis AI Agent", task: "Draft v1 Campaign Analysis skill file — metric definitions, guardrails, diagnostic categories, Slack workflow", owner: "Rakshit + Aswathi", deadline: "2026-07-31", status: "In Progress", source: "Jul 22 — AI Agent Strategy" },
+  { id: 2, workstream: "Nargis AI Agent", task: "Compile compliance guidelines, country tiers, naming conventions and upload to long-term memory", owner: "Naomi + Team", deadline: "ASAP", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
+  { id: 3, workstream: "Nargis AI Agent", task: "Test Nargis prompt/code with Campaign Analysis skill on live data", owner: "Aswathi", deadline: "2026-07-23", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
+  { id: 4, workstream: "Nargis AI Agent", task: "Initiate weekly optimisation calls powered by Nargis", owner: "Team", deadline: "2026-07-27", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
+  { id: 5, workstream: "Nargis AI Agent", task: "Update campaign optimisation document — remove old sections, add new analysis flow", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
+  { id: 6, workstream: "Nargis AI Agent", task: "Define ownership per skill (campaign analysis, competitive analysis, etc.)", owner: "Team Leads", deadline: "", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
+  { id: 7, workstream: "Nargis AI Agent", task: "Pilot 3–4 skills and test outputs for alignment", owner: "Team", deadline: "", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
+  { id: 8, workstream: "Nargis AI Agent", task: "Establish Slack process to log key decisions into agent long-term memory", owner: "Team", deadline: "", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
+
+  // ── GTM Strategy ──
+  { id: 9, workstream: "GTM Strategy", task: "Structure GTM AI agent concept — capabilities, data inputs, strategic outputs", owner: "Shivank", deadline: "2026-07-25", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 10, workstream: "GTM Strategy", task: "Prepare briefing for AI/engineering team (Ankit) on GTM agent requirements", owner: "Shivank + Rakshit", deadline: "2026-07-28", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 11, workstream: "GTM Strategy", task: "Draft new GTM plan from scratch — select target countries, outline core strategy", owner: "Shivank", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 12, workstream: "GTM Strategy", task: "Research GTM best practices for online trading — key metrics, early success indicators", owner: "Shivank", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 13, workstream: "GTM Strategy", task: "Run one full GTM cycle (plan → execute → measure) by end of August", owner: "Shivank + Rakshit", deadline: "2026-08-31", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 14, workstream: "GTM Strategy", task: "Create GTM project tracker to monitor progress and resource blockers", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 15, workstream: "GTM Strategy", task: "Integrate localisation and communication planning into GTM scope", owner: "Shivank", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+
+  // ── Bing Ads Audit ──
+  { id: 16, workstream: "Bing Ads Audit", task: "Pull campaign-level performance reports for 2023 and 2024 for Microsoft rep", owner: "Aswathi", deadline: "ASAP", status: "Not Started", source: "Jul 22 — Bing Ads Audit" },
+  { id: 17, workstream: "Bing Ads Audit", task: "Provide top-performing geos list (Jamaica, Pakistan, etc.) from 2023-24", owner: "Aswathi", deadline: "ASAP", status: "Not Started", source: "Jul 22 — Bing Ads Audit" },
+  { id: 18, workstream: "Bing Ads Audit", task: "Internal goal audit — check if conversion goals were changed (virtual signup → real account → funded)", owner: "Aswathi", deadline: "ASAP", status: "Not Started", source: "Jul 22 — Bing Ads Audit" },
+  { id: 19, workstream: "Bing Ads Audit", task: "Plan customer match list — pull email lists of high-value clients from 2023-24", owner: "Aswathi + Rakshit", deadline: "", status: "Not Started", source: "Jul 22 — Bing Ads Audit" },
+  { id: 20, workstream: "Bing Ads Audit", task: "Microsoft rep delivers full account audit and LatAm recommendations", owner: "Microsoft Rep", deadline: "2026-07-28", status: "Not Started", source: "Jul 22 — Bing Ads Audit" },
+  { id: 21, workstream: "Bing Ads Audit", task: "Restructure campaigns region-by-region starting with LatAm (Jamaica first)", owner: "Aswathi + Microsoft Rep", deadline: "", status: "Not Started", source: "Jul 22 — Bing Ads Audit" },
+  { id: 22, workstream: "Bing Ads Audit", task: "Schedule recurring monthly check-in call for Bing performance", owner: "Microsoft Rep", deadline: "", status: "Not Started", source: "Jul 22 — Bing Ads Audit" },
+
+  // ── PPC Campaign Audit ──
+  { id: 23, workstream: "PPC Campaign Audit", task: "Full audit of all 52 active campaigns (up to 48 months of data) — keep/pause/optimise", owner: "Naomi + Rakshit + Ishank", deadline: "2026-07-22", status: "In Progress", source: "Jul 17 — PPC Performance Audit" },
+  { id: 24, workstream: "PPC Campaign Audit", task: "Diagnose root cause of LTD rate decline (8-10% → 2-3%)", owner: "All", deadline: "", status: "In Progress", source: "Jul 17 — PPC Performance Audit" },
+  { id: 25, workstream: "PPC Campaign Audit", task: "Validate and document campaign goals/settings ('Maximize conversions/signups' applied correctly)", owner: "Naomi", deadline: "2026-07-22", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 26, workstream: "PPC Campaign Audit", task: "Optimisation plan to reduce CPA without budget increases — targeting, keywords, creatives, bidding per campaign", owner: "Naomi", deadline: "2026-07-24", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 27, workstream: "PPC Campaign Audit", task: "Investigate December pause/restart impact — which campaigns paused, reasons, post-restart trends", owner: "Naomi", deadline: "2026-07-23", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 28, workstream: "PPC Campaign Audit", task: "Audit March/June anomalies — ad disapprovals, date errors, delivery constraints", owner: "Naomi", deadline: "2026-07-23", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 29, workstream: "PPC Campaign Audit", task: "Assess daily budgets vs actual spend/delivery constraints — propose adjustments", owner: "Naomi", deadline: "2026-07-22", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 30, workstream: "PPC Campaign Audit", task: "Keyword and targeting review — address wrong clicks, rising CPC, refine negatives and match types", owner: "Naomi", deadline: "2026-07-24", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 31, workstream: "PPC Campaign Audit", task: "Check Jamaica campaign for UTM/lead tracking issues (only platform data showing)", owner: "Naomi", deadline: "2026-07-22", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 32, workstream: "PPC Campaign Audit", task: "Create consolidated partner campaign dashboard (cost + revenue metrics)", owner: "Naomi", deadline: "", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 33, workstream: "PPC Campaign Audit", task: "Remove misnamed/inactive campaign entry from tracking sheet", owner: "Naomi", deadline: "2026-07-19", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 34, workstream: "PPC Campaign Audit", task: "Escalate landing page performance and Core Web Vitals analysis to dev (Robin + Ashwin)", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 35, workstream: "PPC Campaign Audit", task: "Add search-term-level tracking to investigation board (Lord/Brain)", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+  { id: 36, workstream: "PPC Campaign Audit", task: "Discuss feasibility of reviving paused Africa brand campaign (old Google account/GFC approvals)", owner: "Naomi", deadline: "", status: "Not Started", source: "Jul 17 — PPC Performance Audit" },
+
+  // ── Budget & CPA ──
+  { id: 37, workstream: "Budget & CPA", task: "Cap annual spend at ₹5M — allocate remaining ₹1.3-1.5M across Aug-Dec (₹2,36,700/month)", owner: "Rakshit + Naomi", deadline: "", status: "In Progress", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 38, workstream: "Budget & CPA", task: "Finalise list of campaigns to keep and assign spend within monthly budget", owner: "Rakshit + Naomi", deadline: "2026-07-14", status: "In Progress", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 39, workstream: "Budget & CPA", task: "Pull target CPA data per region (brand vs non-brand) for guardrails framework", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 40, workstream: "Budget & CPA", task: "Create 'Do's and Don'ts' campaign guardrails replacing old core-vs-experiment model", owner: "Rakshit + Naomi", deadline: "", status: "Not Started", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 41, workstream: "Budget & CPA", task: "Enforce 20% Month 1 ROAS benchmark — auto-pause campaigns below threshold", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 42, workstream: "Budget & CPA", task: "Document process to re-evaluate paused campaigns at 6 months", owner: "Rakshit", deadline: "2026-07-31", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 43, workstream: "Budget & CPA", task: "Reduce PPC client acquisition spend — cap at ₹3K-4K/month for now", owner: "Rakshit's Team", deadline: "", status: "In Progress", source: "Jul 10 — Team Sync" },
+
+  // ── LTV & Data Modelling ──
+  { id: 44, workstream: "LTV & Data Modelling", task: "Build Bayesian LTV model — blend historical + current cohort data", owner: "Data Scientist", deadline: "2026-07-31", status: "In Progress", source: "Jul 10 — LTV Modelling" },
+  { id: 45, workstream: "LTV & Data Modelling", task: "Calculate per-geo average user lifespan from historic data", owner: "Data Scientist", deadline: "2026-07-24", status: "Not Started", source: "Jul 10 — LTV Modelling" },
+  { id: 46, workstream: "LTV & Data Modelling", task: "Provision access to BI 'gold layer' datasets in BigQuery for data scientist", owner: "Rakshit + Naomi", deadline: "2026-07-15", status: "Not Started", source: "Jul 10 — LTV Modelling" },
+  { id: 47, workstream: "LTV & Data Modelling", task: "Request dedicated data analyst/engineer for cleaning and structuring data", owner: "Naomi + Rakshit", deadline: "2026-07-16", status: "Not Started", source: "Jul 10 — LTV Modelling" },
+  { id: 48, workstream: "LTV & Data Modelling", task: "Define single source of truth tables and publish query documentation", owner: "Rakshit + Jatin", deadline: "2026-07-20", status: "Not Started", source: "Jul 10 — LTV Modelling" },
+  { id: 49, workstream: "LTV & Data Modelling", task: "Develop predictive LTV model for signal engineering — pass conversion value within 7-30 days", owner: "Rakshit / Data Science", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 50, workstream: "LTV & Data Modelling", task: "Fix FTD reporting — add campaign name, spend, region columns to FTD source data upstream", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 51, workstream: "LTV & Data Modelling", task: "Resolve social media campaigns appearing in PPC dashboard (log with Jatin)", owner: "Naomi", deadline: "", status: "Done", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 52, workstream: "LTV & Data Modelling", task: "Get Jatin brought into the team — talk to David for approval", owner: "Shivank", deadline: "", status: "Not Started", source: "Jul 10 — Team Sync" },
+
+  // ── App Campaigns ──
+  { id: 53, workstream: "App Campaigns", task: "Appeal all disapproved app campaigns (licensed + non-licensed countries)", owner: "Shivank", deadline: "2026-06-30", status: "In Progress", source: "Jun 30 — Project Phoenix Q3" },
+  { id: 54, workstream: "App Campaigns", task: "Submit Google G2 Complex Financial Products verification", owner: "Anmol + Compliance", deadline: "Pre-campaign", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 55, workstream: "App Campaigns", task: "Create new Google/Bing ad accounts (Trading brand + Educational) with fresh emails", owner: "Anmol", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 56, workstream: "App Campaigns", task: "Launch branded search campaigns in ZA/UAE post G2 approval", owner: "Anmol", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 57, workstream: "App Campaigns", task: "Set up educational funnel on Meta — e-book, UGC, localisation (Colombia/Thailand)", owner: "Anmol", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 58, workstream: "App Campaigns", task: "Implement offline conversion tracking (GCLID/FBCLID passback)", owner: "Anmol", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 59, workstream: "App Campaigns", task: "Implement Meta Conversion API with dev team", owner: "Anmol", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 60, workstream: "App Campaigns", task: "ASO localisation rollout — next priority countries after Kenya + Brazil", owner: "Team", deadline: "", status: "In Progress", source: "Jun 24 — App Installs Review" },
+  { id: 61, workstream: "App Campaigns", task: "Web-to-app banner placement in headers across all key pages and subdomains", owner: "Team", deadline: "", status: "In Progress", source: "Jun 24 — App Installs Review" },
+  { id: 62, workstream: "App Campaigns", task: "Deep linking — confirm latest app version support, create behaviour matrix (iOS/Android/desktop)", owner: "Mobile Team", deadline: "", status: "In Progress", source: "Jun 24 — App Installs Review" },
+  { id: 63, workstream: "App Campaigns", task: "Launch re-engagement campaigns — demo users, unfunded accounts, lapsed traders (D-Trader bonus)", owner: "Team", deadline: "", status: "Not Started", source: "Jun 29 — Project Phoenix Marketing Sync" },
+  { id: 64, workstream: "App Campaigns", task: "Build DAU dashboard — previous day's number + trend line over time", owner: "Team", deadline: "", status: "Not Started", source: "Jun 29 — Project Phoenix Marketing Sync" },
+  { id: 65, workstream: "App Campaigns", task: "Confirm trademark registration and submit to Google for brand protections", owner: "Anmol", deadline: "", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+  { id: 66, workstream: "App Campaigns", task: "Crypto exchange feature — set up new separate app account to test without risking main app", owner: "Product Team", deadline: "", status: "Not Started", source: "Jun 29 — Project Phoenix Marketing Sync" },
+
+  // ── YouTube ──
+  { id: 67, workstream: "YouTube", task: "Arrange AI-first creative session with Zach — ABCD framework for video creation", owner: "Michelle (Google)", deadline: "2026-07-14", status: "Not Started", source: "Jun 30 — Project Phoenix Q3" },
+  { id: 68, workstream: "YouTube", task: "Identify and share 6 priority target markets for YouTube launch", owner: "Shivank", deadline: "2026-07-03", status: "Not Started", source: "Jun 30 — Project Phoenix Q3" },
+  { id: 69, workstream: "YouTube", task: "Complete YouTube intelligence dashboard (API → market size → content patterns → briefs → tracking)", owner: "Rakshit", deadline: "2026-09-22", status: "In Progress", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 70, workstream: "YouTube", task: "Define priority topics/countries and success metrics for share-of-voice growth", owner: "Rakshit + Team", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 71, workstream: "YouTube", task: "Close the video production pipeline gap — integrate with content/creative team", owner: "Team", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 72, workstream: "YouTube", task: "Connect YouTube/ASO agents to creative/video production engines", owner: "Rakshit", deadline: "2026-08-31", status: "Not Started", source: "Jul 19 — Digital Marketing Strategy" },
+
+  // ── Partner Data ──
+  { id: 73, workstream: "Partner Data", task: "Investigate API access for partner data — contact Mahantesh and Ankarsh re: Superbase/Jarvis", owner: "Michael", deadline: "", status: "Not Started", source: "Jul 17 — Project Firefly" },
+  { id: 74, workstream: "Partner Data", task: "Build automated partner data distribution system for country managers", owner: "Michael", deadline: "", status: "Not Started", source: "Jul 17 — Project Firefly" },
+  { id: 75, workstream: "Partner Data", task: "Align on partner onboarding definitions — lead vs onboarded vs active (zero revenue)", owner: "Team", deadline: "", status: "Done", source: "Jul 17 — Project Firefly" },
+
+  // ── Team & Process ──
+  { id: 76, workstream: "Team & Process", task: "Launch weekly peer learning sessions — one person presents each week (rotation)", owner: "Rakshit", deadline: "2026-07-27", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 77, workstream: "Team & Process", task: "Weekly AI-driven optimisation calls — agent surfaces opportunities, team discusses", owner: "Team", deadline: "2026-07-27", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 78, workstream: "Team & Process", task: "Each team member: set up, train, and document assigned AI agent (agent-per-owner model)", owner: "All", deadline: "2026-10-22", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 79, workstream: "Team & Process", task: "Adopt plan.md + critique.md workflow in Claude Code across all projects", owner: "All", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+  { id: 80, workstream: "Team & Process", task: "Conduct team skills assessment / appraisal — align strengths with upcoming projects", owner: "Naomi", deadline: "", status: "Not Started", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 81, workstream: "Team & Process", task: "Perfect retargeting strategy — segment pixel audiences by stage", owner: "Naomi + Team", deadline: "", status: "Not Started", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 82, workstream: "Team & Process", task: "Book MQL campaigns — 12-month for proven markets (Botswana, Nigeria), shorter for tests", owner: "Rakshit", deadline: "", status: "Not Started", source: "Jul 14 — Marketing Post-Mortem" },
+  { id: 83, workstream: "Team & Process", task: "Assess $5M VIP deal for Video & Demand Gen — review performance through July", owner: "Shivank", deadline: "2026-07-31", status: "Not Started", source: "Jun 30 — Project Phoenix Q3" },
+  { id: 84, workstream: "Team & Process", task: "Share Q3 budget forecast (Jul-Aug) with leadership for alignment", owner: "Shivank", deadline: "2026-07-03", status: "Not Started", source: "Jun 30 — Project Phoenix Q3" },
+  { id: 85, workstream: "Team & Process", task: "Propose name and visual identity for the new 'engine' initiative", owner: "Team", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
+];
+
+const statusColors = {
+  "Not Started": { bg: "rgba(120,120,140,0.08)", text: "#6b6b80", dot: "#9d9db0" },
+  "In Progress": { bg: "rgba(56,132,244,0.08)", text: "#2563eb", dot: "#3b82f6" },
+  "Blocked": { bg: "rgba(239,68,68,0.07)", text: "#dc2626", dot: "#ef4444" },
+  "Done": { bg: "rgba(22,163,74,0.08)", text: "#15803d", dot: "#22c55e" },
+};
+
+function StatusBadge({ status }) {
+  const c = statusColors[status];
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, letterSpacing: 0.3, background: c.bg, color: c.text, whiteSpace: "nowrap" }}>
+      <span style={{ width: 6, height: 6, borderRadius: "50%", background: c.dot, flexShrink: 0 }} />
+      {status}
+    </span>
+  );
+}
+
+export default function PlaudTaskTracker() {
+  const [tasks, setTasks] = useState(() => {
+    return INITIAL_TASKS;
+  });
+  const [filter, setFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const [expandedId, setExpandedId] = useState(null);
+
+  const filtered = useMemo(() => {
+    return tasks.filter((t) => {
+      if (filter !== "All" && t.workstream !== filter) return false;
+      if (statusFilter !== "All" && t.status !== statusFilter) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return (
+          t.task.toLowerCase().includes(q) ||
+          t.owner.toLowerCase().includes(q) ||
+          t.source.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [tasks, filter, statusFilter, search]);
+
+  const stats = useMemo(() => {
+    const s = { total: tasks.length };
+    STATUS_OPTIONS.forEach((st) => {
+      s[st] = tasks.filter((t) => t.status === st).length;
+    });
+    return s;
+  }, [tasks]);
+
+  const updateStatus = (id, newStatus) => {
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
+  };
+
+  const workstreamCounts = useMemo(() => {
+    const counts = {};
+    WORKSTREAMS.slice(1).forEach((ws) => {
+      counts[ws] = tasks.filter((t) => t.workstream === ws).length;
+    });
+    return counts;
+  }, [tasks]);
+
+  return (
+    <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", maxWidth: 960, margin: "0 auto", padding: "24px 16px", color: "var(--text-color, #1a1a2e)" }}>
+      {/* Header */}
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: -0.5, color: "var(--text-color, #111)" }}>
+          Plaud Task Tracker
+        </h1>
+        <p style={{ fontSize: 13, color: "var(--text-secondary, #666)", margin: "4px 0 0", lineHeight: 1.4 }}>
+          {stats.total} tasks extracted from 30 days of recordings (Jun 22 – Jul 22, 2026)
+        </p>
+      </div>
+
+      {/* Stats row */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+        {STATUS_OPTIONS.map((st) => (
+          <button
+            key={st}
+            onClick={() => setStatusFilter(statusFilter === st ? "All" : st)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", borderRadius: 8,
+              border: statusFilter === st ? `2px solid ${statusColors[st].dot}` : "1px solid var(--border-color, #e2e2e8)",
+              background: statusFilter === st ? statusColors[st].bg : "var(--bg-secondary, #fafafa)",
+              cursor: "pointer", fontSize: 12, fontWeight: 600,
+              color: statusColors[st].text,
+              transition: "all 0.15s"
+            }}
+          >
+            <span style={{ fontSize: 16, fontWeight: 700 }}>{stats[st]}</span>
+            {st}
+          </button>
+        ))}
+        {statusFilter !== "All" && (
+          <button
+            onClick={() => setStatusFilter("All")}
+            style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid var(--border-color, #e2e2e8)", background: "transparent", cursor: "pointer", fontSize: 12, color: "var(--text-secondary, #888)" }}
+          >
+            Clear filter ✕
+          </button>
+        )}
+      </div>
+
+      {/* Workstream tabs */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+        {WORKSTREAMS.map((ws) => (
+          <button
+            key={ws}
+            onClick={() => setFilter(ws)}
+            style={{
+              padding: "5px 12px", borderRadius: 6, fontSize: 11.5, fontWeight: filter === ws ? 700 : 500,
+              border: "none",
+              background: filter === ws ? "var(--text-color, #1a1a2e)" : "var(--bg-secondary, #f0f0f4)",
+              color: filter === ws ? "var(--bg-color, #fff)" : "var(--text-secondary, #555)",
+              cursor: "pointer", transition: "all 0.15s",
+              whiteSpace: "nowrap"
+            }}
+          >
+            {ws}{ws !== "All" ? ` (${workstreamCounts[ws] || 0})` : ""}
+          </button>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div style={{ marginBottom: 16 }}>
+        <input
+          type="text"
+          placeholder="Search tasks, owners, or sources…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            width: "100%", padding: "9px 14px", borderRadius: 8,
+            border: "1px solid var(--border-color, #ddd)", fontSize: 13,
+            background: "var(--bg-color, #fff)", color: "var(--text-color, #111)",
+            outline: "none", boxSizing: "border-box"
+          }}
+        />
+      </div>
+
+      {/* Showing count */}
+      <p style={{ fontSize: 12, color: "var(--text-secondary, #888)", margin: "0 0 12px" }}>
+        Showing {filtered.length} of {stats.total} tasks
+      </p>
+
+      {/* Task list */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {filtered.map((t) => {
+          const isExpanded = expandedId === t.id;
+          return (
+            <div
+              key={t.id}
+              style={{
+                border: "1px solid var(--border-color, #e8e8ee)",
+                borderRadius: 10,
+                padding: "12px 14px",
+                background: "var(--bg-color, #fff)",
+                cursor: "pointer",
+                transition: "box-shadow 0.15s"
+              }}
+              onClick={() => setExpandedId(isExpanded ? null : t.id)}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, lineHeight: 1.45, color: "var(--text-color, #1a1a2e)" }}>
+                    {t.task}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
+                    <span style={{
+                      fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.6,
+                      color: "var(--text-secondary, #888)", background: "var(--bg-secondary, #f3f3f7)",
+                      padding: "2px 8px", borderRadius: 4
+                    }}>
+                      {t.workstream}
+                    </span>
+                    <StatusBadge status={t.status} />
+                  </div>
+                </div>
+              </div>
+              {isExpanded && (
+                <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border-color, #eee)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", fontSize: 12.5, color: "var(--text-secondary, #555)" }}>
+                    <div><span style={{ fontWeight: 600, color: "var(--text-color, #333)" }}>Owner:</span> {t.owner}</div>
+                    <div><span style={{ fontWeight: 600, color: "var(--text-color, #333)" }}>Deadline:</span> {t.deadline || "—"}</div>
+                    <div style={{ gridColumn: "1 / -1" }}><span style={{ fontWeight: 600, color: "var(--text-color, #333)" }}>Source:</span> {t.source}</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+                    {STATUS_OPTIONS.map((st) => (
+                      <button
+                        key={st}
+                        onClick={(e) => { e.stopPropagation(); updateStatus(t.id, st); }}
+                        style={{
+                          padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600,
+                          border: t.status === st ? `2px solid ${statusColors[st].dot}` : "1px solid var(--border-color, #ddd)",
+                          background: t.status === st ? statusColors[st].bg : "transparent",
+                          color: statusColors[st].text,
+                          cursor: "pointer", transition: "all 0.1s"
+                        }}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {filtered.length === 0 && (
+        <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-secondary, #999)", fontSize: 14 }}>
+          No tasks match your filters
+        </div>
+      )}
+    </div>
+  );
+}
