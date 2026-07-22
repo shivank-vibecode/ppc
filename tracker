@@ -1,5 +1,232 @@
-import { useState, useMemo, useEffect } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plaud Task Tracker</title>
+<style>
+  :root {
+    --bg-color: #ffffff;
+    --bg-secondary: #f7f7fa;
+    --text-color: #14141f;
+    --text-secondary: #6b6b7d;
+    --border-color: #e6e6ee;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+    line-height: 1.4;
+  }
+  .stats-row {
+    display: flex;
+    gap: 8px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .stat-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .stat-btn .count { font-size: 16px; font-weight: 700; }
+  .stat-btn.active { border-width: 2px; }
+  .clear-filter-btn {
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: inherit;
+  }
+  .ws-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .ws-tab {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+    border: none;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .ws-tab.active {
+    font-weight: 700;
+    background: var(--text-color);
+    color: var(--bg-color);
+  }
+  .search-box {
+    width: 100%;
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 13px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    outline: none;
+    margin-bottom: 16px;
+    font-family: inherit;
+  }
+  .showing-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0 0 12px;
+  }
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .task-card {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: var(--bg-color);
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+  .task-card:hover {
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .task-title {
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .task-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .ws-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .task-detail {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    display: none;
+  }
+  .task-card.expanded .task-detail {
+    display: block;
+  }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+  }
+  .detail-grid .full { grid-column: 1 / -1; }
+  .detail-grid strong { color: var(--text-color); font-weight: 600; }
+  .status-btn-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .status-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.1s;
+    font-family: inherit;
+  }
+  .status-btn.active { border-width: 2px; }
+  .empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h1>Plaud Task Tracker</h1>
+    <p class="subtitle" id="subtitle"></p>
+  </div>
 
+  <div class="stats-row" id="statsRow"></div>
+  <div class="ws-tabs" id="wsTabs"></div>
+
+  <input type="text" class="search-box" id="searchBox" placeholder="Search tasks, owners, or sources…">
+
+  <p class="showing-count" id="showingCount"></p>
+  <div class="task-list" id="taskList"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">No tasks match your filters</div>
+</div>
+
+<script>
 const WORKSTREAMS = [
   "All",
   "Nargis AI Agent",
@@ -16,7 +243,14 @@ const WORKSTREAMS = [
 
 const STATUS_OPTIONS = ["Not Started", "In Progress", "Blocked", "Done"];
 
-const INITIAL_TASKS = [
+const STATUS_COLORS = {
+  "Not Started": { bg: "rgba(120,120,140,0.08)", text: "#6b6b80", dot: "#9d9db0" },
+  "In Progress": { bg: "rgba(56,132,244,0.08)", text: "#2563eb", dot: "#3b82f6" },
+  "Blocked": { bg: "rgba(239,68,68,0.07)", text: "#dc2626", dot: "#ef4444" },
+  "Done": { bg: "rgba(22,163,74,0.08)", text: "#15803d", dot: "#22c55e" },
+};
+
+let tasks = [
   // ── Nargis AI Agent ──
   { id: 1, workstream: "Nargis AI Agent", task: "Draft v1 Campaign Analysis skill file — metric definitions, guardrails, diagnostic categories, Slack workflow", owner: "Rakshit + Aswathi", deadline: "2026-07-31", status: "In Progress", source: "Jul 22 — AI Agent Strategy" },
   { id: 2, workstream: "Nargis AI Agent", task: "Compile compliance guidelines, country tiers, naming conventions and upload to long-term memory", owner: "Naomi + Team", deadline: "ASAP", status: "Not Started", source: "Jul 22 — AI Agent Strategy" },
@@ -123,221 +357,165 @@ const INITIAL_TASKS = [
   { id: 85, workstream: "Team & Process", task: "Propose name and visual identity for the new 'engine' initiative", owner: "Team", deadline: "", status: "Not Started", source: "Jul 22 — GTM AI Agent Strategy" },
 ];
 
-const statusColors = {
-  "Not Started": { bg: "rgba(120,120,140,0.08)", text: "#6b6b80", dot: "#9d9db0" },
-  "In Progress": { bg: "rgba(56,132,244,0.08)", text: "#2563eb", dot: "#3b82f6" },
-  "Blocked": { bg: "rgba(239,68,68,0.07)", text: "#dc2626", dot: "#ef4444" },
-  "Done": { bg: "rgba(22,163,74,0.08)", text: "#15803d", dot: "#22c55e" },
-};
+let currentWorkstream = "All";
+let currentStatus = "All";
+let currentSearch = "";
+let expandedId = null;
 
-function StatusBadge({ status }) {
-  const c = statusColors[status];
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, letterSpacing: 0.3, background: c.bg, color: c.text, whiteSpace: "nowrap" }}>
-      <span style={{ width: 6, height: 6, borderRadius: "50%", background: c.dot, flexShrink: 0 }} />
-      {status}
-    </span>
-  );
-}
-
-export default function PlaudTaskTracker() {
-  const [tasks, setTasks] = useState(() => {
-    return INITIAL_TASKS;
+function getStats() {
+  const s = { total: tasks.length };
+  STATUS_OPTIONS.forEach(st => {
+    s[st] = tasks.filter(t => t.status === st).length;
   });
-  const [filter, setFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [search, setSearch] = useState("");
-  const [expandedId, setExpandedId] = useState(null);
-
-  const filtered = useMemo(() => {
-    return tasks.filter((t) => {
-      if (filter !== "All" && t.workstream !== filter) return false;
-      if (statusFilter !== "All" && t.status !== statusFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        return (
-          t.task.toLowerCase().includes(q) ||
-          t.owner.toLowerCase().includes(q) ||
-          t.source.toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-  }, [tasks, filter, statusFilter, search]);
-
-  const stats = useMemo(() => {
-    const s = { total: tasks.length };
-    STATUS_OPTIONS.forEach((st) => {
-      s[st] = tasks.filter((t) => t.status === st).length;
-    });
-    return s;
-  }, [tasks]);
-
-  const updateStatus = (id, newStatus) => {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
-  };
-
-  const workstreamCounts = useMemo(() => {
-    const counts = {};
-    WORKSTREAMS.slice(1).forEach((ws) => {
-      counts[ws] = tasks.filter((t) => t.workstream === ws).length;
-    });
-    return counts;
-  }, [tasks]);
-
-  return (
-    <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", maxWidth: 960, margin: "0 auto", padding: "24px 16px", color: "var(--text-color, #1a1a2e)" }}>
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: -0.5, color: "var(--text-color, #111)" }}>
-          Plaud Task Tracker
-        </h1>
-        <p style={{ fontSize: 13, color: "var(--text-secondary, #666)", margin: "4px 0 0", lineHeight: 1.4 }}>
-          {stats.total} tasks extracted from 30 days of recordings (Jun 22 – Jul 22, 2026)
-        </p>
-      </div>
-
-      {/* Stats row */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
-        {STATUS_OPTIONS.map((st) => (
-          <button
-            key={st}
-            onClick={() => setStatusFilter(statusFilter === st ? "All" : st)}
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "7px 14px", borderRadius: 8,
-              border: statusFilter === st ? `2px solid ${statusColors[st].dot}` : "1px solid var(--border-color, #e2e2e8)",
-              background: statusFilter === st ? statusColors[st].bg : "var(--bg-secondary, #fafafa)",
-              cursor: "pointer", fontSize: 12, fontWeight: 600,
-              color: statusColors[st].text,
-              transition: "all 0.15s"
-            }}
-          >
-            <span style={{ fontSize: 16, fontWeight: 700 }}>{stats[st]}</span>
-            {st}
-          </button>
-        ))}
-        {statusFilter !== "All" && (
-          <button
-            onClick={() => setStatusFilter("All")}
-            style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid var(--border-color, #e2e2e8)", background: "transparent", cursor: "pointer", fontSize: 12, color: "var(--text-secondary, #888)" }}
-          >
-            Clear filter ✕
-          </button>
-        )}
-      </div>
-
-      {/* Workstream tabs */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
-        {WORKSTREAMS.map((ws) => (
-          <button
-            key={ws}
-            onClick={() => setFilter(ws)}
-            style={{
-              padding: "5px 12px", borderRadius: 6, fontSize: 11.5, fontWeight: filter === ws ? 700 : 500,
-              border: "none",
-              background: filter === ws ? "var(--text-color, #1a1a2e)" : "var(--bg-secondary, #f0f0f4)",
-              color: filter === ws ? "var(--bg-color, #fff)" : "var(--text-secondary, #555)",
-              cursor: "pointer", transition: "all 0.15s",
-              whiteSpace: "nowrap"
-            }}
-          >
-            {ws}{ws !== "All" ? ` (${workstreamCounts[ws] || 0})` : ""}
-          </button>
-        ))}
-      </div>
-
-      {/* Search */}
-      <div style={{ marginBottom: 16 }}>
-        <input
-          type="text"
-          placeholder="Search tasks, owners, or sources…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%", padding: "9px 14px", borderRadius: 8,
-            border: "1px solid var(--border-color, #ddd)", fontSize: 13,
-            background: "var(--bg-color, #fff)", color: "var(--text-color, #111)",
-            outline: "none", boxSizing: "border-box"
-          }}
-        />
-      </div>
-
-      {/* Showing count */}
-      <p style={{ fontSize: 12, color: "var(--text-secondary, #888)", margin: "0 0 12px" }}>
-        Showing {filtered.length} of {stats.total} tasks
-      </p>
-
-      {/* Task list */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {filtered.map((t) => {
-          const isExpanded = expandedId === t.id;
-          return (
-            <div
-              key={t.id}
-              style={{
-                border: "1px solid var(--border-color, #e8e8ee)",
-                borderRadius: 10,
-                padding: "12px 14px",
-                background: "var(--bg-color, #fff)",
-                cursor: "pointer",
-                transition: "box-shadow 0.15s"
-              }}
-              onClick={() => setExpandedId(isExpanded ? null : t.id)}
-            >
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 500, lineHeight: 1.45, color: "var(--text-color, #1a1a2e)" }}>
-                    {t.task}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
-                    <span style={{
-                      fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.6,
-                      color: "var(--text-secondary, #888)", background: "var(--bg-secondary, #f3f3f7)",
-                      padding: "2px 8px", borderRadius: 4
-                    }}>
-                      {t.workstream}
-                    </span>
-                    <StatusBadge status={t.status} />
-                  </div>
-                </div>
-              </div>
-              {isExpanded && (
-                <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border-color, #eee)" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", fontSize: 12.5, color: "var(--text-secondary, #555)" }}>
-                    <div><span style={{ fontWeight: 600, color: "var(--text-color, #333)" }}>Owner:</span> {t.owner}</div>
-                    <div><span style={{ fontWeight: 600, color: "var(--text-color, #333)" }}>Deadline:</span> {t.deadline || "—"}</div>
-                    <div style={{ gridColumn: "1 / -1" }}><span style={{ fontWeight: 600, color: "var(--text-color, #333)" }}>Source:</span> {t.source}</div>
-                  </div>
-                  <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
-                    {STATUS_OPTIONS.map((st) => (
-                      <button
-                        key={st}
-                        onClick={(e) => { e.stopPropagation(); updateStatus(t.id, st); }}
-                        style={{
-                          padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600,
-                          border: t.status === st ? `2px solid ${statusColors[st].dot}` : "1px solid var(--border-color, #ddd)",
-                          background: t.status === st ? statusColors[st].bg : "transparent",
-                          color: statusColors[st].text,
-                          cursor: "pointer", transition: "all 0.1s"
-                        }}
-                      >
-                        {st}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {filtered.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-secondary, #999)", fontSize: 14 }}>
-          No tasks match your filters
-        </div>
-      )}
-    </div>
-  );
+  return s;
 }
+
+function getWorkstreamCounts() {
+  const counts = {};
+  WORKSTREAMS.slice(1).forEach(ws => {
+    counts[ws] = tasks.filter(t => t.workstream === ws).length;
+  });
+  return counts;
+}
+
+function renderStats() {
+  const stats = getStats();
+  const row = document.getElementById('statsRow');
+  row.innerHTML = '';
+  STATUS_OPTIONS.forEach(st => {
+    const c = STATUS_COLORS[st];
+    const btn = document.createElement('button');
+    btn.className = 'stat-btn' + (currentStatus === st ? ' active' : '');
+    btn.style.color = c.text;
+    btn.style.background = currentStatus === st ? c.bg : 'var(--bg-secondary)';
+    btn.style.borderColor = currentStatus === st ? c.dot : 'var(--border-color)';
+    btn.innerHTML = `<span class="count">${stats[st]}</span>${st}`;
+    btn.onclick = () => {
+      currentStatus = currentStatus === st ? "All" : st;
+      renderAll();
+    };
+    row.appendChild(btn);
+  });
+  if (currentStatus !== "All") {
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'clear-filter-btn';
+    clearBtn.textContent = 'Clear filter ✕';
+    clearBtn.onclick = () => { currentStatus = "All"; renderAll(); };
+    row.appendChild(clearBtn);
+  }
+}
+
+function renderTabs() {
+  const counts = getWorkstreamCounts();
+  const tabs = document.getElementById('wsTabs');
+  tabs.innerHTML = '';
+  WORKSTREAMS.forEach(ws => {
+    const btn = document.createElement('button');
+    btn.className = 'ws-tab' + (currentWorkstream === ws ? ' active' : '');
+    btn.textContent = ws !== "All" ? `${ws} (${counts[ws] || 0})` : ws;
+    btn.onclick = () => { currentWorkstream = ws; renderAll(); };
+    tabs.appendChild(btn);
+  });
+}
+
+function statusBadgeHtml(status) {
+  const c = STATUS_COLORS[status];
+  return `<span class="status-badge" style="background:${c.bg};color:${c.text};">
+    <span class="status-dot" style="background:${c.dot};"></span>${status}
+  </span>`;
+}
+
+function getFiltered() {
+  return tasks.filter(t => {
+    if (currentWorkstream !== "All" && t.workstream !== currentWorkstream) return false;
+    if (currentStatus !== "All" && t.status !== currentStatus) return false;
+    if (currentSearch) {
+      const q = currentSearch.toLowerCase();
+      return t.task.toLowerCase().includes(q) ||
+             t.owner.toLowerCase().includes(q) ||
+             t.source.toLowerCase().includes(q);
+    }
+    return true;
+  });
+}
+
+function updateStatus(id, newStatus) {
+  const t = tasks.find(x => x.id === id);
+  if (t) t.status = newStatus;
+  renderAll();
+}
+
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  renderTaskList();
+}
+
+function renderTaskList() {
+  const filtered = getFiltered();
+  const stats = getStats();
+  document.getElementById('showingCount').textContent = `Showing ${filtered.length} of ${stats.total} tasks`;
+
+  const list = document.getElementById('taskList');
+  const empty = document.getElementById('emptyState');
+
+  if (filtered.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = filtered.map(t => {
+    const isExpanded = expandedId === t.id;
+    const statusButtons = STATUS_OPTIONS.map(st => {
+      const c = STATUS_COLORS[st];
+      const active = t.status === st;
+      return `<button class="status-btn${active ? ' active' : ''}"
+        style="color:${c.text};border-color:${active ? c.dot : 'var(--border-color)'};background:${active ? c.bg : 'transparent'};"
+        onclick="event.stopPropagation(); updateStatus(${t.id}, '${st}')">${st}</button>`;
+    }).join('');
+
+    return `
+      <div class="task-card${isExpanded ? ' expanded' : ''}" onclick="toggleExpand(${t.id})">
+        <div class="task-title">${escapeHtml(t.task)}</div>
+        <div class="task-meta-row">
+          <span class="ws-badge">${escapeHtml(t.workstream)}</span>
+          ${statusBadgeHtml(t.status)}
+        </div>
+        <div class="task-detail">
+          <div class="detail-grid">
+            <div><strong>Owner:</strong> ${escapeHtml(t.owner)}</div>
+            <div><strong>Deadline:</strong> ${escapeHtml(t.deadline || "—")}</div>
+            <div class="full"><strong>Source:</strong> ${escapeHtml(t.source)}</div>
+          </div>
+          <div class="status-btn-row">${statusButtons}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderAll() {
+  const stats = getStats();
+  document.getElementById('subtitle').textContent =
+    `${stats.total} tasks extracted from 30 days of recordings (Jun 22 – Jul 22, 2026)`;
+  renderStats();
+  renderTabs();
+  renderTaskList();
+}
+
+document.getElementById('searchBox').addEventListener('input', (e) => {
+  currentSearch = e.target.value;
+  renderTaskList();
+});
+
+renderAll();
+</script>
+</body>
+</html>
