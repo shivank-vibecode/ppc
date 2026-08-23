@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitor Ad Intelligence</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* ── Tokens ── */
+:root {
+  --surface-page: #f2f1ec;
+  --surface-card: #faf9f6;
+  --surface-chart: #fcfcfb;
+  --ink-primary: #1a1d23;
+  --ink-secondary: #52514e;
+  --ink-muted: #8a877f;
+  --ink-faint: #b8b5ad;
+  --border: #e1dfd8;
+  --border-strong: #c8c5bc;
+  --accent: #b8872e;
+  --accent-wash: rgba(184,135,46,0.08);
+  --accent-text: #8f6a1f;
+  --steel: #456b8a;
+  --steel-wash: rgba(69,107,138,0.08);
+  --proven-bg: rgba(184,135,46,0.06);
+  --experiment-bg: rgba(69,107,138,0.06);
+  --gridline: #e8e6df;
+  --baseline: #c3c2b7;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --s4: #eda100; --s5: #e87ba4; --s6: #008300;
+  --s7: #4a3aa7; --s8: #e34948;
+  --radius: 6px;
+  --font-display: 'DM Sans', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-page: #111114;
+    --surface-card: #1c1c20;
+    --surface-chart: #1a1a19;
+    --ink-primary: #f0efeb;
+    --ink-secondary: #c3c2b7;
+    --ink-muted: #898781;
+    --ink-faint: #55534e;
+    --border: #2e2e2b;
+    --border-strong: #44423e;
+    --accent: #d4a23c;
+    --accent-wash: rgba(212,162,60,0.10);
+    --accent-text: #d4a23c;
+    --steel: #6a9cc2;
+    --steel-wash: rgba(106,156,194,0.10);
+    --proven-bg: rgba(212,162,60,0.08);
+    --experiment-bg: rgba(106,156,194,0.08);
+    --gridline: #2c2c2a;
+    --baseline: #383835;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --s4: #c98500; --s5: #d55181; --s6: #008300;
+    --s7: #9085e9; --s8: #e66767;
+  }
+}
+:root[data-theme="dark"] {
+  --surface-page: #111114;
+  --surface-card: #1c1c20;
+  --surface-chart: #1a1a19;
+  --ink-primary: #f0efeb;
+  --ink-secondary: #c3c2b7;
+  --ink-muted: #898781;
+  --ink-faint: #55534e;
+  --border: #2e2e2b;
+  --border-strong: #44423e;
+  --accent: #d4a23c;
+  --accent-wash: rgba(212,162,60,0.10);
+  --accent-text: #d4a23c;
+  --steel: #6a9cc2;
+  --steel-wash: rgba(106,156,194,0.10);
+  --proven-bg: rgba(212,162,60,0.08);
+  --experiment-bg: rgba(106,156,194,0.08);
+  --gridline: #2c2c2a;
+  --baseline: #383835;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  --s4: #c98500; --s5: #d55181; --s6: #008300;
+  --s7: #9085e9; --s8: #e66767;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--surface-page);
+  color: var(--ink-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.app { max-width: 1440px; margin: 0 auto; padding: 24px 32px 64px; }
+.app-header {
+  display: flex; align-items: baseline; gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.app-header h1 {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+}
+.app-header .subtitle {
+  font-size: 13px; color: var(--ink-muted);
+  font-family: var(--font-body);
+}
+
+/* ── Loading state ── */
+.loading-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 340px; gap: 16px;
+}
+.loading-state .spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-state .loading-text {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 500; color: var(--ink-muted);
+}
+.loading-state .loading-error {
+  font-size: 12px; color: var(--ink-faint);
+  margin-top: -8px;
+}
+
+/* ── Upload state ── */
+.upload-zone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 340px;
+  border: 2px dashed var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface-card);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.upload-zone .icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+.upload-zone .label {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 600; color: var(--ink-secondary);
+}
+.upload-zone .hint { font-size: 12px; color: var(--ink-muted); margin-top: 6px; }
+#file-input { display: none; }
+
+/* ── Filters ── */
+.filter-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  padding: 12px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  align-items: center;
+}
+.filter-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--ink-muted);
+  margin-right: 4px;
+}
+.filter-select {
+  font-family: var(--font-body); font-size: 13px;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-card);
+  color: var(--ink-primary);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238a877f' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+}
+.filter-select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ── Cards ── */
+.section { margin-bottom: 32px; }
+.section-title {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 4px;
+}
+.section-subtitle {
+  font-size: 12px; color: var(--ink-muted);
+  margin-bottom: 16px;
+}
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* ── Stat tiles ── */
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-tile {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.stat-tile .stat-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--ink-muted);
+  margin-bottom: 6px;
+}
+.stat-tile .stat-value {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1.1;
+}
+.stat-tile .stat-detail {
+  font-size: 12px; color: var(--ink-secondary);
+  margin-top: 4px;
+}
+
+/* ── Heatmap ── */
+.heatmap-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.heatmap-table {
+  border-collapse: separate; border-spacing: 2px;
+  font-size: 11px; width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.heatmap-table th {
+  font-weight: 500; color: var(--ink-muted);
+  padding: 4px 6px; text-align: left;
+  position: sticky; top: 0; background: var(--surface-card);
+  font-size: 10px; white-space: nowrap;
+}
+.heatmap-table th.rotate {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  height: 80px;
+  text-align: right;
+  padding: 4px 2px;
+}
+.heatmap-table td {
+  text-align: center; padding: 0;
+  width: 28px; height: 24px;
+  border-radius: 3px;
+  font-size: 10px; font-weight: 500;
+  color: var(--ink-primary);
+  cursor: default;
+  position: relative;
+}
+.heatmap-table td.broker-name {
+  text-align: left; white-space: nowrap;
+  font-weight: 600; padding: 4px 8px 4px 4px;
+  width: auto; background: transparent;
+  color: var(--ink-secondary);
+  font-size: 11px;
+}
+.heatmap-cell { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 3px; }
+
+/* ── Ads table ── */
+.ads-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 520px; overflow-y: auto; }
+.ads-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; font-variant-numeric: tabular-nums;
+}
+.ads-table thead { position: sticky; top: 0; z-index: 2; }
+.ads-table th {
+  text-align: left; padding: 8px 10px;
+  font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  background: var(--surface-card);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer; user-select: none;
+}
+.ads-table th:hover { color: var(--ink-primary); }
+.ads-table th .sort-arrow { font-size: 10px; margin-left: 3px; opacity: 0.4; }
+.ads-table th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+.ads-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-secondary);
+  vertical-align: top;
+}
+.ads-table tr:hover td { background: var(--accent-wash); }
+.ads-table .days-badge {
+  display: inline-block; padding: 2px 8px;
+  border-radius: 10px; font-weight: 600; font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.days-proven { background: var(--proven-bg); color: var(--accent-text); }
+.days-experiment { background: var(--experiment-bg); color: var(--steel); }
+.format-pill {
+  display: inline-block; padding: 1px 7px;
+  border-radius: 3px; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.format-text { background: rgba(42,120,214,0.10); color: var(--s1); }
+.format-image { background: rgba(27,175,122,0.10); color: var(--s3); }
+.format-video { background: rgba(235,104,52,0.10); color: var(--s2); }
+.truncate { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.link-out {
+  color: var(--steel); text-decoration: none; font-size: 11px;
+}
+.link-out:hover { text-decoration: underline; }
+
+/* ── Ad preview thumbnails ── */
+.ad-thumb {
+  width: 56px; height: 56px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--gridline);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.ad-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ad-thumb .thumb-fallback {
+  font-size: 10px; color: var(--ink-muted);
+  text-align: center; line-height: 1.2;
+  padding: 4px;
+}
+.ad-thumb .video-badge {
+  position: absolute; bottom: 2px; right: 2px;
+  background: rgba(0,0,0,0.7); color: #fff;
+  font-size: 8px; font-weight: 700;
+  padding: 1px 4px; border-radius: 2px;
+  line-height: 1.2;
+}
+/* Lightbox */
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+.lightbox-overlay img {
+  max-width: 90vw; max-height: 85vh;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+.lightbox-overlay .lb-caption {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-card); color: var(--ink-secondary);
+  padding: 8px 16px; border-radius: var(--radius);
+  font-size: 12px; white-space: nowrap;
+  max-width: 90vw; overflow: hidden; text-overflow: ellipsis;
+}
+/* Messaging angle cell */
+.msg-angle {
+  max-width: 180px; font-size: 12px;
+  color: var(--ink-secondary);
+}
+.msg-angle .cta-text {
+  font-weight: 600; color: var(--ink-primary);
+  display: block; margin-bottom: 2px;
+}
+.msg-angle .msg-hint {
+  font-size: 10px; color: var(--ink-faint); font-style: italic;
+}
+
+/* ── Format breakdown ── */
+.format-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.format-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.format-card .broker-label {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 10px;
+}
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.bar-label { font-size: 11px; color: var(--ink-muted); width: 42px; text-align: right; flex-shrink: 0; }
+.bar-track { flex: 1; height: 14px; background: var(--gridline); border-radius: 3px; overflow: hidden; display: flex; gap: 2px; }
+.bar-fill { height: 100%; border-radius: 0 3px 3px 0; transition: width 0.3s ease; min-width: 1px; }
+.bar-fill:first-child { border-radius: 3px 0 0 3px; }
+.bar-fill:last-child { border-radius: 0 3px 3px 0; }
+.bar-fill:only-child { border-radius: 3px; }
+.bar-value { font-size: 11px; color: var(--ink-secondary); width: 32px; font-variant-numeric: tabular-nums; }
+.legend-row { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-secondary); }
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── Tab bar ── */
+.tab-bar { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+.tab-btn {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 500;
+  padding: 8px 16px;
+  border: none; background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--ink-primary); }
+.tab-btn.active {
+  color: var(--accent-text);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Tooltip ── */
+.tooltip {
+  position: fixed; z-index: 100;
+  background: var(--surface-card); border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 12px; color: var(--ink-secondary);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  pointer-events: none;
+  max-width: 260px;
+  line-height: 1.4;
+  display: none;
+}
+.tooltip .tt-val { font-weight: 600; color: var(--ink-primary); }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--ink-muted); font-size: 13px;
+}
+
+/* ── Platform section ── */
+.platform-overview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+@media (max-width: 768px) { .platform-overview { grid-template-columns: 1fr; } }
+.platform-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.platform-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.platform-card.plat-search::before { background: var(--s1); }
+.platform-card.plat-display::before { background: var(--s3); }
+.platform-card.plat-youtube::before { background: var(--s2); }
+.platform-card .plat-icon { font-size: 20px; margin-bottom: 8px; }
+.platform-card .plat-name {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 700;
+  color: var(--ink-primary);
+  margin-bottom: 2px;
+}
+.platform-card .plat-count {
+  font-family: var(--font-display);
+  font-size: 26px; font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1.1;
+}
+.platform-card .plat-pct {
+  font-size: 13px; font-weight: 600;
+  margin-left: 6px;
+}
+.plat-pct.search-color { color: var(--s1); }
+.plat-pct.display-color { color: var(--s3); }
+.plat-pct.youtube-color { color: var(--s2); }
+.platform-card .plat-meta {
+  font-size: 12px; color: var(--ink-muted);
+  margin-top: 6px;
+}
+.platform-card .plat-brokers {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.platform-card .plat-brokers .plat-broker-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--ink-muted);
+  margin-bottom: 6px;
+}
+.plat-broker-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 3px 0; font-size: 12px;
+}
+.plat-broker-row .broker-n { color: var(--ink-secondary); font-weight: 500; }
+.plat-broker-row .broker-c { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+
+.platform-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.platform-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; font-variant-numeric: tabular-nums;
+}
+.platform-table thead { position: sticky; top: 0; z-index: 2; }
+.platform-table th {
+  text-align: left; padding: 8px 10px;
+  font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  background: var(--surface-card);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.platform-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-secondary);
+}
+.platform-table tr:hover td { background: var(--accent-wash); }
+.platform-table .broker-col { font-weight: 600; color: var(--ink-primary); }
+.plat-pill {
+  display: inline-block; padding: 1px 7px;
+  border-radius: 3px; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.plat-pill.search { background: rgba(42,120,214,0.10); color: var(--s1); }
+.plat-pill.display { background: rgba(27,175,122,0.10); color: var(--s3); }
+.plat-pill.youtube { background: rgba(235,104,52,0.10); color: var(--s2); }
+.stacked-bar-cell { display: flex; height: 16px; border-radius: 3px; overflow: hidden; gap: 1px; min-width: 120px; }
+.stacked-bar-cell .seg { height: 100%; min-width: 1px; transition: width 0.3s ease; }
+.stacked-bar-cell .seg:first-child { border-radius: 3px 0 0 3px; }
+.stacked-bar-cell .seg:last-child { border-radius: 0 3px 3px 0; }
+.stacked-bar-cell .seg:only-child { border-radius: 3px; }
+
+/* ── Export button ── */
+.export-btn {
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  padding: 6px 14px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-wash);
+  color: var(--accent-text);
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  margin-left: auto;
+}
+.export-btn:hover { background: var(--accent); color: #fff; }
+.export-btn:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .app { padding: 16px; }
+  .app-header h1 { font-size: 18px; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .format-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="app-header">
+    <h1>Competitor Ad Intelligence</h1>
+    <span class="subtitle">Africa &amp; LATAM · Google Ads Transparency Center</span>
+  </header>
+
+  <!-- Loading state (shown while auto-fetching JSON) -->
+  <div id="loading-state" style="display:none">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading dashboard data…</div>
+      <div class="loading-error" id="loading-error"></div>
+    </div>
+  </div>
+
+  <!-- Upload fallback (shown if auto-fetch fails) -->
+  <div id="upload-state" style="display:none">
+    <div class="upload-zone" id="drop-zone">
+      <div class="icon">📊</div>
+      <div class="label">Load dashboard data</div>
+      <div class="hint">Drop combined_dashboard_data.json (or .csv files) here, or click to browse</div>
+    </div>
+    <input type="file" id="file-input" accept=".json,.csv" multiple>
+  </div>
+
+  <div id="dashboard" style="display:none">
+    <!-- Filters -->
+    <div class="filter-row">
+      <span class="filter-label">Region</span>
+      <select class="filter-select" id="filter-region">
+        <option value="all">All Regions</option>
+        <option value="africa">Africa</option>
+        <option value="latam">LATAM</option>
+      </select>
+      <span class="filter-label" style="margin-left:8px">Broker</span>
+      <select class="filter-select" id="filter-broker">
+        <option value="all">All Brokers</option>
+      </select>
+      <span class="filter-label" style="margin-left:8px">Format</span>
+      <select class="filter-select" id="filter-format">
+        <option value="all">All Formats</option>
+        <option value="Text">Text</option>
+        <option value="Image">Image</option>
+        <option value="Video">Video</option>
+      </select>
+      <span class="filter-label" style="margin-left:8px">Longevity</span>
+      <select class="filter-select" id="filter-longevity">
+        <option value="all">All Ads</option>
+        <option value="proven">Proven (90+ days)</option>
+        <option value="established">Established (30–90 days)</option>
+        <option value="experiment">Experiments (&lt;30 days)</option>
+      </select>
+      <button class="export-btn" id="export-btn" title="Export filtered ads as CSV">⬇ Export CSV</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-row" id="stat-row"></div>
+
+    <!-- Tabs -->
+    <div class="tab-bar" id="tab-bar">
+      <button class="tab-btn active" data-tab="heatmap">Country Heatmap</button>
+      <button class="tab-btn" data-tab="proven">What's Working</button>
+      <button class="tab-btn" data-tab="experiments">Experiments</button>
+      <button class="tab-btn" data-tab="formats">Format Breakdown</button>
+      <button class="tab-btn" data-tab="platform">Platform</button>
+    </div>
+
+    <!-- Heatmap -->
+    <div class="tab-panel active" id="panel-heatmap">
+      <div class="section">
+        <div class="section-title">Ad presence by broker × country</div>
+        <div class="section-subtitle">Cell = number of active creatives. Darker = more investment.</div>
+        <div class="card">
+          <div class="heatmap-wrap" id="heatmap-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proven ads -->
+    <div class="tab-panel" id="panel-proven">
+      <div class="section">
+        <div class="section-title">Long-Running Ads — What's Working</div>
+        <div class="section-subtitle">Sorted by days running. Ads active 90+ days are likely profitable.</div>
+        <div class="card">
+          <div class="ads-table-wrap" id="proven-table-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experiments -->
+    <div class="tab-panel" id="panel-experiments">
+      <div class="section">
+        <div class="section-title">Short-Lived Ads — Experiments &amp; Tests</div>
+        <div class="section-subtitle">Ads running &lt;30 days. Shows what each broker is currently testing.</div>
+        <div class="card">
+          <div class="ads-table-wrap" id="experiments-table-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Format Breakdown -->
+    <div class="tab-panel" id="panel-formats">
+      <div class="section">
+        <div class="section-title">Ad Format Mix by Broker</div>
+        <div class="section-subtitle">Text vs Image vs Video. Cross-referenced with average longevity per format.</div>
+        <div class="format-grid" id="format-grid"></div>
+      </div>
+    </div>
+
+    <!-- Platform -->
+    <div class="tab-panel" id="panel-platform">
+      <div class="section">
+        <div class="section-title">Ad Platform Distribution</div>
+        <div class="section-subtitle">Where brokers run ads — Google Search, Display Network, and YouTube. Mapped from ad format.</div>
+        <div class="platform-overview" id="platform-overview"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">Platform Mix by Broker</div>
+        <div class="section-subtitle">Ad count and avg. longevity per platform for each broker. Primary platform highlighted.</div>
+        <div class="card">
+          <div class="platform-table-wrap" id="platform-table-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ── Data & State ──
+let RAW_DATA = {};
+let FILTERED_ADS = [];
+const AFRICA_COUNTRIES = new Set(["Algeria","Benin","Burundi","Burkina Faso","Cameroon","Central African Republic","Chad","Republic of the Congo","DR Congo","Djibouti","Egypt","Equatorial Guinea","Eritrea","Ethiopia","Gabon","The Gambia","Ghana","Guinea","Guinea-Bissau","Cote d'Ivoire","Kenya","Lesotho","Liberia","Libya","Malawi","Mali","Madagascar","Mauritania","Mauritius","Morocco","Mozambique","Namibia","Niger","Nigeria","Rwanda","Senegal","Seychelles","Sierra Leone","Somalia","South Africa","Eswatini","Tunisia","Uganda","Tanzania","Zimbabwe"]);
+const LATAM_COUNTRIES = new Set(["Argentina","Bahamas","The Bahamas","Barbados","Belize","Bolivia","Brazil","Chile","Colombia","Costa Rica","Dominica","Dominican Republic","Ecuador","El Salvador","Haiti","Honduras","Jamaica","Mexico","Nicaragua","Panama","Paraguay","Peru","Puerto Rico","Suriname","Uruguay","Venezuela","Antigua and Barbuda","Antigua & Barbuda","Cayman Islands","Anguilla","Saint Kitts and Nevis","Saint Kitts & Nevis","Saint Lucia","Saint Martin","Saint Pierre and Miquelon","Saint Pierre & Miquelon","Saint Vincent and the Grenadines","Saint Vincent","Montserrat","Trinidad and Tobago","Trinidad & Tobago","Turks and Caicos Islands","Turks & Caicos","U.S. Virgin Islands","British Virgin Islands","Guadeloupe","French Guiana","Martinique"]);
+
+// ── Auto-load JSON ──
+// Tries several relative paths (works whether served from repo root or competitor-ads/)
+const DATA_PATHS = [
+  'competitor-ads/combined_dashboard_data.json',
+  'combined_dashboard_data.json',
+  '../combined_dashboard_data.json',
+];
+
+async function autoLoadData() {
+  document.getElementById('loading-state').style.display = 'block';
+
+  for (const path of DATA_PATHS) {
+    try {
+      const resp = await fetch(path);
+      if (resp.ok) {
+        const text = await resp.text();
+        RAW_DATA = JSON.parse(text);
+        document.getElementById('loading-state').style.display = 'none';
+        initDashboard();
+        return;
+      }
+    } catch(e) { /* try next path */ }
+  }
+
+  // All paths failed — show upload fallback
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('upload-state').style.display = 'block';
+  document.getElementById('loading-error').textContent = '';
+}
+
+// ── File upload fallback ──
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  const files = e.dataTransfer.files;
+  if (files.length) loadFiles(files);
+});
+fileInput.addEventListener('change', e => { if (e.target.files.length) loadFiles(e.target.files); });
+
+function loadFiles(files) {
+  const jsonFiles = [];
+  const csvFiles = [];
+  for (const f of files) {
+    if (f.name.endsWith('.json')) jsonFiles.push(f);
+    else if (f.name.endsWith('.csv')) csvFiles.push(f);
+  }
+
+  if (jsonFiles.length) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        RAW_DATA = JSON.parse(e.target.result);
+        document.getElementById('upload-state').style.display = 'none';
+        initDashboard();
+      } catch(err) { alert('Invalid JSON file: ' + err.message); }
+    };
+    reader.readAsText(jsonFiles[0]);
+  } else if (csvFiles.length) {
+    let loaded = 0;
+    RAW_DATA = {};
+    for (const f of csvFiles) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const brokerName = f.name.replace(/\.csv$/, '');
+        RAW_DATA[brokerName] = parseCSV(e.target.result);
+        loaded++;
+        if (loaded === csvFiles.length) {
+          document.getElementById('upload-state').style.display = 'none';
+          initDashboard();
+        }
+      };
+      reader.readAsText(f);
+    }
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n');
+  if (lines.length < 2) return [];
+  const headers = parseCSVLine(lines[0]);
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const vals = parseCSVLine(line);
+    const row = {};
+    headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
+    if (!row.days_running && row.first_shown_date && row.last_shown_date) {
+      const d1 = new Date(row.first_shown_date);
+      const d2 = new Date(row.last_shown_date);
+      if (!isNaN(d1) && !isNaN(d2)) {
+        row.days_running = String(Math.max(0, Math.round((d2 - d1) / 86400000)));
+      }
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+
+function parseCSVLine(line) {
+  const fields = [];
+  let current = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuote) {
+      if (ch === '"' && line[i+1] === '"') { current += '"'; i++; }
+      else if (ch === '"') { inQuote = false; }
+      else { current += ch; }
+    } else {
+      if (ch === '"') { inQuote = true; }
+      else if (ch === ',') { fields.push(current); current = ''; }
+      else { current += ch; }
+    }
+  }
+  fields.push(current);
+  return fields;
+}
+
+// ── Init ──
+function initDashboard() {
+  document.getElementById('dashboard').style.display = 'block';
+
+  // Populate broker filter
+  const brokerSelect = document.getElementById('filter-broker');
+  brokerSelect.innerHTML = '<option value="all">All Brokers</option>';
+  for (const name of Object.keys(RAW_DATA).sort()) {
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    brokerSelect.appendChild(opt);
+  }
+
+  // Attach filter listeners
+  for (const id of ['filter-region','filter-broker','filter-format','filter-longevity']) {
+    document.getElementById(id).addEventListener('change', applyFilters);
+  }
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Export — native browser download
+  document.getElementById('export-btn').addEventListener('click', exportCSV);
+
+  applyFilters();
+}
+
+// ── CSV Export (native Blob download) ──
+function exportCSV() {
+  if (!FILTERED_ADS.length) return;
+  const cols = ['broker','creative_id','format_name','days_running','first_shown_date','last_shown_date',
+    'countries_found_in','country_count','call_to_action','video_link','image_url','transparency_url'];
+  const header = cols.join(',');
+  const rows = FILTERED_ADS.map(ad => {
+    return cols.map(c => {
+      let v = c === 'broker' ? (ad._broker || '') : (ad[c] || '');
+      v = String(v);
+      if (v.includes(',') || v.includes('"') || v.includes('\n')) {
+        v = '"' + v.replace(/"/g, '""') + '"';
+      }
+      return v;
+    }).join(',');
+  });
+  const csv = header + '\n' + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'competitor_ads_export.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ── Filtering ──
+function applyFilters() {
+  const regionFilter = document.getElementById('filter-region').value;
+  const brokerFilter = document.getElementById('filter-broker').value;
+  const formatFilter = document.getElementById('filter-format').value;
+  const longevityFilter = document.getElementById('filter-longevity').value;
+
+  FILTERED_ADS = [];
+
+  for (const [broker, ads] of Object.entries(RAW_DATA)) {
+    if (brokerFilter !== 'all' && broker !== brokerFilter) continue;
+
+    for (const ad of ads) {
+      if (regionFilter !== 'all') {
+        const countries = (ad.countries_found_in || '').split('|').filter(Boolean);
+        if (regionFilter === 'africa' && !countries.some(c => AFRICA_COUNTRIES.has(c))) continue;
+        if (regionFilter === 'latam' && !countries.some(c => LATAM_COUNTRIES.has(c))) continue;
+      }
+      if (formatFilter !== 'all' && ad.format_name !== formatFilter) continue;
+      const days = parseInt(ad.days_running) || 0;
+      if (longevityFilter === 'proven' && days < 90) continue;
+      if (longevityFilter === 'established' && (days < 30 || days >= 90)) continue;
+      if (longevityFilter === 'experiment' && days >= 30) continue;
+
+      FILTERED_ADS.push({ ...ad, _broker: broker });
+    }
+  }
+
+  renderStats();
+  renderHeatmap();
+  renderProvenTable();
+  renderExperimentsTable();
+  renderFormatBreakdown();
+  renderPlatform();
+}
+
+// ── Stats ──
+function renderStats() {
+  const container = document.getElementById('stat-row');
+  const totalAds = FILTERED_ADS.length;
+  const brokers = new Set(FILTERED_ADS.map(a => a._broker)).size;
+  const countriesSet = new Set();
+  FILTERED_ADS.forEach(a => {
+    (a.countries_found_in || '').split('|').filter(Boolean).forEach(n => countriesSet.add(n));
+  });
+  const daysArr = FILTERED_ADS.map(a => parseInt(a.days_running) || 0).filter(d => d > 0);
+  const avgDays = daysArr.length ? Math.round(daysArr.reduce((s,d) => s+d, 0) / daysArr.length) : 0;
+  const proven = FILTERED_ADS.filter(a => (parseInt(a.days_running) || 0) >= 90).length;
+
+  container.innerHTML = `
+    <div class="stat-tile">
+      <div class="stat-label">Total ads</div>
+      <div class="stat-value">${totalAds.toLocaleString()}</div>
+      <div class="stat-detail">${brokers} brokers</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">Countries reached</div>
+      <div class="stat-value">${countriesSet.size}</div>
+      <div class="stat-detail">Africa &amp; LATAM</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">Avg. days running</div>
+      <div class="stat-value">${avgDays}</div>
+      <div class="stat-detail">across all creatives</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-label">Proven performers</div>
+      <div class="stat-value">${proven.toLocaleString()}</div>
+      <div class="stat-detail">90+ days active</div>
+    </div>
+  `;
+}
+
+// ── Heatmap ──
+function renderHeatmap() {
+  const container = document.getElementById('heatmap-container');
+  const matrix = {};
+  const allCountries = new Set();
+  const brokerSet = new Set();
+
+  FILTERED_ADS.forEach(ad => {
+    const broker = ad._broker;
+    brokerSet.add(broker);
+    if (!matrix[broker]) matrix[broker] = {};
+    const names = (ad.countries_found_in || '').split('|').filter(Boolean);
+    names.forEach(country => {
+      allCountries.add(country);
+      matrix[broker][country] = (matrix[broker][country] || 0) + 1;
+    });
+  });
+
+  const brokers = [...brokerSet].sort();
+  const countryTotals = {};
+  allCountries.forEach(c => {
+    countryTotals[c] = 0;
+    brokers.forEach(b => { countryTotals[c] += (matrix[b] && matrix[b][c]) || 0; });
+  });
+  const countries = Object.entries(countryTotals)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0, 25)
+    .map(e => e[0]);
+
+  if (!brokers.length || !countries.length) {
+    container.innerHTML = '<div class="empty-state">No data matches the current filters.</div>';
+    return;
+  }
+
+  let maxVal = 0;
+  brokers.forEach(b => countries.forEach(c => {
+    const v = (matrix[b] && matrix[b][c]) || 0;
+    if (v > maxVal) maxVal = v;
+  }));
+
+  let html = '<table class="heatmap-table"><thead><tr><th></th>';
+  countries.forEach(c => {
+    const short = c.length > 12 ? c.substring(0, 10) + '…' : c;
+    html += `<th class="rotate" title="${esc(c)}">${esc(short)}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  brokers.forEach(b => {
+    html += `<tr><td class="broker-name">${esc(b)}</td>`;
+    countries.forEach(c => {
+      const v = (matrix[b] && matrix[b][c]) || 0;
+      const intensity = maxVal > 0 ? v / maxVal : 0;
+      const bg = v === 0 ? 'transparent' : heatColor(intensity);
+      const textColor = intensity > 0.6 ? '#fff' : 'var(--ink-secondary)';
+      html += `<td title="${esc(b)} · ${esc(c)}: ${v} ads"><div class="heatmap-cell" style="background:${bg};color:${textColor}">${v || ''}</div></td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function heatColor(t) {
+  const r = Math.round(252 - t * 100);
+  const g = Math.round(240 - t * 130);
+  const b = Math.round(210 - t * 170);
+  return `rgb(${r},${g},${b})`;
+}
+
+// ── Ads table builder ──
+function buildAdsTable(ads, containerId) {
+  const container = document.getElementById(containerId);
+  if (!ads.length) {
+    container.innerHTML = '<div class="empty-state">No ads match the current filters.</div>';
+    return;
+  }
+
+  ads.sort((a, b) => (parseInt(b.days_running) || 0) - (parseInt(a.days_running) || 0));
+
+  let html = `<table class="ads-table">
+    <thead><tr>
+      <th>Broker</th>
+      <th>Days<span class="sort-arrow">↓</span></th>
+      <th>Format</th>
+      <th>Ad Preview</th>
+      <th>Messaging Angle</th>
+      <th>First Shown</th>
+      <th>Last Shown</th>
+      <th>Countries</th>
+      <th>View</th>
+    </tr></thead><tbody>`;
+
+  const shown = ads.slice(0, 200);
+  shown.forEach((ad, idx) => {
+    const days = parseInt(ad.days_running) || 0;
+    const daysCls = days >= 90 ? 'days-proven' : (days < 30 ? 'days-experiment' : '');
+    const fmtCls = 'format-' + (ad.format_name || '').toLowerCase();
+    const regionNames = (ad.countries_found_in || '').split('|').filter(Boolean);
+    const countryStr = regionNames.slice(0, 3).join(', ') + (regionNames.length > 3 ? ` +${regionNames.length - 3}` : '');
+    const imgUrl = ad.image_url || '';
+    const cta = ad.call_to_action || '';
+    const transparencyUrl = ad.transparency_url || '';
+    const isVideo = (ad.format_name || '').toLowerCase() === 'video';
+    const thumbId = containerId + '-thumb-' + idx;
+
+    let thumbHtml;
+    if (imgUrl) {
+      thumbHtml = `<div class="ad-thumb" onclick="openLightbox('${escAttr(imgUrl)}','${escAttr(ad._broker + ' · ' + days + 'd · ' + (ad.format_name || ''))}')">
+        <img src="${esc(imgUrl)}" alt="Ad preview" loading="lazy" id="${thumbId}"
+          onerror="this.parentElement.innerHTML='<div class=\\'thumb-fallback\\'>${transparencyUrl ? "<a href=\\'" + escAttr(transparencyUrl) + "\\' target=\\'_blank\\' rel=\\'noopener\\' style=\\'color:var(--steel);font-size:10px\\'>View ad ↗</a>" : "No preview"}</div>'">
+        ${isVideo ? '<div class="video-badge">▶ Video</div>' : ''}
+      </div>`;
+    } else {
+      thumbHtml = '<div class="ad-thumb"><div class="thumb-fallback">No preview</div></div>';
+    }
+
+    let msgHtml;
+    if (cta) {
+      msgHtml = `<div class="msg-angle"><span class="cta-text">${esc(cta)}</span></div>`;
+    } else if (imgUrl) {
+      msgHtml = `<div class="msg-angle"><span class="msg-hint">See ad preview →</span></div>`;
+    } else {
+      msgHtml = '<div class="msg-angle">—</div>';
+    }
+
+    html += `<tr>
+      <td style="font-weight:600;color:var(--ink-primary)">${esc(ad._broker)}</td>
+      <td><span class="days-badge ${daysCls}">${days}d</span></td>
+      <td><span class="format-pill ${fmtCls}">${esc(ad.format_name || '?')}</span></td>
+      <td>${thumbHtml}</td>
+      <td>${msgHtml}</td>
+      <td>${esc(ad.first_shown_date || '—')}</td>
+      <td>${esc(ad.last_shown_date || '—')}</td>
+      <td class="truncate" title="${esc(regionNames.join(', '))}">${esc(countryStr)}</td>
+      <td>${transparencyUrl ? `<a href="${esc(transparencyUrl)}" target="_blank" rel="noopener" class="link-out">View ↗</a>` : '—'}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  if (ads.length > 200) {
+    html += `<div style="text-align:center;padding:10px;font-size:12px;color:var(--ink-muted)">Showing 200 of ${ads.length} ads. Use filters to narrow.</div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderProvenTable() {
+  const proven = FILTERED_ADS.filter(a => (parseInt(a.days_running) || 0) >= 30);
+  buildAdsTable(proven, 'proven-table-container');
+}
+
+function renderExperimentsTable() {
+  const experiments = FILTERED_ADS.filter(a => (parseInt(a.days_running) || 0) < 30);
+  buildAdsTable(experiments, 'experiments-table-container');
+}
+
+// ── Format Breakdown ──
+function renderFormatBreakdown() {
+  const container = document.getElementById('format-grid');
+  const brokerFormats = {};
+
+  FILTERED_ADS.forEach(ad => {
+    const b = ad._broker;
+    if (!brokerFormats[b]) brokerFormats[b] = { Text: { count: 0, days: [] }, Image: { count: 0, days: [] }, Video: { count: 0, days: [] } };
+    const fmt = ad.format_name || 'Text';
+    if (brokerFormats[b][fmt]) {
+      brokerFormats[b][fmt].count++;
+      const d = parseInt(ad.days_running) || 0;
+      if (d > 0) brokerFormats[b][fmt].days.push(d);
+    }
+  });
+
+  const brokers = Object.keys(brokerFormats).sort();
+  if (!brokers.length) {
+    container.innerHTML = '<div class="empty-state">No data matches the current filters.</div>';
+    return;
+  }
+
+  const formatColors = { Text: 'var(--s1)', Image: 'var(--s3)', Video: 'var(--s2)' };
+
+  let html = '';
+  brokers.forEach(broker => {
+    const data = brokerFormats[broker];
+    const total = data.Text.count + data.Image.count + data.Video.count;
+    if (total === 0) return;
+
+    html += `<div class="format-card">
+      <div class="broker-label">${esc(broker)}</div>`;
+
+    for (const fmt of ['Text', 'Image', 'Video']) {
+      const pct = total > 0 ? Math.round((data[fmt].count / total) * 100) : 0;
+      html += `<div class="bar-row">
+        <div class="bar-label">${fmt}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%;background:${formatColors[fmt]}"></div>
+        </div>
+        <div class="bar-value">${data[fmt].count}</div>
+      </div>`;
+    }
+
+    const avgText = data.Text.days.length ? Math.round(data.Text.days.reduce((s,d)=>s+d,0)/data.Text.days.length) : 0;
+    const avgImg = data.Image.days.length ? Math.round(data.Image.days.reduce((s,d)=>s+d,0)/data.Image.days.length) : 0;
+    const avgVid = data.Video.days.length ? Math.round(data.Video.days.reduce((s,d)=>s+d,0)/data.Video.days.length) : 0;
+    html += `<div style="font-size:11px;color:var(--ink-muted);margin-top:6px">
+      Avg. days — Text: ${avgText} · Image: ${avgImg} · Video: ${avgVid}
+    </div></div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+// ── Platform ──
+const PLATFORM_MAP = { Text: 'Search', Image: 'Display', Video: 'YouTube' };
+const PLATFORM_META = {
+  Search:  { icon: '🔍', color: 'var(--s1)', cls: 'search',  pctCls: 'search-color',  label: 'Google Search' },
+  Display: { icon: '🖼️', color: 'var(--s3)', cls: 'display', pctCls: 'display-color', label: 'Display Network' },
+  YouTube: { icon: '▶️',  color: 'var(--s2)', cls: 'youtube', pctCls: 'youtube-color', label: 'YouTube' },
+};
+
+function renderPlatform() {
+  const platTotals = { Search: { count: 0, days: [], brokers: {} }, Display: { count: 0, days: [], brokers: {} }, YouTube: { count: 0, days: [], brokers: {} } };
+  const brokerPlat = {};
+
+  FILTERED_ADS.forEach(ad => {
+    const plat = PLATFORM_MAP[ad.format_name] || 'Search';
+    const b = ad._broker;
+    const d = parseInt(ad.days_running) || 0;
+
+    platTotals[plat].count++;
+    if (d > 0) platTotals[plat].days.push(d);
+    platTotals[plat].brokers[b] = (platTotals[plat].brokers[b] || 0) + 1;
+
+    if (!brokerPlat[b]) brokerPlat[b] = { Search: { count: 0, days: [] }, Display: { count: 0, days: [] }, YouTube: { count: 0, days: [] } };
+    brokerPlat[b][plat].count++;
+    if (d > 0) brokerPlat[b][plat].days.push(d);
+  });
+
+  const grandTotal = FILTERED_ADS.length || 1;
+
+  const overviewEl = document.getElementById('platform-overview');
+  let overviewHtml = '';
+
+  for (const plat of ['Search', 'Display', 'YouTube']) {
+    const meta = PLATFORM_META[plat];
+    const data = platTotals[plat];
+    const pct = Math.round((data.count / grandTotal) * 100);
+    const avgD = data.days.length ? Math.round(data.days.reduce((s,v) => s+v, 0) / data.days.length) : 0;
+
+    const topBrokers = Object.entries(data.brokers)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 5);
+
+    overviewHtml += `<div class="platform-card plat-${meta.cls}">
+      <div class="plat-icon">${meta.icon}</div>
+      <div class="plat-name">${meta.label}</div>
+      <div>
+        <span class="plat-count">${data.count.toLocaleString()}</span>
+        <span class="plat-pct ${meta.pctCls}">${pct}%</span>
+      </div>
+      <div class="plat-meta">Avg. ${avgD} days running</div>
+      <div class="plat-brokers">
+        <div class="plat-broker-label">Top brokers</div>
+        ${topBrokers.length ? topBrokers.map(([name, cnt]) =>
+          `<div class="plat-broker-row"><span class="broker-n">${esc(name)}</span><span class="broker-c">${cnt}</span></div>`
+        ).join('') : '<div style="font-size:12px;color:var(--ink-muted)">—</div>'}
+      </div>
+    </div>`;
+  }
+  overviewEl.innerHTML = overviewHtml;
+
+  const tableEl = document.getElementById('platform-table-container');
+  const brokers = Object.keys(brokerPlat).sort();
+
+  if (!brokers.length) {
+    tableEl.innerHTML = '<div class="empty-state">No data matches the current filters.</div>';
+    return;
+  }
+
+  let tHtml = `<table class="platform-table">
+    <thead><tr>
+      <th>Broker</th>
+      <th>Total</th>
+      <th style="min-width:140px">Platform Mix</th>
+      <th>Search</th>
+      <th>Display</th>
+      <th>YouTube</th>
+      <th>Primary</th>
+      <th>Avg Days (S / D / Y)</th>
+    </tr></thead><tbody>`;
+
+  brokers.forEach(b => {
+    const bp = brokerPlat[b];
+    const total = bp.Search.count + bp.Display.count + bp.YouTube.count;
+    if (total === 0) return;
+
+    const sPct = Math.round((bp.Search.count / total) * 100);
+    const dPct = Math.round((bp.Display.count / total) * 100);
+    const yPct = 100 - sPct - dPct;
+
+    let primary = 'Search';
+    if (bp.Display.count > bp.Search.count && bp.Display.count > bp.YouTube.count) primary = 'Display';
+    if (bp.YouTube.count > bp.Search.count && bp.YouTube.count > bp.Display.count) primary = 'YouTube';
+    const pMeta = PLATFORM_META[primary];
+
+    const avgS = bp.Search.days.length ? Math.round(bp.Search.days.reduce((s,v)=>s+v,0)/bp.Search.days.length) : '—';
+    const avgD = bp.Display.days.length ? Math.round(bp.Display.days.reduce((s,v)=>s+v,0)/bp.Display.days.length) : '—';
+    const avgY = bp.YouTube.days.length ? Math.round(bp.YouTube.days.reduce((s,v)=>s+v,0)/bp.YouTube.days.length) : '—';
+
+    tHtml += `<tr>
+      <td class="broker-col">${esc(b)}</td>
+      <td>${total.toLocaleString()}</td>
+      <td>
+        <div class="stacked-bar-cell">
+          ${sPct > 0 ? `<div class="seg" style="width:${sPct}%;background:var(--s1)" title="Search ${sPct}%"></div>` : ''}
+          ${dPct > 0 ? `<div class="seg" style="width:${dPct}%;background:var(--s3)" title="Display ${dPct}%"></div>` : ''}
+          ${yPct > 0 ? `<div class="seg" style="width:${yPct}%;background:var(--s2)" title="YouTube ${yPct}%"></div>` : ''}
+        </div>
+      </td>
+      <td>${bp.Search.count || '—'}</td>
+      <td>${bp.Display.count || '—'}</td>
+      <td>${bp.YouTube.count || '—'}</td>
+      <td><span class="plat-pill ${pMeta.cls}">${primary}</span></td>
+      <td>${avgS} / ${avgD} / ${avgY}</td>
+    </tr>`;
+  });
+
+  tHtml += '</tbody></table>';
+  tHtml += `<div class="legend-row" style="margin-top:12px">
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--s1)"></span> Search</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--s3)"></span> Display</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--s2)"></span> YouTube</div>
+  </div>`;
+
+  tableEl.innerHTML = tHtml;
+}
+
+// ── Lightbox ──
+function openLightbox(imgUrl, caption) {
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.onclick = () => overlay.remove();
+  const img = document.createElement('img');
+  img.src = imgUrl;
+  img.alt = 'Ad preview';
+  img.onerror = function() {
+    window.open(imgUrl, '_blank');
+    overlay.remove();
+  };
+  overlay.appendChild(img);
+  if (caption) {
+    const cap = document.createElement('div');
+    cap.className = 'lb-caption';
+    cap.textContent = caption;
+    overlay.appendChild(cap);
+  }
+  document.body.appendChild(overlay);
+  const onKey = (e) => { if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', onKey); } };
+  document.addEventListener('keydown', onKey);
+}
+
+// ── Helpers ──
+function esc(s) {
+  if (!s) return '';
+  const el = document.createElement('span');
+  el.textContent = String(s);
+  return el.innerHTML;
+}
+function escAttr(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/'/g,'&#39;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Boot ──
+autoLoadData();
+</script>
+
+</body>
+</html>
