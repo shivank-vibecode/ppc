@@ -15,6 +15,19 @@
   --radius:10px;
 }
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+#auth-gate{position:fixed;inset:0;z-index:9999;background:var(--header);display:flex;align-items:center;justify-content:center}
+#auth-gate.hidden{display:none}
+.auth-box{background:var(--card);border-radius:16px;padding:40px 36px;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.auth-box .logo{font-size:1.4rem;font-weight:700;color:var(--header);margin-bottom:4px}
+.auth-box .subtitle{font-size:.78rem;color:var(--muted);margin-bottom:24px}
+.auth-box input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.88rem;outline:none;transition:border .15s}
+.auth-box input:focus{border-color:var(--blue)}
+.auth-box button{width:100%;margin-top:12px;padding:10px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+.auth-box button:hover{opacity:.9}
+.auth-box .error{color:var(--red);font-size:.75rem;margin-top:8px;min-height:1.2em}
+.auth-box .hint{font-size:.7rem;color:var(--subtle);margin-top:16px}
+#app-content{display:none}
 .header{background:var(--header);color:#fff;padding:24px 32px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .header h1{font-size:1.3rem;font-weight:700;letter-spacing:-.02em}
 .header .pill{background:rgba(255,255,255,.12);color:#cbd5e1;font-size:.68rem;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase}
@@ -62,6 +75,19 @@ tr.danger-row{background:var(--red-bg) !important}
 </style>
 </head>
 <body>
+
+<div id="auth-gate">
+  <div class="auth-box">
+    <div class="logo">LTV CAC Dashboard</div>
+    <div class="subtitle">Restricted to Deriv employees</div>
+    <input type="password" id="auth-pw" placeholder="Enter password" autocomplete="off" onkeydown="if(event.key==='Enter')checkAuth()">
+    <button onclick="checkAuth()">Unlock</button>
+    <div class="error" id="auth-error"></div>
+    <div class="hint">Contact your team lead for the password</div>
+  </div>
+</div>
+
+<div id="app-content">
 <div class="header">
   <h1>Country & Geo LTV → CAC Framework</h1>
   <span class="pill">Performance Marketing</span>
@@ -175,6 +201,7 @@ tr.danger-row{background:var(--red-bg) !important}
   <p class="note" id="source-note"></p>
 </div>
 
+</div>
 </div>
 
 <script>
@@ -624,8 +651,39 @@ function setTierPlatform(p) { tierPlatform = p; render(); }
 function setGlobalPlatform(p) { globalPlatform = p; render(); }
 function setCityCountry(c) { cityCountry = c; render(); }
 
-// Initial render
-render();
+// --- Auth gate ---
+const AUTH_HASH = "ec669f8f0a908c0ec598c56969a0c637a2045af5a414bca5e7f68eb2b21e8ce1";
+
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest("SHA-256",
+    new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b =>
+    b.toString(16).padStart(2,"0")).join("");
+}
+
+async function checkAuth() {
+  const pw = document.getElementById("auth-pw").value.trim();
+  if (!pw) { document.getElementById("auth-error").textContent = "Please enter a password"; return; }
+  const hash = await sha256(pw);
+  if (hash === AUTH_HASH) {
+    sessionStorage.setItem("ltv_auth", hash);
+    showApp();
+  } else {
+    document.getElementById("auth-error").textContent = "Incorrect password";
+    document.getElementById("auth-pw").value = "";
+  }
+}
+
+function showApp() {
+  document.getElementById("auth-gate").classList.add("hidden");
+  document.getElementById("app-content").style.display = "block";
+  render();
+}
+
+(async function() {
+  const saved = sessionStorage.getItem("ltv_auth");
+  if (saved === AUTH_HASH) { showApp(); }
+})();
 </script>
 </body>
 </html>
