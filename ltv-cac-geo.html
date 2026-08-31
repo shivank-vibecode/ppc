@@ -760,7 +760,10 @@ function setGlobalPlatform(p) { globalPlatform = p; render(); }
 function setCityCountry(c) { cityCountry = c; render(); }
 
 // --- Auth gate ---
-const AUTH_HASH = "ec669f8f0a908c0ec598c56969a0c637a2045af5a414bca5e7f68eb2b21e8ce1";
+const AUTH_HASHES = [
+  "ec669f8f0a908c0ec598c56969a0c637a2045af5a414bca5e7f68eb2b21e8ce1",
+  "0ec4c1ed6073cce2d106b3980990519d2c03449a37f2551b33b048e800ad6746"
+];
 
 async function sha256(msg) {
   const buf = await crypto.subtle.digest("SHA-256",
@@ -773,8 +776,9 @@ async function checkAuth() {
   const pw = document.getElementById("auth-pw").value.trim();
   if (!pw) { document.getElementById("auth-error").textContent = "Please enter a password"; return; }
   const hash = await sha256(pw);
-  if (hash === AUTH_HASH) {
-    sessionStorage.setItem("ltv_auth", hash);
+  const hashLower = await sha256(pw.toLowerCase());
+  if (AUTH_HASHES.includes(hash) || AUTH_HASHES.includes(hashLower)) {
+    sessionStorage.setItem("ltv_auth", AUTH_HASHES[0]);
     showApp();
   } else {
     document.getElementById("auth-error").textContent = "Incorrect password";
@@ -790,7 +794,7 @@ function showApp() {
 
 (async function() {
   const saved = sessionStorage.getItem("ltv_auth");
-  if (saved === AUTH_HASH) { showApp(); }
+  if (AUTH_HASHES.includes(saved)) { showApp(); }
 })();
 </script>
 </body>
