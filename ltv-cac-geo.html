@@ -147,7 +147,7 @@ tr.danger-row{background:var(--red-bg) !important}
 
 <div class="section">
   <h2>Highest-volume countries</h2>
-  <p class="desc">Top 15 by D180-mature user count. Set country CAC caps from D180 LTV ÷ 3.</p>
+  <p class="desc">Top 15 by D180-mature user count. Set country CAC caps from D180 LTV ÷ 2.</p>
   <div class="table-wrap"><table id="topvol-table"></table></div>
 </div>
 
@@ -495,11 +495,11 @@ function render() {
   const regions = regionSource;
   const regionRows = rowsFor(regions, segment);
   const regionSegs = segLabels(regions, segment);
-  const rHeaders = showSeg ? ["Region","Segment","Users ≥180d","D180 LTV","CAC 3:1"] : ["Region","Users ≥180d","D180 LTV","CAC 3:1"];
+  const rHeaders = showSeg ? ["Region","Segment","Users ≥180d","D180 LTV","CAC 2:1"] : ["Region","Users ≥180d","D180 LTV","CAC 2:1"];
   const rAligns = showSeg ? ["left","left","right","right","right"] : ["left","right","right","right"];
   buildTable(document.getElementById("region-table"), rHeaders,
     regionRows.map((r,i) => {
-      const core = [num(r.n_d180), usd(r.ltv_primary), usd(r.cac_balanced_3x)];
+      const core = [num(r.n_d180), usd(r.ltv_primary), usd(r.cac_aggressive_2x)];
       return showSeg ? [r.group, regionSegs[i], ...core] : [r.group, ...core];
     }),
     {aligns: rAligns, tones: tonesFor(regions, segment)}
@@ -535,10 +535,10 @@ function render() {
   const topVol = topVolSource;
   const volRows = rowsFor(topVol, segment);
   const volSegs = segLabels(topVol, segment);
-  const vHeaders = showSeg ? ["Country","Segment","Users ≥180d","D180 LTV","CAC 3:1"] : ["Country","Users ≥180d","D180 LTV","CAC 3:1"];
+  const vHeaders = showSeg ? ["Country","Segment","Users ≥180d","D180 LTV","CAC 2:1"] : ["Country","Users ≥180d","D180 LTV","CAC 2:1"];
   buildTable(document.getElementById("topvol-table"), vHeaders,
     volRows.map((c,i) => {
-      const core = [num(c.n_d180), usd(c.ltv_primary), usd(c.cac_balanced_3x)];
+      const core = [num(c.n_d180), usd(c.ltv_primary), usd(c.cac_aggressive_2x)];
       return showSeg ? [c.group, volSegs[i], ...core] : [c.group, ...core];
     }),
     {aligns: showSeg ? ["left","left","right","right","right"] : ["left","right","right","right"], tones: tonesFor(topVol, segment)}
@@ -548,13 +548,13 @@ function render() {
   const countries = globalPlatform === "All" ? DATA.countries : countrySource;
   const ctyRows = rowsFor(countries, segment);
   const ctySegs = segLabels(countries, segment);
-  const cHeaders = showSeg ? ["Country","Segment","Users ≥180d","D180 LTV","CAC 2:1","CAC 3:1","CAC 4:1"] : ["Country","Users ≥180d","D180 LTV","CAC 2:1","CAC 3:1","CAC 4:1"];
+  const cHeaders = showSeg ? ["Country","Segment","Users ≥180d","D180 LTV","CAC 2:1"] : ["Country","Users ≥180d","D180 LTV","CAC 2:1"];
   buildTable(document.getElementById("country-table"), cHeaders,
     ctyRows.map((c,i) => {
-      const core = [num(c.n_d180), usd(c.ltv_primary), usd(c.cac_aggressive_2x), usd(c.cac_balanced_3x), usd(c.cac_conservative_4x)];
+      const core = [num(c.n_d180), usd(c.ltv_primary), usd(c.cac_aggressive_2x)];
       return showSeg ? [c.group, ctySegs[i], ...core] : [c.group, ...core];
     }),
-    {aligns: showSeg ? ["left","left","right","right","right","right","right"] : ["left","right","right","right","right","right"], tones: tonesFor(countries, segment)}
+    {aligns: showSeg ? ["left","left","right","right","right"] : ["left","right","right","right"], tones: tonesFor(countries, segment)}
   );
 
   // Campaign whales
@@ -599,10 +599,10 @@ function render() {
   const yearRegion = yearlyRegionView(regionYearSource, segment, cohortYear);
   const yearUsers = regionYearSource.all.filter(r => r.year === cohortYear).reduce((s,r) => s + r.n_d180, 0);
   document.getElementById("year-note").textContent = `${cohortYear} · ${num(yearUsers)} depositors aged ≥180d`;
-  const yrHeaders = showSeg ? ["Region","Segment","Users ≥180d","D180 LTV","CAC 3:1"] : ["Region","Users ≥180d","D180 LTV","CAC 3:1"];
+  const yrHeaders = showSeg ? ["Region","Segment","Users ≥180d","D180 LTV","CAC 2:1"] : ["Region","Users ≥180d","D180 LTV","CAC 2:1"];
   buildTable(document.getElementById("region-year-table"), yrHeaders,
     yearRegion.rows.map((r,i) => {
-      const core = [num(r.n_d180), usd(r.ltv_primary), usd(r.cac_balanced_3x)];
+      const core = [num(r.n_d180), usd(r.ltv_primary), usd(r.cac_aggressive_2x)];
       return showSeg ? [r.group, yearRegion.segs[i], ...core] : [r.group, ...core];
     }),
     {aligns: showSeg ? ["left","left","right","right","right"] : ["left","right","right","right"], tones: yearRegion.tones}
@@ -629,11 +629,11 @@ function render() {
   const yearTierUsers = tierSource.all.filter(r => r.year === cohortYear).reduce((s,r) => s + r.n_d180, 0);
   const platLabel = tierPlatform === "All" ? "" : ` · ${tierPlatform}`;
   document.getElementById("tier-year-note").textContent = `${cohortYear}${platLabel} · ${num(yearTierUsers)} D180-mature depositors from these campaign prefixes` + (tierPlatform !== "All" ? "  ·  † = n < 10, treat as directional" : "");
-  const trHeaders = showSeg ? ["Region","Tier","Segment","Users ≥180d","D180 LTV","CAC 3:1"] : ["Region","Tier","Users ≥180d","D180 LTV","CAC 3:1"];
+  const trHeaders = showSeg ? ["Region","Tier","Segment","Users ≥180d","D180 LTV","CAC 2:1"] : ["Region","Tier","Users ≥180d","D180 LTV","CAC 2:1"];
   buildTable(document.getElementById("tier-year-table"), trHeaders,
     yearTier.rows.map((r,i) => {
       const ltvStr = r.ltv_primary != null && r.low_n ? usd(r.ltv_primary) + " †" : usd(r.ltv_primary);
-      const cacStr = r.cac_balanced_3x != null && r.low_n ? usd(r.cac_balanced_3x) + " †" : usd(r.cac_balanced_3x);
+      const cacStr = r.cac_aggressive_2x != null && r.low_n ? usd(r.cac_aggressive_2x) + " †" : usd(r.cac_aggressive_2x);
       const core = [num(r.n_d180), ltvStr, cacStr];
       return showSeg ? [r.group, r.tier||"", yearTier.segs[i], ...core] : [r.group, r.tier||"", ...core];
     }),
@@ -649,15 +649,15 @@ function render() {
   const dimLabel = DIM_OPTIONS.find(d => d.id === dim)?.label || "Value";
   let dHeaders, dAligns;
   if (dim === "region_tier") {
-    dHeaders = showSeg ? ["Region","Tier","Segment","Users ≥180d","D180 LTV","CAC 3:1"] : ["Region","Tier","Users ≥180d","D180 LTV","CAC 3:1"];
+    dHeaders = showSeg ? ["Region","Tier","Segment","Users ≥180d","D180 LTV","CAC 2:1"] : ["Region","Tier","Users ≥180d","D180 LTV","CAC 2:1"];
     dAligns = showSeg ? ["left","left","left","right","right","right"] : ["left","left","right","right","right"];
   } else {
-    dHeaders = showSeg ? [dimLabel,"Segment","Users ≥180d","D180 LTV","CAC 3:1"] : [dimLabel,"Users ≥180d","D180 LTV","CAC 3:1"];
+    dHeaders = showSeg ? [dimLabel,"Segment","Users ≥180d","D180 LTV","CAC 2:1"] : [dimLabel,"Users ≥180d","D180 LTV","CAC 2:1"];
     dAligns = showSeg ? ["left","left","right","right","right"] : ["left","right","right","right"];
   }
   buildTable(document.getElementById("dim-table"), dHeaders,
     dimData.rows.map((r,i) => {
-      const core = [num(r.n_d180), usd(r.ltv_primary), usd(r.cac_balanced_3x)];
+      const core = [num(r.n_d180), usd(r.ltv_primary), usd(r.cac_aggressive_2x)];
       if (dim === "region_tier") {
         return showSeg ? [r.region||r.group, r.tier||"", dimData.segs[i], ...core] : [r.region||r.group, r.tier||"", ...core];
       }
@@ -699,12 +699,12 @@ function render() {
   }
 
   const cityHeaders = showSeg
-    ? ["City","Country","Segment","Users ≥180d","D180 LTV","CAC 3:1","Whale rate"]
-    : ["City","Country","Users ≥180d","D180 LTV","CAC 3:1","Whale rate"];
+    ? ["City","Country","Segment","Users ≥180d","D180 LTV","CAC 2:1","Whale rate"]
+    : ["City","Country","Users ≥180d","D180 LTV","CAC 2:1","Whale rate"];
   buildTable(document.getElementById("city-table"), cityHeaders,
     cityRows.map((r,i) => {
       const ltvStr = r.low_n ? usd(r.ltv_primary) + " †" : usd(r.ltv_primary);
-      const cacStr = r.low_n ? usd(r.cac_balanced_3x) + " †" : usd(r.cac_balanced_3x);
+      const cacStr = r.low_n ? usd(r.cac_aggressive_2x) + " †" : usd(r.cac_aggressive_2x);
       const core = [num(r.n_d180), ltvStr, cacStr, pct(r.whale_rate)];
       return showSeg ? [r.group, r.country, citySegs[i], ...core] : [r.group, r.country, ...core];
     }),
